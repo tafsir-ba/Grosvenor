@@ -40,3 +40,10 @@ class DownloadType(str, Enum):
 
 # Downloads that require a captured lead before the file is served.
 GATED_DOWNLOAD_TYPES = {DownloadType.BROCHURE}
+
+# Anonymous interaction lead-types — captured without name/email (click tracking).
+CLICK_LEAD_TYPES = {
+    LeadType.WHATSAPP_CLICK,
+    LeadType.PHONE_CLICK,
+    LeadType.EMAIL_CLICK,
+}

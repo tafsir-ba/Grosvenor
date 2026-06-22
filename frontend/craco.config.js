@@ -97,4 +97,33 @@ if (isDevServer) {
   }
 }
 
+// Normalize deprecated webpack-dev-server middleware hooks for CRA5 + webpack-dev-server@5 compatibility.
+// react-scripts injects onBeforeSetupMiddleware/onAfterSetupMiddleware which wds@5 rejects.
+// This runs only for the dev server and does not affect production builds.
+if (isDevServer) {
+  const __existingDevServer = webpackConfig.devServer;
+  webpackConfig.devServer = (devServerConfig) => {
+    let cfg = devServerConfig;
+    if (typeof __existingDevServer === "function") {
+      cfg = __existingDevServer(devServerConfig) || devServerConfig;
+    } else if (__existingDevServer && typeof __existingDevServer === "object") {
+      cfg = { ...devServerConfig, ...__existingDevServer };
+    }
+    const { onBeforeSetupMiddleware, onAfterSetupMiddleware, https, http2, ...rest } = cfg;
+    if (https) {
+      rest.server = https === true ? "https" : { type: "https", options: https };
+    }
+    if (onBeforeSetupMiddleware || onAfterSetupMiddleware) {
+      const priorSetup = rest.setupMiddlewares;
+      rest.setupMiddlewares = (middlewares, devServer) => {
+        if (typeof onBeforeSetupMiddleware === "function") onBeforeSetupMiddleware(devServer);
+        if (typeof priorSetup === "function") middlewares = priorSetup(middlewares, devServer);
+        if (typeof onAfterSetupMiddleware === "function") onAfterSetupMiddleware(devServer);
+        return middlewares;
+      };
+    }
+    return rest;
+  };
+}
+
 module.exports = webpackConfig;

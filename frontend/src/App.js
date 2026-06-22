@@ -1,56 +1,56 @@
-import { useEffect } from "react";
-import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import { Toaster } from "sonner";
+import { AuthProvider } from "@/context/AuthContext";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import SiteLayout from "@/components/layout/SiteLayout";
+import HomePage from "@/pages/HomePage";
+import DevelopmentPage from "@/pages/DevelopmentPage";
+import ResidencesPage from "@/pages/ResidencesPage";
+import UnitDetailPage from "@/pages/UnitDetailPage";
+import AmenitiesPage from "@/pages/AmenitiesPage";
+import LocationPage from "@/pages/LocationPage";
+import GalleryPage from "@/pages/GalleryPage";
+import MortgagePage from "@/pages/MortgagePage";
+import FaqPage from "@/pages/FaqPage";
+import ContactPage from "@/pages/ContactPage";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+import AdminLogin from "@/pages/admin/AdminLogin";
+import AdminLayout from "@/pages/admin/AdminLayout";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminUnits from "@/pages/admin/AdminUnits";
+import AdminLeads from "@/pages/admin/AdminLeads";
+import AdminDownloads from "@/pages/admin/AdminDownloads";
 
 function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
-  );
+    return (
+        <AuthProvider>
+            <BrowserRouter>
+                <Toaster position="top-right" richColors closeButton />
+                <Routes>
+                    <Route element={<SiteLayout />}>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/the-development" element={<DevelopmentPage />} />
+                        <Route path="/residences" element={<ResidencesPage />} />
+                        <Route path="/residences/:slug" element={<UnitDetailPage />} />
+                        <Route path="/amenities" element={<AmenitiesPage />} />
+                        <Route path="/location" element={<LocationPage />} />
+                        <Route path="/gallery" element={<GalleryPage />} />
+                        <Route path="/mortgage" element={<MortgagePage />} />
+                        <Route path="/faq" element={<FaqPage />} />
+                        <Route path="/contact" element={<ContactPage />} />
+                    </Route>
+
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin" element={<AdminLayout />}>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="units" element={<AdminUnits />} />
+                        <Route path="leads" element={<AdminLeads />} />
+                        <Route path="downloads" element={<AdminDownloads />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
+    );
 }
 
 export default App;

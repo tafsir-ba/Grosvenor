@@ -1,0 +1,39 @@
+{
+  "summary": "Full backend + frontend regression for Grosvenor Vistas. 23/23 backend pytest cases pass; all frontend flows (home, navigation, residences filters, unit detail enquiry, contact visit form, gated brochure dialog, open pricelist, admin login + dashboard + units status change with persistence, leads + downloads pages) verified working end-to-end.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "DownloadForm dialog / Gallery lightbox", "issues": ["Console a11y warning: Radix DialogContent missing Description or aria-describedby. Non-blocking but recommended to add a DialogDescription (or aria-describedby={undefined} suppressor) for screen-reader accessibility."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_grosvenor_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Optional: silence/fix Radix Dialog a11y warning by adding <DialogDescription/> to brochure download dialog and gallery lightbox."
+  ],
+  "critical_code_review_comments": [
+    "domain/models.py: stray broken line at end of file ('eated_at: str = Field(default_factory=utc_now_iso)' on line 110) — appears to be a duplicate/corrupted leftover; it is dead code because the previous line already closes the Download class assignment, but it is parseable as a module-level annotation. Recommend removing to keep the file clean.",
+    "BaseDocument.from_mongo() / to_mongo(): model_dump() is called without by_alias on serialization to API responses, so the Pydantic field 'id' (aliased to '_id') is serialized as '_id' only because the mongo doc is loaded directly with '_id' key and FastAPI's default jsonable_encoder honors the alias when populate_by_name=True is set. Frontend correctly reads '_id' — confirmed working. Document this contract in the model docstring so future devs don't introduce 'id' as a parallel key.",
+    "routes/leads.py POST /track accepts a full LeadCreate payload but the docstring says click events are anonymous; consider rejecting non-click lead_types on /track to keep the public surface tight.",
+    "Stats endpoint computes available_value_usd by summing prices but units may have price=null (Price on request); current logic already guards with 'if u.price' — fine.",
+    "Frontend ResidencesPage filters use building 'all', 'available' etc as raw values — works, but consider sharing constants from /lib/constants.js for forward-compat.",
+    "Admin login response stores access_token in localStorage AND backend sets httpOnly cookies — confirmed (cookies attached automatically to subsequent admin requests). Good defence in depth."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_grosvenor_api.py"
+  ],
+  "success_rate": {"backend": "100% (23/23)", "frontend": "100% of requested flows"},
+  "test_credentials": "admin@grosvenorvistas.com / Grosvenor2026! (per /app/memory/test_credentials.md)",
+  "seed_data_creation": "Pytest creates TEST-prefixed leads and one TEST unit which is then deleted within the same test (test_unit_crud_lifecycle cleans itself up). A handful of TEST_* leads remain in the leads collection from create/track and PATCH tests — visible in admin leads listing (count went from baseline to 11 after this run).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend regression suite lives at /app/backend/tests/test_grosvenor_api.py — run with `pytest backend/tests/test_grosvenor_api.py -v`. NOTE: requests.Session is reused across tests and login sets httpOnly cookies, so any 'no-auth' test MUST use a fresh `requests.get(...)` (without session) to actually validate the 401 path — see TestAuth.test_admin_requires_auth. Frontend admin status select options use lowercase values ('available'/'reserved'/'sold') — use exact=True with lowercase names when interacting with the dropdown via Playwright. Header dev route is `/the-development`, not `/development`. CRM_SYNC_ENABLED is intentionally false — leads stored locally; do NOT flag missing external CRM calls.",
+  "rca of the issue": "No outstanding bugs. Initial flake in TestAuth.test_admin_requires_auth was caused by the shared requests.Session carrying httpOnly auth cookies from the prior login fixture, which authenticated the 'unauthorized' request. Fixed by using a fresh requests.get() in that test."
+}

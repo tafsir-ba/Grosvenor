@@ -21,7 +21,7 @@ class UnitBase(BaseModel):
     floor: int
     total_surface: float          # interior surface
     balcony_surface: float = 0
-    price: float
+    price: Optional[float] = None      # None => "Price on request"
     currency: str = "USD"
     status: UnitStatus = UnitStatus.AVAILABLE
     # Optional external reference so a synced unit maps back to the CRM record.
@@ -53,8 +53,10 @@ class Unit(BaseDocument, UnitBase):
 
 # ----------------------------- Leads -----------------------------
 class LeadCreate(BaseModel):
-    name: str
-    email: EmailStr
+    # name/email are optional at the schema level to support anonymous click
+    # tracking; the leads service enforces them for real form submissions.
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
     phone: Optional[str] = None
     message: Optional[str] = None
     lead_type: LeadType = LeadType.GENERAL_CONTACT
@@ -105,3 +107,4 @@ class DownloadUpdate(BaseModel):
 
 class Download(BaseDocument, DownloadBase):
     created_at: str = Field(default_factory=utc_now_iso)
+eated_at: str = Field(default_factory=utc_now_iso)
