@@ -27,7 +27,7 @@ export default function Hero({ image, overline, title, titleAccent, subtitle, pr
                     className="h-[120%] w-full object-cover"
                 />
                 <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-gradient-to-t from-brand-blue/75 via-brand-blue/10 to-brand-blue/5" />
-                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-brand-ink/45 to-transparent" />
+                <div className="absolute inset-x-0 top-0 h-52 bg-gradient-to-b from-brand-ink/70 via-brand-ink/25 to-transparent" />
             </motion.div>
 
             <div className="container-x relative z-10 pb-20 pt-44 md:pb-28">

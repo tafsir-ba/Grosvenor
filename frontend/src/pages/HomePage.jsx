@@ -103,7 +103,7 @@ export default function HomePage() {
             <section className="bg-brand-blue py-24 text-white md:py-28" data-testid="home-downloads">
                 <div className="container-x grid items-center gap-14 lg:grid-cols-2">
                     <div className="overflow-hidden">
-                        <img src="/gallery/townhouse-facade.png" alt="" className="aspect-[4/3] w-full object-cover" />
+                        <img src="/gallery/model-unit-kitchen.png" alt="" className="aspect-[4/3] w-full object-cover" />
                     </div>
                     <div>
                         <h2 className="display text-5xl text-white lg:text-6xl">Brochure & price list</h2>

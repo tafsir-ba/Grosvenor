@@ -19,9 +19,8 @@ export default function Header() {
     }, []);
 
     const atTop = !scrolled;
-    const isHome = location.pathname === "/";
-    // White text only when floating over a dark inner-page hero; home hero is bright.
-    const lightTone = atTop && !isHome;
+    // White logo/text at the top over the hero scrim; blue once scrolled.
+    const lightTone = atTop;
     const tone = lightTone ? "text-white" : "text-brand-blue";
 
     return (
@@ -32,7 +31,7 @@ export default function Header() {
                 atTop ? "bg-transparent" : "border-b border-border bg-white/95 backdrop-blur-xl"
             )}
         >
-            <div className="container-x flex h-24 items-center justify-between">
+            <div className={cn("container-x flex items-center justify-between transition-all duration-500", atTop ? "h-28" : "h-20")}>
                 {/* Left: Menu drawer */}
                 <Sheet>
                     <SheetTrigger asChild>
