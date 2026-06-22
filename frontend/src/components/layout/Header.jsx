@@ -36,7 +36,7 @@ export default function Header() {
                 <Sheet>
                     <SheetTrigger asChild>
                         <button data-testid="menu-trigger" className={cn("flex items-center gap-3 transition-colors", tone)}>
-                            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-current">
+                            <span className="flex h-12 w-12 items-center justify-center rounded-none border border-current">
                                 <Menu className="h-5 w-5" />
                             </span>
                             <span className="hidden text-xs font-medium uppercase tracking-[0.22em] sm:inline">Menu</span>
@@ -47,7 +47,7 @@ export default function Header() {
                             <div className="mb-12 flex items-center justify-between">
                                 <Logo color="white" layout="horizontal" className="h-10" />
                                 <SheetClose asChild>
-                                    <button data-testid="menu-close" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30"><X className="h-5 w-5" /></button>
+                                    <button data-testid="menu-close" className="flex h-11 w-11 items-center justify-center rounded-none border border-white/30"><X className="h-5 w-5" /></button>
                                 </SheetClose>
                             </div>
                             <nav className="flex flex-1 flex-col justify-center gap-1">
@@ -76,7 +76,11 @@ export default function Header() {
 
                 {/* Center: Logo */}
                 <Link to="/" data-testid="header-logo-link" className="absolute left-1/2 -translate-x-1/2">
-                    <Logo color={lightTone ? "white" : "blue"} layout="horizontal" className="h-9 w-auto md:h-11" />
+                    <Logo
+                        color={lightTone ? "white" : "blue"}
+                        layout="horizontal"
+                        className={cn("w-auto transition-all duration-500", atTop ? "h-24 md:h-32 lg:h-36" : "h-12 md:h-14")}
+                    />
                 </Link>
 
                 {/* Right: Instagram + Contact */}
@@ -94,7 +98,7 @@ export default function Header() {
                         to="/contact"
                         data-testid="header-contact"
                         className={cn(
-                            "rounded-sm border px-8 py-3.5 text-sm font-medium uppercase tracking-[0.14em] transition-colors duration-300",
+                            "rounded-none border px-8 py-3.5 text-base font-medium uppercase tracking-[0.14em] transition-colors duration-300",
                             lightTone ? "border-white/50 text-white hover:bg-white hover:text-brand-blue" : "border-brand-blue/40 text-brand-blue hover:bg-brand-blue hover:text-white"
                         )}
                     >

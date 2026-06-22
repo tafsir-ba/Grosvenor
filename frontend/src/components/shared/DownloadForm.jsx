@@ -28,12 +28,9 @@ export default function DownloadForm({ download, dark = false }) {
 
     return (
         <div data-testid={`download-${download.type}`} className={`flex items-center justify-between gap-6 border-b py-6 ${dark ? "border-white/20" : "border-border"}`}>
-            <div className="flex items-start gap-4">
-                <FileText className={`mt-1 h-6 w-6 flex-shrink-0 ${dark ? "text-white" : "text-brand-gold"}`} />
-                <div>
-                    <h4 className={`font-display text-xl ${dark ? "text-white" : "text-brand-blue"}`}>{download.title}</h4>
-                    {download.description && <p className={`mt-1 text-sm ${dark ? "text-white/70" : "text-muted-foreground"}`}>{download.description}</p>}
-                </div>
+            <div className="flex items-center gap-4">
+                <FileText className={`h-6 w-6 flex-shrink-0 ${dark ? "text-white" : "text-brand-gold"}`} />
+                <h4 className={`font-display text-2xl ${dark ? "text-white" : "text-brand-blue"}`}>{download.title}</h4>
             </div>
 
             {gated ? (

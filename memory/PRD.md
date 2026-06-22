@@ -46,6 +46,15 @@ Inbound unit sync mapping (`map_crm_unit`) + endpoint stub ready for wiring.
 ## Credentials
 Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 
+## UI Polish (2026-06-22, fork)
+- Header logo enlarged (h-24→36 on landing, shrinks on scroll). Wordmark now prominent.
+- All CTAs/buttons squared (rounded-none); WhatsApp float → brand-green square.
+- Base body font bumped to 1.2rem for accessibility; CtaButton text-base.
+- Removed "Find Us" overline kicker from MapSection. Card corners squared on Contact/Mortgage/Development.
+- AmenityScroller: click-and-drag scrolling; AMENITY_GALLERY titles corrected to real amenity list (Panoramic Views, Rooftop Pools & Gyms, Landscaped Gardens, Elevator Access, Kid's Playground, Underground Parking, Smart-Lock Entry, Gated Security).
+- Downloads section simplified (title + download row only, descriptions removed).
+- Verified: slider drag works, brochure gated dialog opens.
+
 ## Backlog / Next
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
 - P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).

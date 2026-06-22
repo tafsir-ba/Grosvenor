@@ -57,10 +57,10 @@ export default function BrochureRail() {
             {/* Mobile: bottom-left compact buttons */}
             <div className="fixed bottom-6 left-6 z-40 flex gap-2 md:hidden">
                 {brochure && (
-                    <button onClick={() => setOpen(true)} data-testid="rail-brochure-mobile" className="rounded-full bg-brand-gold px-4 py-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-white shadow-lg">Brochure</button>
+                    <button onClick={() => setOpen(true)} data-testid="rail-brochure-mobile" className="rounded-none bg-brand-gold px-4 py-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-white shadow-lg">Brochure</button>
                 )}
                 {pricelist && (
-                    <button onClick={openPricelist} data-testid="rail-pricelist-mobile" className="rounded-full bg-brand-blue px-4 py-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-white shadow-lg">Prices</button>
+                    <button onClick={openPricelist} data-testid="rail-pricelist-mobile" className="rounded-none bg-brand-blue px-4 py-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-white shadow-lg">Prices</button>
                 )}
             </div>
 

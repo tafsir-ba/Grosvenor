@@ -137,16 +137,16 @@ export const GALLERY = [
 export const HERO_IMAGE = "/gallery/buildings-01.png";
 export const AERIAL_IMAGE = "/site/aerial-masterplan.jpg";
 
-// Image-led amenity showcase (short titles only — no body text).
+// Image-led amenity showcase — short titles only, drawn from the real amenity list.
 export const AMENITY_GALLERY = [
     { title: "Panoramic Views", image: "/gallery/buildings-01.png" },
     { title: "Rooftop Pools & Gyms", image: "/gallery/rooftop-pool.png" },
     { title: "Landscaped Gardens", image: "/gallery/terrace.png" },
-    { title: "Private Terraces", image: "/gallery/terrace-2.png" },
+    { title: "Elevator Access", image: "/gallery/terrace-2.png" },
     { title: "Kid's Playground", image: "/gallery/homestaging-evening-terrace.png" },
     { title: "Underground Parking", image: "/gallery/townhouse-facade.png" },
-    { title: "Smart-Lock Security", image: "/gallery/model-unit-living-room.png" },
-    { title: "Elegant Interiors", image: "/gallery/model-unit-living-and-dining-room.png" },
+    { title: "Smart-Lock Entry", image: "/gallery/model-unit-living-room.png" },
+    { title: "Gated Security", image: "/gallery/model-unit-living-and-dining-room.png" },
 ];
 
 export const SHOWROOM_IMAGE = "/gallery/model-unit-living-room.png";

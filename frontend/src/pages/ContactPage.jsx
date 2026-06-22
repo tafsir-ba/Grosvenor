@@ -37,7 +37,7 @@ export default function ContactPage() {
                                     onClick={() => trackClick(c.type)}
                                     data-testid={c.testid}
                                     {...(c.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                                    className="flex items-center gap-4 rounded-sm border border-border bg-card p-5 transition-colors hover:border-brand-gold"
+                                    className="flex items-center gap-4 rounded-none border border-border bg-card p-5 transition-colors hover:border-brand-gold"
                                 >
                                     <c.icon className="h-5 w-5 text-brand-gold" />
                                     <div>
@@ -46,7 +46,7 @@ export default function ContactPage() {
                                     </div>
                                 </a>
                             ))}
-                            <div className="flex items-start gap-4 rounded-sm border border-border bg-card p-5">
+                            <div className="flex items-start gap-4 rounded-none border border-border bg-card p-5">
                                 <MapPin className="mt-1 h-5 w-5 text-brand-gold" />
                                 <div>
                                     <p className="overline text-muted-foreground">Showroom</p>
@@ -57,7 +57,7 @@ export default function ContactPage() {
                     </div>
 
                     {/* Form with tabs */}
-                    <div className="rounded-sm border border-border bg-card p-8 md:p-10" data-testid="contact-form-card">
+                    <div className="rounded-none border border-border bg-card p-8 md:p-10" data-testid="contact-form-card">
                         <Tabs defaultValue="visit">
                             <TabsList className="mb-8 grid w-full grid-cols-2" data-testid="contact-tabs">
                                 <TabsTrigger value="visit" data-testid="tab-visit">Book Showroom Visit</TabsTrigger>

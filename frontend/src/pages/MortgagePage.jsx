@@ -43,7 +43,7 @@ export default function MortgagePage() {
                         {priceList && <div className="mt-12"><DownloadForm download={priceList} /></div>}
                     </div>
 
-                    <div className="h-fit rounded-sm border border-border bg-card p-8 lg:sticky lg:top-28" data-testid="mortgage-enquiry">
+                    <div className="h-fit rounded-none border border-border bg-card p-8 lg:sticky lg:top-28" data-testid="mortgage-enquiry">
                         <h2 className="font-display text-2xl text-brand-ink">Request mortgage information</h2>
                         <p className="mt-2 text-sm text-muted-foreground">Tell us a little about you and we'll share relevant financing details.</p>
                         <div className="mt-6">

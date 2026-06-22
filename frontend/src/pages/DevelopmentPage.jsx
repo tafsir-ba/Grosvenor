@@ -32,7 +32,7 @@ export default function DevelopmentPage() {
 
             {/* Masterplan */}
             <section className="container-x pb-24 md:pb-32">
-                <div className="overflow-hidden rounded-sm border border-border">
+                <div className="overflow-hidden rounded-none border border-border">
                     <img src={AERIAL_IMAGE} alt="Grosvenor Vistas aerial masterplan" className="w-full object-cover" />
                 </div>
             </section>

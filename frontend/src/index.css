@@ -42,8 +42,8 @@
         @apply bg-background text-foreground;
         font-family: "Signika", system-ui, sans-serif;
         font-weight: 400;
-        font-size: 1.075rem;
-        line-height: 1.6;
+        font-size: 1.2rem;
+        line-height: 1.65;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }

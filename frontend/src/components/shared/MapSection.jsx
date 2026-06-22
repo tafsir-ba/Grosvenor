@@ -7,8 +7,7 @@ export default function MapSection() {
     return (
         <div className="grid gap-0 overflow-hidden rounded-sm border border-border lg:grid-cols-2" data-testid="map-section">
             <div className="bg-brand-blue p-10 text-white md:p-12">
-                <p className="overline text-brand-gold">Find Us</p>
-                <h3 className="mt-4 font-display text-3xl">{PROJECT.location.split(" · ")[0]}</h3>
+                <h3 className="font-display text-4xl md:text-5xl">{PROJECT.location.split(" · ")[0]}</h3>
                 <div className="mt-6 flex items-start gap-3 text-white/85">
                     <MapPin className="mt-1 h-5 w-5 flex-shrink-0 text-brand-gold" />
                     <p className="leading-relaxed">{PROJECT.contact.address}</p>

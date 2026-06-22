@@ -21,7 +21,7 @@ export default function CtaButton({
     ...rest
 }) {
     const classes = cn(
-        "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm px-7 py-3 text-sm font-medium uppercase tracking-[0.12em] transition-colors duration-300",
+        "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none px-8 py-4 text-base font-medium uppercase tracking-[0.12em] transition-colors duration-300",
         VARIANTS[variant],
         className
     );
