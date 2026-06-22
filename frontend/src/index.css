@@ -74,6 +74,20 @@
     .link-underline {
         @apply relative after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-current after:transition-all after:duration-500 hover:after:w-full;
     }
+    /* Visible scrollbar to signal horizontal scrolling on the amenity rail */
+    .amenity-scroll {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(var(--gold)) rgba(255, 255, 255, 0.15);
+    }
+    .amenity-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+    .amenity-scroll::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.14);
+    }
+    .amenity-scroll::-webkit-scrollbar-thumb {
+        background: hsl(var(--gold));
+    }
 }
 
 ::selection {

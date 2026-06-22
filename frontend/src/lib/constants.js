@@ -26,7 +26,7 @@ export const STARTING_PRICE = "USD 393,000";
 
 // Full amenity list (icons rendered in the UI). Views pushed first.
 export const AMENITY_FEATURES = [
-    { icon: "views", label: "Panoramic hillside & city views" },
+    { icon: "views", label: "Panoramic mountain & sea views" },
     { icon: "pool", label: "Rooftop swimming pools & gyms for each block and townhouse" },
     { icon: "elevator", label: "Elevator access to each unit, gym and pool deck" },
     { icon: "lock", label: "Entrance doors equipped with smart locks" },

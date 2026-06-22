@@ -20,7 +20,7 @@ const reveal = {
 const STATS = [
     { big: "43", small: "Residences" },
     { big: STARTING_PRICE, small: "Starting from" },
-    { big: "360°", small: "Hillside & City Views" },
+    { big: "360°", small: "Mountain & Sea Views" },
 ];
 
 function ParallaxImage({ src, children }) {
@@ -53,19 +53,13 @@ export default function HomePage() {
                 secondary={{ to: "/contact", children: "Book a Visit" }}
             />
 
-            {/* Short, bold summary — editorial figures with faded watermark */}
-            <section className="relative overflow-hidden border-b border-border bg-white py-24 md:py-32" data-testid="home-stats">
-                <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none text-center font-display text-[20vw] font-light italic leading-none text-brand-blue/[0.04]"
-                >
-                    In Figures
-                </span>
-                <div className="container-x relative grid grid-cols-1 gap-14 sm:grid-cols-3">
+            {/* Short, bold summary — clean centered figures */}
+            <section className="border-b border-border bg-white py-24 md:py-32" data-testid="home-stats">
+                <div className="container-x grid grid-cols-1 gap-14 text-center sm:grid-cols-3">
                     {STATS.map((s, i) => (
-                        <motion.div key={s.small} {...reveal} transition={{ ...reveal.transition, delay: i * 0.1 }} className="text-center sm:text-left">
+                        <motion.div key={s.small} {...reveal} transition={{ ...reveal.transition, delay: i * 0.1 }}>
                             <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{s.small}</p>
-                            <p className="mt-4 display text-6xl font-light text-brand-blue md:text-7xl lg:text-8xl">{s.big}</p>
+                            <p className="mt-4 display text-5xl font-light text-brand-blue md:text-6xl">{s.big}</p>
                         </motion.div>
                     ))}
                 </div>
@@ -73,8 +67,11 @@ export default function HomePage() {
 
             {/* Amenities — image-led gallery, minimal text */}
             <section className="bg-brand-blue py-24 text-white md:py-32" data-testid="home-amenities">
-                <div className="container-x mb-12">
+                <div className="container-x mb-12 flex flex-wrap items-end justify-between gap-4">
                     <SectionHeading title="Amenities" titleAccent="& lifestyle" light />
+                    <span className="flex items-center gap-2 text-sm uppercase tracking-[0.2em] text-white/60" data-testid="amenity-drag-hint">
+                        Drag to explore <span aria-hidden="true">→</span>
+                    </span>
                 </div>
                 <AmenityScroller items={AMENITY_GALLERY} />
                 <div className="container-x mt-12"><CtaButton to="/amenities" variant="outline-light">Explore Lifestyle</CtaButton></div>

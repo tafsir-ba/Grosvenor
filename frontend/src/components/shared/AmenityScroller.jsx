@@ -36,8 +36,8 @@ export default function AmenityScroller({ items }) {
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
             onPointerLeave={endDrag}
-            className={`flex select-none gap-6 overflow-x-auto px-6 pb-8 md:px-12 lg:px-16 ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
-            style={{ scrollbarWidth: "none", touchAction: "pan-y" }}
+            className={`amenity-scroll flex select-none gap-6 overflow-x-auto px-6 pb-6 md:px-12 lg:px-16 ${dragging ? "cursor-grabbing" : "cursor-grab"}`}
+            style={{ touchAction: "pan-y" }}
         >
             {items.map((a, i) => (
                 <motion.figure
