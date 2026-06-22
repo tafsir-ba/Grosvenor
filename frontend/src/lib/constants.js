@@ -21,6 +21,23 @@ export const PROJECT = {
     agentLabel: "Grosvenor Agent",
 };
 
+// Authoritative starting price for marketing display.
+export const STARTING_PRICE = "USD 393,000";
+
+// Full amenity list (icons rendered in the UI). Views pushed first.
+export const AMENITY_FEATURES = [
+    { icon: "views", label: "Panoramic hillside & city views" },
+    { icon: "pool", label: "Rooftop swimming pools & gyms for each block and townhouse" },
+    { icon: "elevator", label: "Elevator access to each unit, gym and pool deck" },
+    { icon: "lock", label: "Entrance doors equipped with smart locks" },
+    { icon: "parking", label: "Assigned underground parking for residents" },
+    { icon: "playground", label: "Dedicated kid's playground area" },
+    { icon: "security", label: "Strata-approved security services" },
+    { icon: "gate", label: "Electronic gate system for enhanced safety" },
+    { icon: "garden", label: "Well-maintained outdoor garden spaces" },
+    { icon: "garbage", label: "Efficient garbage management with designated skips" },
+];
+
 export const NAV = [
     { label: "The Development", to: "/the-development" },
     { label: "Residences", to: "/residences" },

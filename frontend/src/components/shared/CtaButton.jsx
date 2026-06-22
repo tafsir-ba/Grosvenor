@@ -7,6 +7,7 @@ const VARIANTS = {
     secondary: "bg-brand-blue text-white hover:bg-brand-blue/90",
     outline: "border border-brand-blue/30 text-brand-blue hover:bg-brand-blue hover:text-white",
     "outline-light": "border border-white/40 text-white hover:bg-white hover:text-brand-ink",
+    white: "bg-white text-brand-blue hover:bg-white/90",
 };
 
 export default function CtaButton({

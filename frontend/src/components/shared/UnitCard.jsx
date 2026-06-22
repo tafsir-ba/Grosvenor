@@ -8,38 +8,28 @@ function shortBuilding(value) {
     return BUILDINGS.find((b) => b.value === value)?.short || value;
 }
 
-// Borderless editorial unit row — no boxes. Pure facts.
+// Clean borderless unit row — no overline labels.
 export default function UnitCard({ unit }) {
     const sold = unit.status === "sold";
     return (
         <Link
             to={`/residences/${unit.slug}`}
             data-testid={`unit-card-${unit.slug}`}
-            className="group grid grid-cols-2 items-center gap-4 border-t border-border py-7 transition-colors duration-300 hover:bg-muted/40 md:grid-cols-12 md:gap-6 md:py-8"
+            className="group flex flex-col gap-4 py-8 transition-all duration-300 hover:pl-4 md:flex-row md:items-center md:justify-between"
         >
-            <div className="md:col-span-3">
-                <p className="overline text-brand-gold">{shortBuilding(unit.building)}</p>
-                <h3 className="mt-2 font-display text-3xl font-light text-brand-blue md:text-4xl">{unit.unit_number}</h3>
+            <div className="flex items-baseline gap-5">
+                <h3 className="font-display text-4xl font-light text-brand-blue transition-colors group-hover:text-brand-gold md:text-5xl">
+                    {unit.unit_number}
+                </h3>
+                <span className="text-sm uppercase tracking-[0.18em] text-muted-foreground">{shortBuilding(unit.building)} · {floorLabel(unit.floor)}</span>
             </div>
-            <div className="md:col-span-2">
-                <p className="overline text-muted-foreground">Floor</p>
-                <p className="mt-1 text-brand-ink">{floorLabel(unit.floor)}</p>
-            </div>
-            <div className="md:col-span-2">
-                <p className="overline text-muted-foreground">Surface</p>
-                <p className="mt-1 text-brand-ink">{formatSurface(unit.total_surface)}</p>
-            </div>
-            <div className="md:col-span-2">
-                <p className="overline text-muted-foreground">Balcony</p>
-                <p className="mt-1 text-brand-ink">{formatSurface(unit.balcony_surface)}</p>
-            </div>
-            <div className="md:col-span-2">
-                <p className="overline text-muted-foreground">Price</p>
-                <p className="mt-1 font-display text-lg text-brand-ink">{sold ? "—" : formatPrice(unit.price, unit.currency)}</p>
-            </div>
-            <div className="flex items-center justify-end gap-4 md:col-span-1">
+
+            <div className="flex items-center gap-8 md:gap-12">
+                <span className="text-base text-brand-ink">{formatSurface(unit.total_surface)}</span>
+                <span className="hidden text-sm text-muted-foreground sm:inline">+{formatSurface(unit.balcony_surface)} balcony</span>
+                <span className="min-w-[120px] font-display text-xl text-brand-ink">{sold ? "—" : formatPrice(unit.price, unit.currency)}</span>
                 <StatusBadge status={unit.status} />
-                <ArrowUpRight className="hidden h-5 w-5 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-gold md:block" />
+                <ArrowUpRight className="hidden h-5 w-5 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-gold lg:block" />
             </div>
         </Link>
     );

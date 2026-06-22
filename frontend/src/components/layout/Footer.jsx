@@ -16,7 +16,7 @@ export default function Footer() {
                 </div>
 
                 <div>
-                    <p className="overline text-brand-gold">Explore</p>
+                    <p className="overline text-white/90">Explore</p>
                     <ul className="mt-5 space-y-3 text-sm">
                         {NAV.slice(0, 5).map((n) => (
                             <li key={n.to}>
@@ -27,32 +27,31 @@ export default function Footer() {
                 </div>
 
                 <div>
-                    <p className="overline text-brand-gold">Information</p>
+                    <p className="overline text-white/90">Information</p>
                     <ul className="mt-5 space-y-3 text-sm">
                         {NAV.slice(5).map((n) => (
                             <li key={n.to}>
                                 <Link to={n.to} className="transition-colors hover:text-white" data-testid={`footer-nav-${n.to.replace("/", "")}`}>{n.label}</Link>
                             </li>
                         ))}
-                        <li><Link to="/admin/login" className="text-white/40 transition-colors hover:text-white">Agent Login</Link></li>
                     </ul>
                 </div>
 
                 <div>
-                    <p className="overline text-brand-gold">Contact</p>
+                    <p className="overline text-white/90">Contact</p>
                     <ul className="mt-5 space-y-4 text-sm">
                         <li>
                             <a href={PROJECT.contact.phoneHref} onClick={() => trackClick(LEAD_TYPE.PHONE_CLICK)} data-testid="footer-phone" className="flex items-center gap-3 transition-colors hover:text-white">
-                                <Phone className="h-4 w-4 text-brand-gold" /> {PROJECT.contact.phone}
+                                <Phone className="h-4 w-4 text-white/90" /> {PROJECT.contact.phone}
                             </a>
                         </li>
                         <li>
                             <a href={PROJECT.contact.emailHref} onClick={() => trackClick(LEAD_TYPE.EMAIL_CLICK)} data-testid="footer-email" className="flex items-center gap-3 transition-colors hover:text-white">
-                                <Mail className="h-4 w-4 text-brand-gold" /> {PROJECT.contact.email}
+                                <Mail className="h-4 w-4 text-white/90" /> {PROJECT.contact.email}
                             </a>
                         </li>
                         <li className="flex items-start gap-3">
-                            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-gold" /> {PROJECT.contact.address}
+                            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-white/90" /> {PROJECT.contact.address}
                         </li>
                     </ul>
                 </div>

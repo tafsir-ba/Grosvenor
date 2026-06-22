@@ -1,67 +1,51 @@
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import CtaButton from "@/components/shared/CtaButton";
 
 const fade = {
-    initial: { opacity: 0, y: 28 },
+    initial: { opacity: 0, y: 30 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 1, ease: [0.16, 1, 0.3, 1] },
 };
 
-// Bright, image-led hero. `split` = home editorial style; otherwise full-bleed.
-export default function Hero({ image, overline, title, titleAccent, subtitle, primary, secondary, split = false, height = "min-h-[78vh]" }) {
-    if (split) {
-        return (
-            <section className="relative overflow-hidden bg-white pt-24" data-testid="hero-section">
-                <div className="container-x grid min-h-[92vh] grid-cols-1 items-center gap-10 lg:grid-cols-12">
-                    <motion.div {...fade} className="relative z-20 lg:col-span-5">
-                        {overline && <p className="overline mb-6 text-brand-gold">{overline}</p>}
-                        <h1 className="display text-[3.4rem] leading-[0.95] sm:text-7xl lg:text-[5.5rem]">
-                            <span className="block text-brand-blue">{title}</span>
-                            {titleAccent && <span className="block text-brand-gold">{titleAccent}</span>}
-                        </h1>
-                        {subtitle && <p className="mt-8 max-w-md text-lg leading-relaxed text-muted-foreground">{subtitle}</p>}
-                        {(primary || secondary) && (
-                            <div className="mt-10 flex flex-wrap gap-4">
-                                {primary && <CtaButton {...primary} variant="primary" />}
-                                {secondary && <CtaButton {...secondary} variant="outline" />}
-                            </div>
-                        )}
-                    </motion.div>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 1.04 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="relative h-[50vh] lg:col-span-7 lg:-mr-16 lg:h-[80vh]"
-                    >
-                        <img src={image} alt="" className="h-full w-full object-cover" />
-                    </motion.div>
-                </div>
-            </section>
-        );
-    }
+// Bright, full-bleed, image-led hero with a parallax background.
+export default function Hero({ image, overline, title, titleAccent, subtitle, primary, secondary, note, upper = false, height = "min-h-[82vh]" }) {
+    const ref = useRef(null);
+    const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
+    const overlayOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.4]);
 
     return (
-        <section className={`relative flex ${height} items-end overflow-hidden`} data-testid="hero-section">
-            <div className="absolute inset-0">
+        <section ref={ref} className={`relative flex ${height} items-end overflow-hidden`} data-testid="hero-section">
+            <motion.div className="absolute inset-0" style={{ y }}>
                 <motion.img
-                    initial={{ scale: 1.08 }}
+                    initial={{ scale: 1.12 }}
                     animate={{ scale: 1 }}
-                    transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
                     src={image}
                     alt=""
-                    className="h-full w-full object-cover"
+                    className="h-[120%] w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-blue/55 via-transparent to-transparent" />
-            </div>
-            <div className="container-x relative z-10 pb-16 pt-40 md:pb-24">
-                <motion.div {...fade} className="max-w-4xl">
-                    {overline && <p className="overline mb-5 text-brand-gold">{overline}</p>}
-                    <h1 className="display text-5xl text-white sm:text-7xl lg:text-8xl">
-                        {title} {titleAccent && <span className="text-brand-gold">{titleAccent}</span>}
+                <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-gradient-to-t from-brand-blue/75 via-brand-blue/10 to-brand-blue/5" />
+                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-brand-ink/45 to-transparent" />
+            </motion.div>
+
+            <div className="container-x relative z-10 pb-20 pt-44 md:pb-28">
+                <motion.div {...fade} className="max-w-5xl">
+                    {overline && <p className="overline mb-6 text-white">{overline}</p>}
+                    <h1
+                        className={
+                            upper
+                                ? "font-display text-5xl font-bold uppercase leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-8xl xl:text-[7rem]"
+                                : "display text-6xl text-white sm:text-7xl lg:text-8xl xl:text-[8rem]"
+                        }
+                    >
+                        {title} {titleAccent && <span className="text-white/70">{titleAccent}</span>}
                     </h1>
-                    {subtitle && <p className="mt-6 max-w-xl text-lg text-white/85">{subtitle}</p>}
+                    {subtitle && <p className="mt-7 max-w-xl text-lg text-white/90 md:text-xl">{subtitle}</p>}
+                    {note && <p className="mt-6 text-sm font-medium uppercase tracking-[0.22em] text-white/90">{note}</p>}
                     {(primary || secondary) && (
-                        <div className="mt-9 flex flex-wrap gap-4">
+                        <div className="mt-10 flex flex-wrap gap-4">
                             {primary && <CtaButton {...primary} variant="primary" />}
                             {secondary && <CtaButton {...secondary} variant="outline-light" />}
                         </div>

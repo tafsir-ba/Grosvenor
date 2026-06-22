@@ -9,7 +9,7 @@ import { accessDownload } from "@/lib/downloads";
 import { LEAD_TYPE } from "@/lib/constants";
 
 // Single download row handling gated (brochure) and open (price list).
-export default function DownloadForm({ download }) {
+export default function DownloadForm({ download, dark = false }) {
     const [open, setOpen] = useState(false);
     const gated = download.type === "brochure";
 
@@ -27,19 +27,19 @@ export default function DownloadForm({ download }) {
     };
 
     return (
-        <div data-testid={`download-${download.type}`} className="flex items-center justify-between gap-6 border-b border-border py-6">
+        <div data-testid={`download-${download.type}`} className={`flex items-center justify-between gap-6 border-b py-6 ${dark ? "border-white/20" : "border-border"}`}>
             <div className="flex items-start gap-4">
-                <FileText className="mt-1 h-6 w-6 flex-shrink-0 text-brand-gold" />
+                <FileText className={`mt-1 h-6 w-6 flex-shrink-0 ${dark ? "text-white" : "text-brand-gold"}`} />
                 <div>
-                    <h4 className="font-display text-xl text-brand-blue">{download.title}</h4>
-                    {download.description && <p className="mt-1 text-sm text-muted-foreground">{download.description}</p>}
+                    <h4 className={`font-display text-xl ${dark ? "text-white" : "text-brand-blue"}`}>{download.title}</h4>
+                    {download.description && <p className={`mt-1 text-sm ${dark ? "text-white/70" : "text-muted-foreground"}`}>{download.description}</p>}
                 </div>
             </div>
 
             {gated ? (
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
-                        <CtaButton variant="primary" data-testid={`download-trigger-${download.type}`} className="flex-shrink-0">
+                        <CtaButton variant={dark ? "white" : "primary"} data-testid={`download-trigger-${download.type}`} className="flex-shrink-0">
                             <DownloadIcon className="h-4 w-4" /> Download
                         </CtaButton>
                     </DialogTrigger>
@@ -58,7 +58,7 @@ export default function DownloadForm({ download }) {
                     </DialogContent>
                 </Dialog>
             ) : (
-                <CtaButton variant="outline" onClick={handleOpen} data-testid={`download-trigger-${download.type}`} className="flex-shrink-0">
+                <CtaButton variant={dark ? "outline-light" : "outline"} onClick={handleOpen} data-testid={`download-trigger-${download.type}`} className="flex-shrink-0">
                     <DownloadIcon className="h-4 w-4" /> Download
                 </CtaButton>
             )}

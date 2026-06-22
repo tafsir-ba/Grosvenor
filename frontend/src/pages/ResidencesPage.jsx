@@ -98,7 +98,7 @@ export default function ResidencesPage() {
                 ) : units.length === 0 ? (
                     <p className="py-20 text-center text-muted-foreground" data-testid="no-residences">No residences match your filters.</p>
                 ) : (
-                    <div className="border-b border-border">
+                    <div className="divide-y divide-border border-y border-border">
                         {units.map((u) => <UnitCard key={u.slug} unit={u} />)}
                     </div>
                 )}
