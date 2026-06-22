@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, Instagram, X } from "lucide-react";
+import { Link, NavLink } from "react-router-dom";
+import { Instagram, X, Phone } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import Logo from "@/components/brand/Logo";
 import { NAV, PROJECT, LEAD_TYPE } from "@/lib/constants";
@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
-    const location = useLocation();
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 40);
@@ -19,7 +18,6 @@ export default function Header() {
     }, []);
 
     const atTop = !scrolled;
-    // White logo/text at the top over the hero scrim; blue once scrolled.
     const lightTone = atTop;
     const tone = lightTone ? "text-white" : "text-brand-blue";
 
@@ -27,19 +25,53 @@ export default function Header() {
         <header
             data-testid="site-header"
             className={cn(
-                "fixed top-0 z-40 w-full transition-colors duration-500",
-                atTop ? "bg-transparent" : "border-b border-border bg-white/95 backdrop-blur-xl"
+                "fixed top-0 z-40 w-full transition-all duration-500",
+                atTop ? "bg-transparent" : "border-b border-border bg-white/90 shadow-[0_1px_40px_rgba(15,40,70,0.07)] backdrop-blur-xl"
             )}
         >
-            <div className={cn("container-x flex items-center justify-between transition-all duration-500", atTop ? "h-40" : "h-20")}>
+            {/* Gold hairline accent */}
+            <div className={cn("h-[2px] w-full bg-brand-gold transition-opacity duration-500", atTop ? "opacity-60" : "opacity-100")} />
+
+            {/* Concierge utility strip — present only over the hero */}
+            <div
+                className={cn(
+                    "overflow-hidden transition-all duration-500",
+                    atTop ? "max-h-12 border-b border-white/15 opacity-100" : "max-h-0 border-b border-transparent opacity-0"
+                )}
+            >
+                <div className="container-x flex h-11 items-center justify-between text-[0.7rem] uppercase tracking-[0.24em] text-white/75">
+                    <a
+                        href={PROJECT.contact.phoneHref}
+                        onClick={() => trackClick(LEAD_TYPE.PHONE_CLICK)}
+                        data-testid="header-utility-phone"
+                        className="hidden items-center gap-2 transition-colors hover:text-brand-gold sm:flex"
+                    >
+                        <Phone className="h-3.5 w-3.5" /> {PROJECT.contact.phone}
+                    </a>
+                    <span className="hidden text-center tracking-[0.3em] md:block">Grosvenor Heights · Manor Park · Kingston 8</span>
+                    <a
+                        href={PROJECT.contact.emailHref}
+                        onClick={() => trackClick(LEAD_TYPE.EMAIL_CLICK)}
+                        data-testid="header-utility-email"
+                        className="transition-colors hover:text-brand-gold"
+                    >
+                        {PROJECT.contact.email}
+                    </a>
+                </div>
+            </div>
+
+            {/* Main bar */}
+            <div className={cn("container-x flex items-center justify-between transition-all duration-500", atTop ? "h-28 md:h-32" : "h-20 md:h-24")}>
                 {/* Left: Menu drawer */}
                 <Sheet>
                     <SheetTrigger asChild>
-                        <button data-testid="menu-trigger" className={cn("flex items-center gap-3 transition-colors", tone)}>
-                            <span className="flex h-12 w-12 items-center justify-center rounded-none border border-current">
-                                <Menu className="h-5 w-5" />
+                        <button data-testid="menu-trigger" className={cn("group flex items-center gap-3.5 transition-colors", tone)}>
+                            <span className="flex flex-col items-start gap-[6px]">
+                                <span className="h-px w-7 bg-current transition-all duration-300 group-hover:w-4" />
+                                <span className="h-px w-7 bg-current" />
+                                <span className="h-px w-7 bg-current transition-all duration-300 group-hover:w-5" />
                             </span>
-                            <span className="hidden text-xs font-medium uppercase tracking-[0.22em] sm:inline">Menu</span>
+                            <span className="hidden text-[0.72rem] font-medium uppercase tracking-[0.3em] sm:inline">Menu</span>
                         </button>
                     </SheetTrigger>
                     <SheetContent side="left" className="w-full border-none bg-brand-blue p-0 text-white sm:max-w-md" data-testid="menu-drawer">
@@ -47,7 +79,7 @@ export default function Header() {
                             <div className="mb-12 flex items-center justify-between">
                                 <Logo color="white" layout="horizontal" className="h-10" />
                                 <SheetClose asChild>
-                                    <button data-testid="menu-close" className="flex h-11 w-11 items-center justify-center rounded-none border border-white/30"><X className="h-5 w-5" /></button>
+                                    <button data-testid="menu-close" className="flex h-11 w-11 items-center justify-center rounded-none border border-white/30 transition-colors hover:border-brand-gold hover:text-brand-gold"><X className="h-5 w-5" /></button>
                                 </SheetClose>
                             </div>
                             <nav className="flex flex-1 flex-col justify-center gap-1">
@@ -80,18 +112,19 @@ export default function Header() {
                         src={lightTone ? "/brand/header-white.svg" : "/brand/header-gold.svg"}
                         alt="Grosvenor Vistas"
                         data-testid="brand-logo"
-                        className={cn("w-auto transition-all duration-500", atTop ? "h-28 md:h-36" : "h-12 md:h-16")}
+                        className={cn("w-auto transition-all duration-500", atTop ? "h-20 md:h-28" : "h-12 md:h-16")}
                     />
                 </Link>
 
                 {/* Right: Instagram + Contact */}
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-6">
                     <a
                         href="https://instagram.com"
                         target="_blank"
                         rel="noreferrer"
                         data-testid="header-instagram"
-                        className={cn("transition-colors hover:text-brand-gold", tone)}
+                        aria-label="Instagram"
+                        className={cn("hidden transition-colors hover:text-brand-gold sm:inline-flex", tone)}
                     >
                         <Instagram className="h-5 w-5" />
                     </a>
@@ -99,11 +132,19 @@ export default function Header() {
                         to="/contact"
                         data-testid="header-contact"
                         className={cn(
-                            "rounded-none border px-8 py-3.5 text-base font-medium uppercase tracking-[0.14em] transition-colors duration-300",
-                            lightTone ? "border-white/50 text-white hover:bg-white hover:text-brand-blue" : "border-brand-blue/40 text-brand-blue hover:bg-brand-blue hover:text-white"
+                            "group relative overflow-hidden rounded-none border px-7 py-3.5 text-[0.72rem] font-medium uppercase tracking-[0.24em] transition-colors duration-300",
+                            lightTone ? "border-white/45 text-white" : "border-brand-blue/35 text-brand-blue"
                         )}
                     >
-                        Contact
+                        <span
+                            className={cn(
+                                "absolute inset-0 origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100",
+                                lightTone ? "bg-white" : "bg-brand-blue"
+                            )}
+                        />
+                        <span className={cn("relative transition-colors duration-300", lightTone ? "group-hover:text-brand-blue" : "group-hover:text-white")}>
+                            Book a Visit
+                        </span>
                     </Link>
                 </div>
             </div>

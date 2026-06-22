@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import LeadForm from "@/components/shared/LeadForm";
@@ -11,8 +11,16 @@ import { LEAD_TYPE } from "@/lib/constants";
 export default function BrochureRail() {
     const downloads = useDownloads();
     const [open, setOpen] = useState(false);
+    const [show, setShow] = useState(false);
     const brochure = downloads.find((d) => d.type === "brochure");
     const pricelist = downloads.find((d) => d.type === "pricelist");
+
+    useEffect(() => {
+        const onScroll = () => setShow(window.scrollY > 220);
+        onScroll();
+        window.addEventListener("scroll", onScroll);
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
 
     const openPricelist = async () => {
         if (!pricelist) return;
@@ -33,7 +41,10 @@ export default function BrochureRail() {
 
     return (
         <>
-            <div className="fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col md:flex" data-testid="brochure-rail">
+            <div
+                className={`fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col transition-all duration-500 ease-out md:flex ${show ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"}`}
+                data-testid="brochure-rail"
+            >
                 {brochure && (
                     <button
                         onClick={() => setOpen(true)}
