@@ -19,8 +19,10 @@ export default function HomePage() {
         <div data-testid="home-page">
             <Hero
                 image={HERO_IMAGE}
+                split
                 overline="Manor Park · Kingston 8 · Jamaica"
-                title="A refined address at Grosvenor Vistas"
+                title="Elevate"
+                titleAccent="your view"
                 subtitle="Forty-three considered residences set within the established hills of Grosvenor Heights — bright, spacious and made for the way you live."
                 primary={{ to: "/residences", children: "Explore Residences" }}
                 secondary={{ to: "/contact", children: "Book a Visit" }}
@@ -68,7 +70,7 @@ export default function HomePage() {
                         <SectionHeading overline="Residences" title="Available now" subtitle="A selection of available residences. View the full collection with live availability and pricing." />
                         <CtaButton to="/residences" variant="outline">View All Residences</CtaButton>
                     </div>
-                    <div className="mt-12 grid gap-6 md:grid-cols-3">
+                    <div className="mt-12 border-b border-border">
                         {featured.map((u) => <UnitCard key={u.slug} unit={u} />)}
                     </div>
                 </div>
@@ -103,8 +105,8 @@ export default function HomePage() {
             {/* Downloads */}
             <section className="bg-muted/40 py-24" data-testid="home-downloads">
                 <div className="container-x max-w-3xl">
-                    <SectionHeading overline="Resources" title="Brochure & price list" align="center" className="mb-12" />
-                    <div className="space-y-4">
+                    <SectionHeading overline="Resources" title="Brochure" titleAccent="& price list" align="center" className="mb-10" />
+                    <div>
                         {downloads.map((d) => <DownloadForm key={d._id} download={d} />)}
                     </div>
                 </div>

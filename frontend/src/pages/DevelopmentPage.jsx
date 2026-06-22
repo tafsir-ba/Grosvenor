@@ -41,13 +41,20 @@ export default function DevelopmentPage() {
             <section className="bg-muted/40 py-24 md:py-32">
                 <div className="container-x">
                     <SectionHeading overline="The Collections" title="Three blocks and the Begonia townhouses" align="center" className="mb-14" />
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-x-10 gap-y-2 md:grid-cols-2">
                         {BUILDINGS.map((b) => (
-                            <div key={b.value} data-testid={`building-${b.short}`} className="rounded-sm border border-border bg-card p-8 transition-colors hover:border-brand-gold">
-                                <p className="overline text-brand-gold">{b.block}</p>
-                                <h3 className="mt-3 font-display text-2xl text-brand-ink">{b.short}</h3>
-                                <CtaButton to={`/residences?building=${encodeURIComponent(b.value)}`} variant="outline" className="mt-6 w-full">View Residences</CtaButton>
-                            </div>
+                            <a
+                                key={b.value}
+                                href={`/residences?building=${encodeURIComponent(b.value)}`}
+                                data-testid={`building-${b.short}`}
+                                className="group flex items-center justify-between border-t border-border py-8 transition-colors hover:text-brand-gold"
+                            >
+                                <div>
+                                    <p className="overline text-brand-gold">{b.block}</p>
+                                    <h3 className="mt-2 font-display text-4xl font-light text-brand-blue transition-colors group-hover:text-brand-gold md:text-5xl">{b.short}</h3>
+                                </div>
+                                <span className="text-sm uppercase tracking-[0.16em] text-muted-foreground transition-colors group-hover:text-brand-gold">View →</span>
+                            </a>
                         ))}
                     </div>
                 </div>

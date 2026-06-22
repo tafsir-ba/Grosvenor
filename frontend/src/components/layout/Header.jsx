@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, Instagram, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import Logo from "@/components/brand/Logo";
-import CtaButton from "@/components/shared/CtaButton";
-import { NAV } from "@/lib/constants";
+import { NAV, PROJECT, LEAD_TYPE } from "@/lib/constants";
+import { trackClick } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
-    const overHero = location.pathname === "/" && !scrolled;
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 40);
@@ -19,71 +18,89 @@ export default function Header() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
+    const atTop = !scrolled;
+    const isHome = location.pathname === "/";
+    // White text only when floating over a dark inner-page hero; home hero is bright.
+    const lightTone = atTop && !isHome;
+    const tone = lightTone ? "text-white" : "text-brand-blue";
+
     return (
         <header
             data-testid="site-header"
             className={cn(
-                "fixed top-0 z-40 w-full transition-colors duration-300",
-                overHero ? "bg-transparent" : "border-b border-border bg-background/90 backdrop-blur-xl"
+                "fixed top-0 z-40 w-full transition-colors duration-500",
+                atTop ? "bg-transparent" : "border-b border-border bg-white/95 backdrop-blur-xl"
             )}
         >
-            <div className="container-x flex h-20 items-center justify-between">
-                <Link to="/" data-testid="header-logo-link" className="flex items-center">
-                    <Logo color={overHero ? "white" : "blue"} layout="horizontal" className="h-9 w-auto md:h-10" />
-                </Link>
-
-                <nav className="hidden items-center gap-6 xl:flex">
-                    {NAV.map((item) => (
-                        <NavLink
-                            key={item.to}
-                            to={item.to}
-                            data-testid={`nav-${item.to.replace("/", "")}`}
-                            className={({ isActive }) =>
-                                cn(
-                                    "link-underline whitespace-nowrap text-[13px] font-medium transition-colors",
-                                    overHero ? "text-white/90 hover:text-white" : "text-brand-ink hover:text-brand-gold",
-                                    isActive && !overHero && "text-brand-gold"
-                                )
-                            }
-                        >
-                            {item.label}
-                        </NavLink>
-                    ))}
-                </nav>
-
-                <div className="flex items-center gap-3">
-                    <CtaButton to="/contact" variant={overHero ? "outline-light" : "primary"} className="hidden md:inline-flex" data-testid="header-cta">
-                        Book a Visit
-                    </CtaButton>
-
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <button data-testid="mobile-menu-trigger" aria-label="Open menu" className={cn("xl:hidden", overHero ? "text-white" : "text-brand-ink")}>
-                                <Menu className="h-7 w-7" />
-                            </button>
-                        </SheetTrigger>
-                        <SheetContent side="right" className="w-[300px] bg-background" data-testid="mobile-menu">
-                            <div className="mb-8 mt-2"><Logo color="blue" className="h-9" /></div>
-                            <nav className="flex flex-col gap-1">
-                                {NAV.map((item) => (
+            <div className="container-x flex h-24 items-center justify-between">
+                {/* Left: Menu drawer */}
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <button data-testid="menu-trigger" className={cn("flex items-center gap-3 transition-colors", tone)}>
+                            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-current">
+                                <Menu className="h-5 w-5" />
+                            </span>
+                            <span className="hidden text-xs font-medium uppercase tracking-[0.22em] sm:inline">Menu</span>
+                        </button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-full border-none bg-brand-blue p-0 text-white sm:max-w-md" data-testid="menu-drawer">
+                        <div className="flex h-full flex-col p-10">
+                            <div className="mb-12 flex items-center justify-between">
+                                <Logo color="white" layout="horizontal" className="h-10" />
+                                <SheetClose asChild>
+                                    <button data-testid="menu-close" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30"><X className="h-5 w-5" /></button>
+                                </SheetClose>
+                            </div>
+                            <nav className="flex flex-1 flex-col justify-center gap-1">
+                                {NAV.map((item, i) => (
                                     <SheetClose asChild key={item.to}>
                                         <NavLink
                                             to={item.to}
-                                            data-testid={`mobile-nav-${item.to.replace("/", "")}`}
+                                            data-testid={`nav-${item.to.replace("/", "")}`}
                                             className={({ isActive }) =>
-                                                cn("rounded-sm px-3 py-3 text-base font-medium text-brand-ink hover:bg-muted", isActive && "text-brand-gold")
+                                                cn("font-display text-3xl font-light tracking-tight transition-colors hover:text-brand-gold md:text-4xl", isActive ? "text-brand-gold" : "text-white")
                                             }
                                         >
-                                            {item.label}
+                                            <span className="mr-3 align-top text-xs text-white/40">0{i + 1}</span>{item.label}
                                         </NavLink>
                                     </SheetClose>
                                 ))}
-                                <SheetClose asChild>
-                                    <CtaButton to="/contact" variant="primary" className="mt-5">Book a Visit</CtaButton>
-                                </SheetClose>
                             </nav>
-                        </SheetContent>
-                    </Sheet>
+                            <div className="mt-10 space-y-1 border-t border-white/15 pt-8 text-sm text-white/70">
+                                <a href={PROJECT.contact.phoneHref} className="block hover:text-white">{PROJECT.contact.phone}</a>
+                                <a href={PROJECT.contact.emailHref} className="block hover:text-white">{PROJECT.contact.email}</a>
+                                <p>{PROJECT.contact.address}</p>
+                            </div>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+
+                {/* Center: Logo */}
+                <Link to="/" data-testid="header-logo-link" className="absolute left-1/2 -translate-x-1/2">
+                    <Logo color={lightTone ? "white" : "blue"} layout="horizontal" className="h-9 w-auto md:h-11" />
+                </Link>
+
+                {/* Right: Instagram + Contact */}
+                <div className="flex items-center gap-5">
+                    <a
+                        href="https://instagram.com"
+                        target="_blank"
+                        rel="noreferrer"
+                        data-testid="header-instagram"
+                        className={cn("transition-colors hover:text-brand-gold", tone)}
+                    >
+                        <Instagram className="h-5 w-5" />
+                    </a>
+                    <Link
+                        to="/contact"
+                        data-testid="header-contact"
+                        className={cn(
+                            "rounded-full border px-7 py-3 text-xs font-medium uppercase tracking-[0.18em] transition-colors duration-300",
+                            lightTone ? "border-white/50 text-white hover:bg-white hover:text-brand-blue" : "border-brand-blue/40 text-brand-blue hover:bg-brand-blue hover:text-white"
+                        )}
+                    >
+                        Contact
+                    </Link>
                 </div>
             </div>
         </header>

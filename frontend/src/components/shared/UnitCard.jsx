@@ -8,43 +8,38 @@ function shortBuilding(value) {
     return BUILDINGS.find((b) => b.value === value)?.short || value;
 }
 
-// Inventory card — pure facts, no bedrooms/bathrooms/images.
+// Borderless editorial unit row — no boxes. Pure facts.
 export default function UnitCard({ unit }) {
     const sold = unit.status === "sold";
     return (
         <Link
             to={`/residences/${unit.slug}`}
             data-testid={`unit-card-${unit.slug}`}
-            className="group flex flex-col justify-between rounded-sm border border-border bg-card p-7 transition-colors duration-300 hover:border-brand-gold"
+            className="group grid grid-cols-2 items-center gap-4 border-t border-border py-7 transition-colors duration-300 hover:bg-muted/40 md:grid-cols-12 md:gap-6 md:py-8"
         >
-            <div className="flex items-start justify-between">
-                <div>
-                    <p className="overline text-brand-gold">{shortBuilding(unit.building)}</p>
-                    <h3 className="mt-2 font-display text-2xl text-brand-ink">{unit.unit_number}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{floorLabel(unit.floor)}</p>
-                </div>
+            <div className="md:col-span-3">
+                <p className="overline text-brand-gold">{shortBuilding(unit.building)}</p>
+                <h3 className="mt-2 font-display text-3xl font-light text-brand-blue md:text-4xl">{unit.unit_number}</h3>
+            </div>
+            <div className="md:col-span-2">
+                <p className="overline text-muted-foreground">Floor</p>
+                <p className="mt-1 text-brand-ink">{floorLabel(unit.floor)}</p>
+            </div>
+            <div className="md:col-span-2">
+                <p className="overline text-muted-foreground">Surface</p>
+                <p className="mt-1 text-brand-ink">{formatSurface(unit.total_surface)}</p>
+            </div>
+            <div className="md:col-span-2">
+                <p className="overline text-muted-foreground">Balcony</p>
+                <p className="mt-1 text-brand-ink">{formatSurface(unit.balcony_surface)}</p>
+            </div>
+            <div className="md:col-span-2">
+                <p className="overline text-muted-foreground">Price</p>
+                <p className="mt-1 font-display text-lg text-brand-ink">{sold ? "—" : formatPrice(unit.price, unit.currency)}</p>
+            </div>
+            <div className="flex items-center justify-end gap-4 md:col-span-1">
                 <StatusBadge status={unit.status} />
-            </div>
-
-            <div className="mt-7 grid grid-cols-2 gap-4 border-t border-border pt-5 text-sm">
-                <div>
-                    <p className="overline text-muted-foreground">Total Surface</p>
-                    <p className="mt-1 font-medium text-brand-ink">{formatSurface(unit.total_surface)}</p>
-                </div>
-                <div>
-                    <p className="overline text-muted-foreground">Balcony</p>
-                    <p className="mt-1 font-medium text-brand-ink">{formatSurface(unit.balcony_surface)}</p>
-                </div>
-            </div>
-
-            <div className="mt-6 flex items-end justify-between">
-                <div>
-                    <p className="overline text-muted-foreground">Price</p>
-                    <p className="mt-1 font-display text-xl text-brand-blue">
-                        {sold ? "—" : formatPrice(unit.price, unit.currency)}
-                    </p>
-                </div>
-                <ArrowUpRight className="h-5 w-5 text-muted-foreground transition-all duration-300 group-hover:text-brand-gold group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight className="hidden h-5 w-5 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-gold md:block" />
             </div>
         </Link>
     );

@@ -4,33 +4,33 @@
 
 @layer base {
     :root {
-        /* Brand palette (single source). No black anywhere — warm brown ink. */
-        --gold: 34 65% 47%; /* #C6862B */
-        --blue: 200 90% 24%; /* #064F73 */
-        --green: 147 74% 20%; /* #0D572D */
-        --ink: 28 30% 13%; /* warm dark brown (replaces black) */
-        --cream: 38 40% 97%;
+        /* Brand palette — matches grosvenorvistas.com. No black; warm brown ink. */
+        --gold: 34 65% 47%;        /* #C6862B */
+        --blue: 210 43% 30%;       /* #2C4D6D (new brand blue) */
+        --green: 147 74% 20%;      /* #0D572D */
+        --ink: 28 24% 16%;         /* warm dark brown (text) */
+        --cream: 40 33% 98%;       /* bright off-white */
 
-        --background: 38 40% 97%;
-        --foreground: 28 30% 13%;
+        --background: 0 0% 100%;
+        --foreground: 28 24% 16%;
         --card: 0 0% 100%;
-        --card-foreground: 28 30% 13%;
+        --card-foreground: 28 24% 16%;
         --popover: 0 0% 100%;
-        --popover-foreground: 28 30% 13%;
+        --popover-foreground: 28 24% 16%;
         --primary: 34 65% 47%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 200 90% 24%;
+        --secondary: 210 43% 30%;
         --secondary-foreground: 0 0% 100%;
-        --muted: 36 22% 93%;
-        --muted-foreground: 30 8% 38%;
+        --muted: 40 20% 96%;
+        --muted-foreground: 215 14% 42%;
         --accent: 34 65% 47%;
         --accent-foreground: 0 0% 100%;
         --destructive: 0 72% 42%;
         --destructive-foreground: 0 0% 100%;
-        --border: 36 20% 87%;
-        --input: 36 20% 87%;
+        --border: 36 18% 90%;
+        --input: 36 18% 88%;
         --ring: 34 65% 47%;
-        --radius: 0.25rem;
+        --radius: 0.125rem;
     }
 }
 
@@ -40,31 +40,37 @@
     }
     body {
         @apply bg-background text-foreground;
-        font-family: "Saira", system-ui, sans-serif;
+        font-family: "Signika", system-ui, sans-serif;
+        font-weight: 400;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
     h1, h2, h3, h4, h5 {
         font-family: "Source Sans 3", system-ui, sans-serif;
-        font-weight: 600;
-        letter-spacing: -0.01em;
+        letter-spacing: -0.015em;
     }
 }
 
 @layer components {
-    /* Structural overline label — Bahnschrift-style, all caps, wide tracking */
     .overline {
-        font-family: "Saira", sans-serif;
+        font-family: "Signika", sans-serif;
         text-transform: uppercase;
-        letter-spacing: 0.22em;
+        letter-spacing: 0.28em;
         font-size: 0.72rem;
         font-weight: 500;
     }
     .container-x {
-        @apply mx-auto w-full max-w-7xl px-6 md:px-10;
+        @apply mx-auto w-full max-w-[1400px] px-6 md:px-12 lg:px-16;
+    }
+    /* Oversized, light editorial display heading */
+    .display {
+        font-family: "Source Sans 3", sans-serif;
+        font-weight: 300;
+        line-height: 0.98;
+        letter-spacing: -0.02em;
     }
     .link-underline {
-        @apply relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full;
+        @apply relative after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-current after:transition-all after:duration-500 hover:after:w-full;
     }
 }
 

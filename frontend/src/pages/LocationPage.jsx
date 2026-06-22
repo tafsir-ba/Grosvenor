@@ -21,11 +21,11 @@ export default function LocationPage() {
 
             <section className="container-x py-24 md:py-32">
                 <SectionHeading overline="The Setting" title="Connected, yet wonderfully private" className="mb-14" />
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-x-10 gap-y-2 md:grid-cols-3">
                     {HIGHLIGHTS.map((h, i) => (
-                        <div key={h.title} data-testid={`location-highlight-${i}`} className="rounded-sm border border-border bg-card p-8">
-                            <h3 className="font-display text-xl text-brand-ink">{h.title}</h3>
-                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{h.body}</p>
+                        <div key={h.title} data-testid={`location-highlight-${i}`} className="border-t-2 border-brand-gold/40 py-8">
+                            <h3 className="font-display text-2xl font-light text-brand-blue">{h.title}</h3>
+                            <p className="mt-3 text-base leading-relaxed text-muted-foreground">{h.body}</p>
                         </div>
                     ))}
                 </div>

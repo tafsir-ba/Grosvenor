@@ -6,7 +6,7 @@ module.exports = {
         extend: {
             fontFamily: {
                 display: ["Source Sans 3", "system-ui", "sans-serif"],
-                sans: ["Saira", "system-ui", "sans-serif"],
+                sans: ["Signika", "system-ui", "sans-serif"],
             },
             borderRadius: {
                 lg: "var(--radius)",

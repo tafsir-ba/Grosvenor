@@ -92,13 +92,13 @@ export default function ResidencesPage() {
 
                 {/* Grid */}
                 {loading ? (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-64 rounded-sm" />)}
+                    <div className="border-t border-border">
+                        {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="my-4 h-16" />)}
                     </div>
                 ) : units.length === 0 ? (
                     <p className="py-20 text-center text-muted-foreground" data-testid="no-residences">No residences match your filters.</p>
                 ) : (
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="border-b border-border">
                         {units.map((u) => <UnitCard key={u.slug} unit={u} />)}
                     </div>
                 )}

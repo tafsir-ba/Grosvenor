@@ -6,7 +6,7 @@ import { trackClick } from "@/lib/tracking";
 
 export default function Footer() {
     return (
-        <footer className="bg-brand-ink text-white/80" data-testid="site-footer">
+        <footer className="bg-brand-blue text-white/80" data-testid="site-footer">
             <div className="container-x grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
                 <div className="lg:col-span-1">
                     <Logo color="white" layout="horizontal" className="h-10 w-auto" />

@@ -1,16 +1,14 @@
 import { cn } from "@/lib/utils";
 
-export default function SectionHeading({ overline, title, subtitle, align = "left", light = false, className = "" }) {
+export default function SectionHeading({ overline, title, titleAccent, subtitle, align = "left", light = false, className = "" }) {
     return (
-        <div className={cn(align === "center" && "text-center mx-auto max-w-2xl", "max-w-3xl", className)}>
-            {overline && (
-                <p className={cn("overline mb-4", light ? "text-brand-gold" : "text-brand-gold")}>{overline}</p>
-            )}
-            <h2 className={cn("font-display text-3xl leading-tight md:text-5xl", light ? "text-white" : "text-brand-ink")}>
-                {title}
+        <div className={cn(align === "center" && "mx-auto text-center", "max-w-4xl", className)}>
+            {overline && <p className="overline mb-5 text-brand-gold">{overline}</p>}
+            <h2 className={cn("display text-4xl sm:text-5xl lg:text-6xl", light ? "text-white" : "text-brand-blue")}>
+                {title} {titleAccent && <span className="text-brand-gold">{titleAccent}</span>}
             </h2>
             {subtitle && (
-                <p className={cn("mt-5 text-base leading-relaxed md:text-lg", light ? "text-white/80" : "text-muted-foreground")}>
+                <p className={cn("mt-6 text-lg leading-relaxed", light ? "text-white/80" : "text-muted-foreground", align === "center" && "mx-auto max-w-2xl")}>
                     {subtitle}
                 </p>
             )}
