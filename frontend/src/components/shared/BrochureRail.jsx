@@ -29,15 +29,16 @@ export default function BrochureRail() {
     };
 
     const tabBase =
-        "writing-mode-vertical flex items-center gap-2 px-2.5 py-5 text-[0.7rem] font-medium uppercase tracking-[0.22em] transition-colors duration-300";
+        "group flex items-center justify-center gap-3 px-4 py-7 text-[0.72rem] font-semibold uppercase tracking-[0.28em] transition-all duration-300";
 
     return (
         <>
-            <div className="fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col md:flex" data-testid="brochure-rail" style={{ writingMode: "vertical-rl" }}>
+            <div className="fixed left-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col md:flex" data-testid="brochure-rail">
                 {brochure && (
                     <button
                         onClick={() => setOpen(true)}
                         data-testid="rail-brochure"
+                        style={{ writingMode: "vertical-rl" }}
                         className={`${tabBase} rotate-180 bg-brand-gold text-white hover:bg-brand-gold/90`}
                     >
                         Download Brochure
@@ -47,7 +48,8 @@ export default function BrochureRail() {
                     <button
                         onClick={openPricelist}
                         data-testid="rail-pricelist"
-                        className={`${tabBase} rotate-180 bg-brand-blue text-white hover:bg-brand-blue/90`}
+                        style={{ writingMode: "vertical-rl" }}
+                        className={`${tabBase} rotate-180 border-t border-white/15 bg-brand-blue text-white hover:bg-brand-blue/90`}
                     >
                         Price List
                     </button>
@@ -55,12 +57,12 @@ export default function BrochureRail() {
             </div>
 
             {/* Mobile: bottom-left compact buttons */}
-            <div className="fixed bottom-6 left-6 z-40 flex gap-2 md:hidden">
+            <div className="fixed bottom-6 left-6 z-40 flex gap-3 md:hidden">
                 {brochure && (
-                    <button onClick={() => setOpen(true)} data-testid="rail-brochure-mobile" className="rounded-none bg-brand-gold px-4 py-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-white shadow-lg">Brochure</button>
+                    <button onClick={() => setOpen(true)} data-testid="rail-brochure-mobile" className="rounded-none bg-brand-gold px-5 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white shadow-lg">Brochure</button>
                 )}
                 {pricelist && (
-                    <button onClick={openPricelist} data-testid="rail-pricelist-mobile" className="rounded-none bg-brand-blue px-4 py-2 text-[0.7rem] font-medium uppercase tracking-[0.14em] text-white shadow-lg">Prices</button>
+                    <button onClick={openPricelist} data-testid="rail-pricelist-mobile" className="rounded-none bg-brand-blue px-5 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white shadow-lg">Prices</button>
                 )}
             </div>
 

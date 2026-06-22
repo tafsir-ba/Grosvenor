@@ -20,7 +20,6 @@ const reveal = {
 const STATS = [
     { big: "43", small: "Residences" },
     { big: STARTING_PRICE, small: "Starting from" },
-    { big: "4", small: "Blocks & Townhouses" },
     { big: "360°", small: "Hillside & City Views" },
 ];
 
@@ -54,13 +53,19 @@ export default function HomePage() {
                 secondary={{ to: "/contact", children: "Book a Visit" }}
             />
 
-            {/* Short, bold summary — no paragraphs */}
-            <section className="border-b border-border bg-white py-16 md:py-20" data-testid="home-stats">
-                <div className="container-x grid grid-cols-2 gap-10 md:grid-cols-4">
+            {/* Short, bold summary — editorial figures with faded watermark */}
+            <section className="relative overflow-hidden border-b border-border bg-white py-24 md:py-32" data-testid="home-stats">
+                <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none text-center font-display text-[20vw] font-light italic leading-none text-brand-blue/[0.04]"
+                >
+                    In Figures
+                </span>
+                <div className="container-x relative grid grid-cols-1 gap-14 sm:grid-cols-3">
                     {STATS.map((s, i) => (
-                        <motion.div key={s.small} {...reveal} transition={{ ...reveal.transition, delay: i * 0.08 }} className="text-center md:text-left">
-                            <p className="display text-4xl text-brand-blue md:text-5xl lg:text-6xl">{s.big}</p>
-                            <p className="mt-2 text-sm uppercase tracking-[0.16em] text-muted-foreground">{s.small}</p>
+                        <motion.div key={s.small} {...reveal} transition={{ ...reveal.transition, delay: i * 0.1 }} className="text-center sm:text-left">
+                            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{s.small}</p>
+                            <p className="mt-4 display text-6xl font-light text-brand-blue md:text-7xl lg:text-8xl">{s.big}</p>
                         </motion.div>
                     ))}
                 </div>
@@ -99,16 +104,17 @@ export default function HomePage() {
                 <MapSection />
             </section>
 
-            {/* Downloads */}
+            {/* Downloads — minimal, image-led, single set of actions */}
             <section className="bg-brand-blue py-24 text-white md:py-28" data-testid="home-downloads">
                 <div className="container-x grid items-center gap-14 lg:grid-cols-2">
                     <div className="overflow-hidden">
                         <img src="/gallery/model-unit-kitchen.png" alt="" className="aspect-[4/3] w-full object-cover" />
                     </div>
                     <div>
-                        <h2 className="display text-5xl text-white lg:text-6xl">Brochure & price list</h2>
-                        <div className="mt-10 space-y-3">
-                            {downloads.map((d) => <DownloadForm key={d._id} download={d} dark />)}
+                        <h2 className="display text-5xl text-white lg:text-6xl">Take it with you</h2>
+                        <p className="mt-6 max-w-md text-lg text-white/80">The full brochure and current price list, in your inbox.</p>
+                        <div className="mt-10 flex flex-wrap gap-4">
+                            {downloads.map((d) => <DownloadForm key={d._id} download={d} dark compact />)}
                         </div>
                     </div>
                 </div>

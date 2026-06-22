@@ -76,10 +76,11 @@ export default function Header() {
 
                 {/* Center: Logo */}
                 <Link to="/" data-testid="header-logo-link" className="absolute left-1/2 -translate-x-1/2">
-                    <Logo
-                        color={lightTone ? "white" : "blue"}
-                        layout="horizontal"
-                        className={cn("w-auto transition-all duration-500", atTop ? "h-24 md:h-32 lg:h-36" : "h-12 md:h-14")}
+                    <img
+                        src={lightTone ? "/brand/header-white.svg" : "/brand/header-gold.svg"}
+                        alt="Grosvenor Vistas"
+                        data-testid="brand-logo"
+                        className={cn("w-auto transition-all duration-500", atTop ? "h-28 md:h-36" : "h-12 md:h-16")}
                     />
                 </Link>
 
