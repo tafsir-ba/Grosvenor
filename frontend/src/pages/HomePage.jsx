@@ -1,17 +1,14 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Mountain, Waves, MoveVertical, Lock, Car, Baby, ShieldCheck, DoorClosed, Trees, Trash2 } from "lucide-react";
 import Hero from "@/components/shared/Hero";
 import SectionHeading from "@/components/shared/SectionHeading";
 import UnitCard from "@/components/shared/UnitCard";
+import AmenityScroller from "@/components/shared/AmenityScroller";
 import DownloadForm from "@/components/shared/DownloadForm";
 import MapSection from "@/components/shared/MapSection";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits, useDownloads } from "@/hooks/useData";
-import { PROJECT, AMENITY_FEATURES, STARTING_PRICE, HERO_IMAGE, AERIAL_IMAGE } from "@/lib/constants";
-
-const ICONS = { views: Mountain, pool: Waves, elevator: MoveVertical, lock: Lock, parking: Car, playground: Baby, security: ShieldCheck, gate: DoorClosed, garden: Trees, garbage: Trash2 };
+import { AMENITY_GALLERY, STARTING_PRICE, HERO_IMAGE, SHOWROOM_IMAGE } from "@/lib/constants";
 
 const reveal = {
     initial: { opacity: 0, y: 40 },
@@ -19,6 +16,13 @@ const reveal = {
     viewport: { once: true, margin: "-80px" },
     transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
 };
+
+const STATS = [
+    { big: "43", small: "Residences" },
+    { big: STARTING_PRICE, small: "Starting from" },
+    { big: "4", small: "Blocks & Townhouses" },
+    { big: "360°", small: "Hillside & City Views" },
+];
 
 function ParallaxImage({ src, children }) {
     const ref = useRef(null);
@@ -43,94 +47,66 @@ export default function HomePage() {
             <Hero
                 image={HERO_IMAGE}
                 upper
-                overline="Manor Park · Kingston 8 · Jamaica"
                 title="Elevate"
                 titleAccent="Your View"
-                subtitle="Forty-three considered residences set within the established hills of Grosvenor Heights."
                 note={`From ${STARTING_PRICE}`}
                 primary={{ to: "/residences", children: "Explore Residences" }}
                 secondary={{ to: "/contact", children: "Book a Visit" }}
             />
 
-            {/* Welcome / intro */}
-            <section className="container-x py-28 md:py-36" data-testid="home-intro">
-                <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-                    <motion.div {...reveal}>
-                        <p className="overline text-brand-gold">Welcome to</p>
-                        <h2 className="display mt-4 text-5xl uppercase leading-[0.95] text-brand-blue sm:text-6xl lg:text-7xl">Grosvenor<br />Vistas</h2>
-                        <p className="mt-8 font-display text-5xl font-light text-brand-gold">43 units</p>
-                    </motion.div>
-                    <motion.div {...reveal} className="flex flex-col justify-center space-y-6 text-lg leading-relaxed text-muted-foreground">
-                        <p>Grosvenor Vistas is a community of forty-three bright, spacious residences in one of Kingston's most coveted addresses — with sweeping hillside and city views from every block.</p>
-                        <p>A showroom and fully staged model residence are open on the property. Experience the finishes, the space and the view in person.</p>
-                        <p className="text-brand-blue">Residences from <span className="font-semibold">{STARTING_PRICE}</span>.</p>
-                    </motion.div>
+            {/* Short, bold summary — no paragraphs */}
+            <section className="border-b border-border bg-white py-16 md:py-20" data-testid="home-stats">
+                <div className="container-x grid grid-cols-2 gap-10 md:grid-cols-4">
+                    {STATS.map((s, i) => (
+                        <motion.div key={s.small} {...reveal} transition={{ ...reveal.transition, delay: i * 0.08 }} className="text-center md:text-left">
+                            <p className="display text-4xl text-brand-blue md:text-5xl lg:text-6xl">{s.big}</p>
+                            <p className="mt-2 text-sm uppercase tracking-[0.16em] text-muted-foreground">{s.small}</p>
+                        </motion.div>
+                    ))}
                 </div>
             </section>
 
-            {/* Amenities — pushed up front */}
-            <section className="bg-brand-blue py-28 text-white md:py-36" data-testid="home-amenities">
-                <div className="container-x">
-                    <SectionHeading overline="Amenities & Lifestyle" title="Designed for" titleAccent="the way you live" subtitle="An exceptional offering of shared amenities — and views you'll never tire of." light className="mb-16" />
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:grid-cols-5">
-                        {AMENITY_FEATURES.map((a, i) => {
-                            const Icon = ICONS[a.icon] || Mountain;
-                            return (
-                                <motion.div
-                                    key={a.label}
-                                    initial={{ opacity: 0, y: 24 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true, margin: "-40px" }}
-                                    transition={{ duration: 0.6, delay: (i % 5) * 0.08 }}
-                                    data-testid={`amenity-feature-${i}`}
-                                    className="flex flex-col items-center text-center"
-                                >
-                                    <Icon className="h-9 w-9 text-white" strokeWidth={1.2} />
-                                    <p className="mt-4 text-sm leading-snug text-white/85">{a.label}</p>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                    <div className="mt-16 text-center"><CtaButton to="/amenities" variant="outline-light">Explore Lifestyle</CtaButton></div>
+            {/* Amenities — image-led gallery, minimal text */}
+            <section className="bg-brand-blue py-24 text-white md:py-32" data-testid="home-amenities">
+                <div className="container-x mb-12">
+                    <SectionHeading title="Amenities" titleAccent="& lifestyle" light />
                 </div>
+                <AmenityScroller items={AMENITY_GALLERY} />
+                <div className="container-x mt-12"><CtaButton to="/amenities" variant="outline-light">Explore Lifestyle</CtaButton></div>
             </section>
 
-            {/* Single full-bleed parallax image */}
+            {/* The View */}
             <ParallaxImage src="/gallery/rooftop-pool.png">
                 <motion.div {...reveal}>
-                    <p className="overline mb-5 text-white">The View</p>
-                    <h2 className="display text-5xl leading-[0.98] sm:text-7xl lg:text-8xl">Wake up above it all</h2>
-                    <p className="mx-auto mt-7 max-w-xl text-lg text-white/90">Rooftop pools and panoramic outlooks across Manor Park and the Kingston hills.</p>
+                    <h2 className="display text-5xl leading-[0.98] sm:text-7xl lg:text-8xl">Wake up<br />above it all</h2>
                 </motion.div>
             </ParallaxImage>
 
-            {/* Featured residences */}
-            <section className="container-x py-28 md:py-36" data-testid="home-residences">
+            {/* Available residences */}
+            <section className="container-x py-24 md:py-32" data-testid="home-residences">
                 <div className="flex flex-wrap items-end justify-between gap-6">
-                    <SectionHeading overline="Residences" title="Available" titleAccent="now" subtitle={`Live availability and pricing — from ${STARTING_PRICE}.`} />
+                    <SectionHeading title="Available" titleAccent="now" />
                     <CtaButton to="/residences" variant="outline">View All Residences</CtaButton>
                 </div>
-                <motion.div {...reveal} className="mt-14 divide-y divide-border border-y border-border">
+                <motion.div {...reveal} className="mt-12 divide-y divide-border border-y border-border">
                     {featured.map((u) => <UnitCard key={u.slug} unit={u} />)}
                 </motion.div>
             </section>
 
             {/* Location */}
-            <section className="container-x pb-28 md:pb-36" data-testid="home-location">
-                <SectionHeading overline="Location" title="A coveted" titleAccent="Kingston 8 address" className="mb-14" />
+            <section className="container-x pb-24 md:pb-32" data-testid="home-location">
+                <SectionHeading title="Manor Park," titleAccent="Kingston 8" className="mb-12" />
                 <MapSection />
             </section>
 
-            {/* Downloads — image-led, redesigned */}
-            <section className="bg-brand-blue py-28 text-white md:py-32" data-testid="home-downloads">
-                <div className="container-x grid items-center gap-16 lg:grid-cols-2">
+            {/* Downloads */}
+            <section className="bg-brand-blue py-24 text-white md:py-28" data-testid="home-downloads">
+                <div className="container-x grid items-center gap-14 lg:grid-cols-2">
                     <div className="overflow-hidden">
                         <img src="/gallery/townhouse-facade.png" alt="" className="aspect-[4/3] w-full object-cover" />
                     </div>
                     <div>
-                        <p className="overline text-white">Resources</p>
-                        <h2 className="display mt-4 text-5xl text-white lg:text-6xl">Brochure & price list</h2>
-                        <p className="mt-6 text-lg text-white/80">Everything you need, in two downloads.</p>
+                        <h2 className="display text-5xl text-white lg:text-6xl">Brochure & price list</h2>
                         <div className="mt-10 space-y-3">
                             {downloads.map((d) => <DownloadForm key={d._id} download={d} dark />)}
                         </div>
@@ -138,15 +114,15 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="bg-brand-gold py-24" data-testid="home-cta">
-                <div className="container-x flex flex-col items-center justify-between gap-8 text-center md:flex-row md:text-left">
-                    <div>
-                        <p className="overline text-white/80">Visit the Showroom</p>
-                        <h2 className="mt-3 display text-4xl text-white md:text-5xl">Experience Grosvenor Vistas in person</h2>
-                    </div>
-                    <CtaButton to="/contact" variant="secondary" className="flex-shrink-0">Book a Visit</CtaButton>
-                </div>
+            {/* Showroom CTA — full-bleed image */}
+            <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden" data-testid="home-showroom-cta">
+                <img src={SHOWROOM_IMAGE} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-brand-ink/55" />
+                <motion.div {...reveal} className="container-x relative z-10 text-center text-white">
+                    <h2 className="display text-5xl leading-[0.98] sm:text-7xl lg:text-8xl">Visit the showroom</h2>
+                    <p className="mx-auto mt-6 max-w-lg text-lg text-white/85">Experience the model residence and the view in person.</p>
+                    <CtaButton to="/contact" variant="primary" className="mt-10">Book a Visit</CtaButton>
+                </motion.div>
             </section>
         </div>
     );

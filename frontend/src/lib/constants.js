@@ -136,3 +136,17 @@ export const GALLERY = [
 
 export const HERO_IMAGE = "/gallery/buildings-01.png";
 export const AERIAL_IMAGE = "/site/aerial-masterplan.jpg";
+
+// Image-led amenity showcase (short titles only — no body text).
+export const AMENITY_GALLERY = [
+    { title: "Rooftop Pools", image: "/gallery/rooftop-pool.png" },
+    { title: "Panoramic Views", image: "/gallery/buildings-01.png" },
+    { title: "Private Terraces", image: "/gallery/terrace-2.png" },
+    { title: "Landscaped Gardens", image: "/gallery/terrace.png" },
+    { title: "Evening Outdoors", image: "/gallery/homestaging-evening-terrace.png" },
+    { title: "Elegant Interiors", image: "/gallery/model-unit-living-and-dining-room.png" },
+    { title: "Gourmet Kitchens", image: "/gallery/model-unit-kitchen.png" },
+    { title: "The Townhouses", image: "/gallery/townhouse-facade.png" },
+];
+
+export const SHOWROOM_IMAGE = "/gallery/model-unit-living-room.png";

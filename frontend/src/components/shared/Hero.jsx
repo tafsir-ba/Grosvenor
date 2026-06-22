@@ -32,7 +32,6 @@ export default function Hero({ image, overline, title, titleAccent, subtitle, pr
 
             <div className="container-x relative z-10 pb-20 pt-44 md:pb-28">
                 <motion.div {...fade} className="max-w-5xl">
-                    {overline && <p className="overline mb-6 text-white">{overline}</p>}
                     <h1
                         className={
                             upper
@@ -43,7 +42,7 @@ export default function Hero({ image, overline, title, titleAccent, subtitle, pr
                         {title} {titleAccent && <span className="text-white/70">{titleAccent}</span>}
                     </h1>
                     {subtitle && <p className="mt-7 max-w-xl text-lg text-white/90 md:text-xl">{subtitle}</p>}
-                    {note && <p className="mt-6 text-sm font-medium uppercase tracking-[0.22em] text-white/90">{note}</p>}
+                    {note && <p className="mt-6 font-display text-2xl font-light text-white md:text-3xl">{note}</p>}
                     {(primary || secondary) && (
                         <div className="mt-10 flex flex-wrap gap-4">
                             {primary && <CtaButton {...primary} variant="primary" />}
