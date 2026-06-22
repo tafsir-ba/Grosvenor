@@ -18,7 +18,7 @@ export default function Footer() {
                     </div>
                     <Link
                         to="/contact"
-                        className="rounded-full border border-white/40 px-9 py-4 text-sm font-medium uppercase tracking-[0.16em] text-white transition-colors hover:bg-white hover:text-brand-blue"
+                        className="rounded-sm border border-white/40 px-9 py-4 text-sm font-medium uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-brand-blue"
                         data-testid="footer-cta"
                     >
                         Book a Visit

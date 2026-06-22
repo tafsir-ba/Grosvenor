@@ -31,7 +31,7 @@ export default function Header() {
                 atTop ? "bg-transparent" : "border-b border-border bg-white/95 backdrop-blur-xl"
             )}
         >
-            <div className={cn("container-x flex items-center justify-between transition-all duration-500", atTop ? "h-28" : "h-20")}>
+            <div className={cn("container-x flex items-center justify-between transition-all duration-500", atTop ? "h-40" : "h-20")}>
                 {/* Left: Menu drawer */}
                 <Sheet>
                     <SheetTrigger asChild>
@@ -94,7 +94,7 @@ export default function Header() {
                         to="/contact"
                         data-testid="header-contact"
                         className={cn(
-                            "rounded-full border px-7 py-3 text-xs font-medium uppercase tracking-[0.18em] transition-colors duration-300",
+                            "rounded-sm border px-8 py-3.5 text-sm font-medium uppercase tracking-[0.14em] transition-colors duration-300",
                             lightTone ? "border-white/50 text-white hover:bg-white hover:text-brand-blue" : "border-brand-blue/40 text-brand-blue hover:bg-brand-blue hover:text-white"
                         )}
                     >
