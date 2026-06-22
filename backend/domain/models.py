@@ -107,4 +107,3 @@ class DownloadUpdate(BaseModel):
 
 class Download(BaseDocument, DownloadBase):
     created_at: str = Field(default_factory=utc_now_iso)
-eated_at: str = Field(default_factory=utc_now_iso)

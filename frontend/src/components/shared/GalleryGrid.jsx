@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 // Masonry-style gallery grid with lightbox.
 export default function GalleryGrid({ items }) {
@@ -38,6 +38,8 @@ export default function GalleryGrid({ items }) {
                 <DialogContent className="max-w-4xl border-none bg-transparent p-0 shadow-none" data-testid="gallery-lightbox">
                     {active && (
                         <figure className="overflow-hidden rounded-sm bg-brand-ink">
+                            <DialogTitle className="sr-only">{active.caption}</DialogTitle>
+                            <DialogDescription className="sr-only">Gallery image: {active.caption}</DialogDescription>
                             <img src={active.src} alt={active.caption} className="max-h-[80vh] w-full object-contain" />
                             <figcaption className="p-4 text-center text-sm uppercase tracking-[0.14em] text-white/80">
                                 {active.caption}

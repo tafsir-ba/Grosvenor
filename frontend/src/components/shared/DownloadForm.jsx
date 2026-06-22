@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { FileText, Download as DownloadIcon } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import CtaButton from "@/components/shared/CtaButton";
 import LeadForm from "@/components/shared/LeadForm";
 import { api, formatApiError } from "@/lib/api";
@@ -54,8 +54,8 @@ export default function DownloadForm({ download }) {
                     <DialogContent className="sm:max-w-md" data-testid="download-dialog">
                         <DialogHeader>
                             <DialogTitle className="font-display text-2xl text-brand-ink">Download the Brochure</DialogTitle>
+                            <DialogDescription>Share your details and we'll open your brochure right away.</DialogDescription>
                         </DialogHeader>
-                        <p className="text-sm text-muted-foreground">Share your details and we'll open your brochure right away.</p>
                         <LeadForm
                             leadType={LEAD_TYPE.DOWNLOAD_BROCHURE}
                             fields={["name", "email", "phone"]}
