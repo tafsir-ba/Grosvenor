@@ -1,0 +1,152 @@
+{
+  "project_name": "Grosvenor Vistas",
+  "theme": "LIGHT",
+  "archetype": "5 (Luxury) combined with Warm Organic Elements",
+  "design_philosophy": {
+    "core_concept": "Premium Real-Estate Aesthetic",
+    "description": "Elegant, high-end property branding. Utilizes generous white space, large typographic contrast, and sophisticated warm neutrals to evoke an 'Old Money' and refined atmosphere.",
+    "anti_patterns": [
+      "No purple or teal gradients.",
+      "No Inter font for headings or body.",
+      "No generic 'Bootstrap' symmetric column layouts in marketing sections.",
+      "No heavy drop shadows on cards."
+    ]
+  },
+  "typography": {
+    "primary_font": {
+      "family": "'Cormorant Garamond', serif",
+      "usage": "Headings (H1, H2, H3), large numbers, quotes",
+      "import_url": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap",
+      "styling": "tracking-tight for large text, leading-none for hero headings. Use Light (300) or Regular (400) for massive headers to retain elegance."
+    },
+    "secondary_font": {
+      "family": "'Outfit', sans-serif",
+      "usage": "Body text, UI labels, buttons, navigation, admin dashboard",
+      "import_url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap",
+      "styling": "Clean, highly legible sans-serif. Use uppercase with wide tracking (tracking-widest, text-xs) for overlines and structural labels."
+    }
+  },
+  "colors": {
+    "css_variables": {
+      "--brand-bg": "#F9F8F6",
+      "--brand-surface": "#FFFFFF",
+      "--brand-text": "#1A1C19",
+      "--brand-text-muted": "#6B6D69",
+      "--brand-primary": "#A68A64",
+      "--brand-primary-foreground": "#FFFFFF",
+      "--brand-secondary": "#2C3531",
+      "--brand-secondary-foreground": "#FFFFFF",
+      "--brand-border": "#E5E3DC",
+      "--brand-ring": "#A68A64"
+    },
+    "tailwind_config": {
+      "background": "var(--brand-bg)",
+      "foreground": "var(--brand-text)",
+      "card": {
+        "DEFAULT": "var(--brand-surface)",
+        "foreground": "var(--brand-text)"
+      },
+      "popover": {
+        "DEFAULT": "var(--brand-surface)",
+        "foreground": "var(--brand-text)"
+      },
+      "primary": {
+        "DEFAULT": "var(--brand-primary)",
+        "foreground": "var(--brand-primary-foreground)"
+      },
+      "secondary": {
+        "DEFAULT": "var(--brand-secondary)",
+        "foreground": "var(--brand-secondary-foreground)"
+      },
+      "muted": {
+        "DEFAULT": "#F0EFEA",
+        "foreground": "var(--brand-text-muted)"
+      },
+      "accent": {
+        "DEFAULT": "var(--brand-primary)",
+        "foreground": "var(--brand-primary-foreground)"
+      },
+      "border": "var(--brand-border)",
+      "input": "var(--brand-border)",
+      "ring": "var(--brand-ring)"
+    },
+    "guidelines": "Use pure white (#FFFFFF) for cards and modals. Use the warm off-white (--brand-bg) for the main body background. The primary color (--brand-primary) is a muted luxe gold/bronze for CTAs and highlights. Secondary is a deep charcoal/olive for contrast sections (e.g., dark footers or dark hero overlays)."
+  },
+  "layout_and_spacing": {
+    "marketing_pages": {
+      "strategy": "Asymmetric bento layouts (Mode A: The Tetris Grid). Break the grid intentionally. Mix large full-bleed imagery with elegant typography blocks.",
+      "spacing": "Generous. Use p-12, p-16, py-24 to let content breathe. Containers with borders must have internal padding.",
+      "hero_overlay": "Gradient overlay or max bg-black/40. If image is dark, use bg-black/30. Ensure high contrast for text (APCA standard)."
+    },
+    "admin_dashboard": {
+      "strategy": "Strict grid hierarchy (Mode B: The Control Room). Dense and compact spacing.",
+      "style": "Sharp edges, flat surfaces, or very subtle rounded corners (max 8px border-radius). 1px subtle borders (border-border). Avoid heavy shadows.",
+      "spacing": "Tight gaps (gap-4, gap-6), standard padding (p-4, p-6)."
+    }
+  },
+  "components": {
+    "marketing": {
+      "structure": "Pure HTML/Tailwind for layouts, overlapping elements, pure CSS for complex grid spanning.",
+      "interactive": "Shadcn components (Forms, Dialogs, Select, Inputs) BUT heavily customized to match the luxe branding. Strip Vercel-look defaults.",
+      "buttons": "Sharp corners or very slight rounding (rounded-sm). Use uppercase text-xs tracking-widest for an editorial feel, or elegant normal casing. Hover state must lighten the bg or use an outline shift.",
+      "navigation": "Crystal glassmorphism if overlapping hero (backdrop-blur-xl bg-white/70 or bg-black/40 depending on contrast), or solid white header. Never purely transparent."
+    },
+    "admin": {
+      "structure": "Shadcn components (Tables, Cards, Badges, Tabs, Dropdowns).",
+      "charts": "Shadcn charts or Recharts for unit status analytics.",
+      "forms": "Clean, structured, using Shadcn Form."
+    }
+  },
+  "motion_and_interactions": {
+    "scroll": "MANDATORY: Use `lenis` for smooth scrolling on marketing pages to provide a premium feel.",
+    "animations": "Subtle, slow fade-ins and slide-ups (using Framer Motion). No bouncy or frantic animations. Slow reveal matches the luxury tone.",
+    "hover_states": "Images slightly scale up (scale-105) inside hidden overflow containers. Buttons gently shift colors. Always explicitly set hover text color."
+  },
+  "testing_requirements": {
+    "attributes": "All interactive and key informational elements MUST include `data-testid` attribute (e.g., data-testid='hero-cta-button', data-testid='lead-form-submit')."
+  },
+  "media": {
+    "image_strategy": "High-resolution architectural and interior photography. Images must not exceed 80vh on mobile. Never use placeholder services like dummyimage.com.",
+    "assets": {
+      "hero_exterior": [
+        {
+          "url": "https://images.pexels.com/photos/15577446/pexels-photo-15577446.jpeg",
+          "description": "Contemporary modern architecture with glass facade - Use for main hero."
+        },
+        {
+          "url": "https://images.pexels.com/photos/37582309/pexels-photo-37582309.jpeg",
+          "description": "Unique modern building facade - Use for exterior gallery."
+        }
+      ],
+      "interiors": [
+        {
+          "url": "https://images.unsplash.com/photo-1757924461488-ef9ad0670978?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBtb2Rlcm4lMjBhcGFydG1lbnQlMjBpbnRlcmlvcnxlbnwwfHx8fDE3ODIxMzE2OTN8MA&ixlib=rb-4.1.0&q=85",
+          "description": "Modern living room - Use for Units/Floor-plans overview."
+        },
+        {
+          "url": "https://images.pexels.com/photos/8135492/pexels-photo-8135492.jpeg",
+          "description": "Spacious elegant apartment - Use for interior gallery."
+        }
+      ],
+      "amenities": [
+        {
+          "url": "https://images.unsplash.com/photo-1680609989998-6183fcea718b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwzfHxzd2ltbWluZyUyMHBvb2wlMjBsdXh1cnl8ZW58MHx8fHwxNzgxODY0NzU3fDA&ixlib=rb-4.1.0&q=85",
+          "description": "Large indoor swimming pool - Use for Amenities section."
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1727579674528-600120447183?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHw0fHxzd2ltbWluZyUyMHBvb2wlMjBsdXh1cnl8ZW58MHx8fHwxNzgxODY0NzU3fDA&ixlib=rb-4.1.0&q=85",
+          "description": "Luxury pool with lush trees - Alternative for Amenities."
+        }
+      ]
+    }
+  },
+  "instructions_to_main_agent": [
+    "Inject the provided CSS variables into the global stylesheet (e.g., index.css) inside the :root block.",
+    "Update tailwind.config.js to map to these CSS variables.",
+    "Add 'Cormorant Garamond' and 'Outfit' to the HTML document head via Google Fonts.",
+    "Ensure all marketing sections use <section> and pure Tailwind layouts with generous padding (e.g., py-24).",
+    "Integrate Shadcn UI components for the lead capture forms and admin dashboard.",
+    "Implement Lenis smooth scrolling globally for the marketing site routes.",
+    "Strictly adhere to the data-testid rules for every interactive element."
+  ]
+}
