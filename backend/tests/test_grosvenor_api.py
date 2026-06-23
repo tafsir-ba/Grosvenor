@@ -203,6 +203,52 @@ class TestLeads:
                                "source_url": "https://example.com"})
         assert r.status_code == 200, r.text
 
+    def test_create_contact_about_unit_lead_with_collection_fields(self, session, admin_session):
+        """New: unit-detail enquiry carries collection / unit_surface / unit_balcony."""
+        unique_email = f"test_unitdetail_{uuid.uuid4().hex[:8]}@example.com"
+        payload = {
+            "first_name": "TESTUnit",
+            "last_name": "Enquiry",
+            "email": unique_email,
+            "phone": "+18764844244",
+            "message": "Please share the floor plan for A102.",
+            "consent": True,
+            "lead_type": "contact_about_unit",
+            "source_page": "/residences/a102",
+            "source_unit": "A102",
+            "source_building": "Heliconia",
+            "collection": "Signature Residences",
+            "unit_surface": 1872.5,
+            "unit_balcony": 145.0,
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 200, r.text
+        assert r.json().get("ok") is True
+
+        # Verify persistence with all new fields
+        r = admin_session.get(f"{API}/admin/leads")
+        assert r.status_code == 200
+        match = next((l for l in r.json() if l.get("email") == unique_email), None)
+        assert match is not None, "unit-detail lead not found in admin list"
+        assert match.get("lead_type") == "contact_about_unit"
+        assert match.get("source_unit") == "A102"
+        assert match.get("source_building") == "Heliconia"
+        assert match.get("collection") == "Signature Residences"
+        assert match.get("unit_surface") == 1872.5
+        assert match.get("unit_balcony") == 145.0
+
+    def test_track_rejects_form_lead_type(self, session):
+        """Defensive: /track should not accept non-click lead types (per iteration_2 action item)."""
+        r = session.post(f"{API}/track",
+                         json={"lead_type": "general_contact",
+                               "source_url": "https://example.com"})
+        # Either explicit 422 (preferred) OR at minimum the prior behavior — record as
+        # a soft assertion that flags if backend still permits it.
+        assert r.status_code in (400, 422), (
+            f"/api/track should reject non-click lead_type but got "
+            f"{r.status_code}: {r.text}"
+        )
+
     def test_lead_persisted_with_new_fields(self, session, admin_session):
         # Create lead and verify it appears in admin list with new schema fields
         unique_email = f"test_persist_{uuid.uuid4().hex[:8]}@example.com"

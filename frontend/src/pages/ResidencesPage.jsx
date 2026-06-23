@@ -8,7 +8,7 @@ import CtaButton from "@/components/shared/CtaButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnits } from "@/hooks/useData";
-import { BUILDINGS, STARTING_PRICE } from "@/lib/constants";
+import { BUILDINGS, COLLECTIONS, STARTING_PRICE } from "@/lib/constants";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 const STATUSES = [
@@ -24,15 +24,13 @@ const SORTS = [
     { value: "surface_desc", label: "Largest Surface" },
 ];
 
-// Lifestyle-led collections mapped to real inventory by total surface (sq ft).
-const TIERS = [
-    { key: "vista", name: "The Vista Residences", image: "/gallery/home-staging-kitchen-2.png", test: (u) => u.total_surface < 1750 },
-    { key: "signature", name: "Signature Residences", image: "/gallery/homestaging-bathroom-4.png", test: (u) => u.total_surface >= 1750 && u.total_surface < 2100 },
-    { key: "grand", name: "Grand Residences", image: "/gallery/model-unit-living-and-dining-room.png", test: (u) => u.total_surface >= 2100 && u.total_surface < 2600 },
-    { key: "skyline", name: "Skyline Residences", image: "/gallery/ext-rooftop-seaview.png", test: (u) => u.total_surface >= 2600 && u.total_surface < 3400 },
-    { key: "penthouse", name: "Penthouse Collection", image: "/gallery/homestaging-living-room-2.png", test: (u) => u.total_surface >= 3400 && u.total_surface < 4500 },
-    { key: "townhouses", name: "Begonia Townhouses", image: "/gallery/townhouse-new.png", test: (u) => u.total_surface >= 4500 },
-];
+// Lifestyle collections (shared source of truth) → size-range filters.
+const TIERS = COLLECTIONS.map((c) => ({
+    key: c.key,
+    name: c.name,
+    image: c.cardImage,
+    test: (u) => u.total_surface >= c.min && u.total_surface < c.max,
+}));
 
 // Aerial orientation legend — the four physical blocks within the development.
 const BLOCKS = [

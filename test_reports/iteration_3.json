@@ -1,0 +1,37 @@
+{
+  "summary": "Full backend + frontend regression for the Unit Detail page redesign and new collection/unit_surface/unit_balcony lead fields. Backend: 31/31 pytest cases pass (added test_create_contact_about_unit_lead_with_collection_fields and test_track_rejects_form_lead_type — the latter previously flagged as a minor action item in iteration_2 is now FIXED: /api/track now returns 422 for non-click lead_type). Frontend: unit detail loads for a102 / c302 (sold → 'Now sold') / townhouse-1 (correctly maps to Begonia Townhouses collection). Hero, 5-image representative gallery + disclaimer, 8-row overview dl (no bedroom/room counts), collection-link → /residences?collection=vista with the tier filter applied and clear-collection chip working, related residences cards (3 cards, 'View Residence' CTA, click navigates), Request Floor Plan form: consent-required (toast 'Please accept the data processing consent to continue.'), submit success ('Thank you — we'll be in touch shortly.'), and the resulting lead in the admin list carries first/last/email + lead_type=contact_about_unit + source_unit=A102 + source_building=Heliconia + collection='The Vista Residences' + unit_surface=1671 + unit_balcony=139 — full unit context plumbed through to the CRM payload as designed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/leads", "issue": "source_page from the unit-detail LeadForm is being filled with document.title ('Grosvenor Vistas — Manor Park, Kingston 8') instead of the URL pathname (/residences/a102). source_url contains the full URL so attribution is not lost, but source_page is meant to be the route. Cosmetic / attribution-quality only."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_grosvenor_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional / cosmetic) In frontend/src/lib/tracking.js buildLeadPayload, set source_page = window.location.pathname (currently appears to be using document.title or PROJECT.location). Verified by inspecting the persisted lead — source_unit/source_building/collection/unit_surface/unit_balcony are correct, only source_page is mislabeled."
+  ],
+  "critical_code_review_comments": [
+    "Confirmed: domain/models.LeadCreate now exposes collection (str), unit_surface (float), unit_balcony (float). services/crm.build_lead_payload maps them as collection / unit_surface / unit_balcony in the CRM contact payload. CRM sync remains disabled (CRM_SYNC_ENABLED=false), so push_lead is a no-op as expected.",
+    "UnitDetailPage.jsx leadCtx is correctly constructed from collectionForSurface() and shortBuilding() — verified end-to-end that those values land in MongoDB.",
+    "constants.js COLLECTIONS / collectionForSurface() now drives both Residences (TIERS) and Unit Detail — single source of truth as designed; townhouse-1 (4,845 sq ft) correctly resolves to Begonia Townhouses.",
+    "Previous iteration_2 action item RESOLVED: POST /api/track now rejects non-click lead_types with 422 — verified by test_track_rejects_form_lead_type."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_grosvenor_api.py"
+  ],
+  "success_rate": {"backend": "100% (31/31)", "frontend": "100% of requested flows"},
+  "test_credentials": "admin@grosvenorvistas.com / Grosvenor2026! (per /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created via pytest + Playwright: TESTUnit Enquiry lead (contact_about_unit, A102, Signature Residences, surface 1872.5), TESTFloorPlan Requester lead (contact_about_unit, A102, The Vista Residences, surface 1671, balcony 139) visible in admin leads list. Plus the prior TEST_/TESTPersist_/TEST_LeadPatch_/TEST_Brochure leads from iteration_2 are still in the DB.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Unit Detail page testids: unit-detail-page, back-to-residences, unit-gallery-0..4, overview-residence/building/collection/floor/total-surface/balcony-surface/status/price, collection-link, unit-enquiry (wrapper) with unit-enquiry-{first-name,last-name,phone,email,message,consent,submit,privacy-link,legal-link,form}, unit-whatsapp, unit-call, related-unit-<slug>. The Request Floor Plan LeadForm uses leadType=contact_about_unit and pushes leadCtx {unit,building,collection,unit_surface,unit_balcony} into the LeadCreate payload — verified end-to-end. The Begonia Townhouses live at slugs 'townhouse-1' / 'townhouse-2' (NOT 'townhouses-begonia-th-1' as the request hint suggested). Available SOLD units for status testing: a303, a403, a404, c302 (duplex). CRM_SYNC_ENABLED is false, no outbound HTTP expected.",
+  "rca of the issue": "n/a — no functional bugs found. Only a minor attribution polish (source_page captures document.title rather than pathname) which does not block any flow."
+}

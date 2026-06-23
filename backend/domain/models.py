@@ -67,6 +67,9 @@ class LeadCreate(BaseModel):
     source_page: Optional[str] = None
     source_unit: Optional[str] = None
     source_building: Optional[str] = None
+    collection: Optional[str] = None
+    unit_surface: Optional[float] = None
+    unit_balcony: Optional[float] = None
     source_url: Optional[str] = None
     utm_source: Optional[str] = None
     utm_medium: Optional[str] = None

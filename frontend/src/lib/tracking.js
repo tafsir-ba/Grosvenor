@@ -37,6 +37,9 @@ export function buildLeadPayload(formData, leadType, ctx = {}) {
         lead_type: leadType,
         source_unit: ctx.unit || null,
         source_building: ctx.building || null,
+        collection: ctx.collection || null,
+        unit_surface: ctx.unit_surface ?? null,
+        unit_balcony: ctx.unit_balcony ?? null,
         ...getAttribution(),
     };
 }

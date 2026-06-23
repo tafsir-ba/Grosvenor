@@ -69,6 +69,93 @@ export const BUILDINGS = [
     { value: "Townhouses — Begonia", short: "Begonia", block: "Townhouses" },
 ];
 
+// Lifestyle collections — single source of truth (Residences + Unit Detail).
+// Mapped to real inventory by total surface (sq ft). No bedroom/room data shown.
+export const COLLECTIONS = [
+    {
+        key: "vista", name: "The Vista Residences", min: 0, max: 1750,
+        blurb: "Poised entry residences with elegant proportions, natural light and an elevated outlook.",
+        cardImage: "/gallery/home-staging-kitchen-2.png",
+        heroImage: "/gallery/ext-heliconia-view.png",
+        gallery: [
+            { label: "Living Spaces", image: "/gallery/model-unit-living-room.png" },
+            { label: "Gourmet Kitchen", image: "/gallery/home-staging-kitchen-2.png" },
+            { label: "Principal Suite", image: "/gallery/model-unit-bedroom.png" },
+            { label: "Terrace & Views", image: "/gallery/ext-heliconia-view.png" },
+            { label: "Bathroom", image: "/gallery/model-unit-bathroom.png" },
+        ],
+    },
+    {
+        key: "signature", name: "Signature Residences", min: 1750, max: 2100,
+        blurb: "Generously scaled residences with refined finishes and considered living spaces.",
+        cardImage: "/gallery/homestaging-bathroom-4.png",
+        heroImage: "/gallery/terrace-2.png",
+        gallery: [
+            { label: "Living Spaces", image: "/gallery/homestaging-living-room-2.png" },
+            { label: "Gourmet Kitchen", image: "/gallery/homestaging-kitchen.png" },
+            { label: "Principal Suite", image: "/gallery/homestaging-ginger-lily-bedroom.png" },
+            { label: "Terrace & Views", image: "/gallery/terrace-2.png" },
+            { label: "Bathroom", image: "/gallery/homestaging-bathroom-4.png" },
+        ],
+    },
+    {
+        key: "grand", name: "Grand Residences", min: 2100, max: 2600,
+        blurb: "Expansive residences designed for entertaining, with open-plan living and wide outlooks.",
+        cardImage: "/gallery/model-unit-living-and-dining-room.png",
+        heroImage: "/gallery/ext-rooftop-mountain.png",
+        gallery: [
+            { label: "Living & Dining", image: "/gallery/model-unit-living-and-dining-room.png" },
+            { label: "Gourmet Kitchen", image: "/gallery/model-unit-dining-kitchen.png" },
+            { label: "Principal Suite", image: "/gallery/model-unit-bedroom-2.png" },
+            { label: "Terrace & Views", image: "/gallery/ext-rooftop-mountain.png" },
+            { label: "Bathroom", image: "/gallery/model-unit-bathroom-2.png" },
+        ],
+    },
+    {
+        key: "skyline", name: "Skyline Residences", min: 2600, max: 3400,
+        blurb: "Duplex residences across two levels, crowned by sweeping skyline and mountain views.",
+        cardImage: "/gallery/ext-rooftop-seaview.png",
+        heroImage: "/gallery/ext-rooftop-seaview.png",
+        gallery: [
+            { label: "Living Spaces", image: "/gallery/homestaging-living-dinning-room-kitchen-2.png" },
+            { label: "Gourmet Kitchen", image: "/gallery/model-unit-kitchen.png" },
+            { label: "Principal Suite", image: "/gallery/model-unit-bedroom-3.png" },
+            { label: "Terrace & Views", image: "/gallery/ext-rooftop-seaview.png" },
+            { label: "Bathroom", image: "/gallery/model-unit-master-bathroom-3.png" },
+        ],
+    },
+    {
+        key: "penthouse", name: "Penthouse Collection", min: 3400, max: 4500,
+        blurb: "The development's most exclusive duplex residences, with the finest finishes and panoramas.",
+        cardImage: "/gallery/homestaging-living-room-2.png",
+        heroImage: "/gallery/hero-rooftop-sunset.png",
+        gallery: [
+            { label: "Living Spaces", image: "/gallery/home-staging-living-dinning-room-and-kitchen.png" },
+            { label: "Gourmet Kitchen", image: "/gallery/homestaging-kitchen.png" },
+            { label: "Principal Suite", image: "/gallery/model-unit-mater-bedroom.png" },
+            { label: "Terrace & Views", image: "/gallery/hero-rooftop-sunset.png" },
+            { label: "Bathroom", image: "/gallery/model-unit-master-bathroom-4.png" },
+        ],
+    },
+    {
+        key: "townhouses", name: "Begonia Townhouses", min: 4500, max: 100000,
+        blurb: "Standalone townhouse residences with private rooftop space and the largest footprints.",
+        cardImage: "/gallery/townhouse-new.png",
+        heroImage: "/gallery/heliconia-grounds.png",
+        gallery: [
+            { label: "Living Spaces", image: "/gallery/model-unit-living-room.png" },
+            { label: "Gourmet Kitchen", image: "/gallery/model-unit-dining-kitchen.png" },
+            { label: "Principal Suite", image: "/gallery/model-unit-mater-bedroom.png" },
+            { label: "Grounds & Views", image: "/gallery/heliconia-grounds.png" },
+            { label: "Bathroom", image: "/gallery/homestaging-master-bathroom-1.png" },
+        ],
+    },
+];
+
+export function collectionForSurface(surface) {
+    return COLLECTIONS.find((c) => surface >= c.min && surface < c.max) || COLLECTIONS[0];
+}
+
 // Mirrors backend UnitStatus enum (values are authoritative on the backend).
 export const STATUS_META = {
     available: { label: "Available", classes: "bg-brand-green/10 text-brand-green border-brand-green/30" },
