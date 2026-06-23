@@ -55,6 +55,16 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Downloads section simplified (title + download row only, descriptions removed).
 - Verified: slider drag works, brochure gated dialog opens.
 
+## Homepage Luxury Redesign (2026-06-23)
+- Full editorial redesign per client brief V2 (De Gasparin-inspired luxury hospitality feel).
+- New palette: warm white / ivory / beige + champagne gold; Grosvenor Blue now an accent only. Tokens added (brand-warm/ivory/beige) without breaking other pages.
+- New heading font: Cormorant Garamond (`.lux-title`, `font-heading`) + Signika body. `.lux-eyebrow` for "— Section" labels.
+- 9 sections: Hero (Elevate Your View) → The View → Lifestyle → Amenities immersive reveals → Full-width visual moment → Residences-by-size (Vista/Signature/Begonia, hover reveals sqft+price+availability from live data, NO bedroom counts) → Location preview (map) → Gallery horizontal scroll w/ arrows+counter → Final CTA.
+- Gold circular FAB (FloatingActionButton.jsx) bottom-right expands to Download Brochure (gated dialog) / Book a Visit / WhatsApp — REPLACED the left brochure rail + green WhatsApp button (both files deleted).
+- Framer Motion fade-up + parallax throughout; lazy-loaded imagery; real Grosvenor photos + 1 stock gym image.
+- Verified: all sections render, FAB brochure dialog opens, residence hover reveal works, gallery scrolls.
+- NOTE: inner pages (Residences/Amenities/Development/Location/Contact/etc.) still use the previous blue/Source Sans style — to be migrated to the new luxury system next, per user (homepage first).
+
 ## Backlog / Next
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
 - P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).

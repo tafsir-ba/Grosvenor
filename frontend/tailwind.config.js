@@ -6,6 +6,7 @@ module.exports = {
         extend: {
             fontFamily: {
                 display: ["Source Sans 3", "system-ui", "sans-serif"],
+                heading: ["Cormorant Garamond", "Georgia", "serif"],
                 sans: ["Signika", "system-ui", "sans-serif"],
             },
             borderRadius: {
@@ -22,6 +23,9 @@ module.exports = {
                     green: "hsl(var(--green))",
                     ink: "hsl(var(--ink))",
                     cream: "hsl(var(--cream))",
+                    warm: "#FCFAF8",
+                    ivory: "#F2EFE9",
+                    beige: "#EAE5DB",
                 },
                 card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
                 popover: { DEFAULT: "hsl(var(--popover))", foreground: "hsl(var(--popover-foreground))" },

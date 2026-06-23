@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import WhatsappFloatingButton from "@/components/shared/WhatsappFloatingButton";
-import BrochureRail from "@/components/shared/BrochureRail";
+import FloatingActionButton from "@/components/shared/FloatingActionButton";
 import { captureAttribution } from "@/lib/tracking";
 
 export default function SiteLayout() {
@@ -24,8 +23,7 @@ export default function SiteLayout() {
                 <Outlet />
             </main>
             <Footer />
-            <WhatsappFloatingButton />
-            <BrochureRail />
+            <FloatingActionButton />
         </div>
     );
 }

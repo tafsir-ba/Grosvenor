@@ -61,6 +61,20 @@
         font-size: 0.85rem;
         font-weight: 600;
     }
+    /* Elegant luxury display heading (Cormorant Garamond) */
+    .lux-title {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-weight: 300;
+        line-height: 0.98;
+        letter-spacing: 0.005em;
+    }
+    .lux-eyebrow {
+        font-family: "Signika", sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.28em;
+        font-size: 0.72rem;
+        font-weight: 500;
+    }
     .container-x {
         @apply mx-auto w-full max-w-[1400px] px-6 md:px-12 lg:px-16;
     }
