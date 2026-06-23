@@ -51,11 +51,11 @@ export default function Header() {
                                             to={item.to}
                                             data-testid={`nav-${item.to.replace("/", "")}`}
                                             className={({ isActive }) =>
-                                                cn("group flex items-center gap-5 py-2.5 transition-colors", isActive ? "text-brand-gold" : "text-brand-ink hover:text-brand-gold")
+                                                cn("group flex items-baseline gap-5 py-2 transition-colors", isActive ? "text-brand-gold" : "text-brand-blue hover:text-brand-gold")
                                             }
                                         >
-                                            <span className="w-6 font-sans text-xs font-medium tracking-[0.2em] text-brand-gold/50">0{i + 1}</span>
-                                            <span className="font-sans text-lg font-normal tracking-wide md:text-xl">{item.label}</span>
+                                            <span className="lux-eyebrow w-6 text-brand-gold/60">0{i + 1}</span>
+                                            <span className="lux-title text-2xl font-light leading-none md:text-3xl">{item.label}</span>
                                         </NavLink>
                                     </SheetClose>
                                 ))}
