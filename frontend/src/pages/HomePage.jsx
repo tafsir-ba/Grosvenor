@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
@@ -11,17 +11,22 @@ const HERO_IMG = "/gallery/hero-rooftop-sunset.png";
 const HERO_VIDEO = null;
 
 const VIEW_IMG = "/gallery/rooftop-pool.png";
-const LIFESTYLE_IMG = "/gallery/model-unit-living-and-dining-room.png";
 const MOMENT_IMG = "/gallery/terrace-2.png";
 const FINAL_IMG = "/gallery/homestaging-evening-terrace.png";
-const GYM_IMG = "https://images.unsplash.com/photo-1758957646695-ec8bce3df462?crop=entropy&cs=srgb&fm=jpg&q=80&w=1400";
+const GYM_IMG = "https://images.unsplash.com/photo-1758957646695-ec8bce3df462?crop=entropy&cs=srgb&fm=jpg&q=80&w=1600";
+
+const LIFESTYLE = [
+    { title: "Privacy", image: "/gallery/townhouse-facade.png", points: ["Strata-approved security", "Private residential environment", "Controlled access"] },
+    { title: "Elevation", image: "/gallery/rooftop-pool.png", points: ["Hillside location", "Cooling breezes", "Elevated views over Kingston"] },
+    { title: "Modern Living", image: "/gallery/model-unit-living-and-dining-room.png", points: ["Contemporary architecture", "Thoughtful layouts", "Lifestyle-driven design"] },
+];
 
 const AMENITIES = [
     { title: "Infinity Pool", line: "Rooftop water that meets the horizon.", image: "/gallery/rooftop-pool.png" },
     { title: "Fitness Centre", line: "Move well, with the view as your backdrop.", image: GYM_IMG },
     { title: "Rooftop Spaces", line: "Evenings made for gathering, above it all.", image: "/gallery/homestaging-evening-terrace.png" },
     { title: "Landscaped Grounds", line: "Greenery woven through the community.", image: "/gallery/terrace.png" },
-    { title: "24/7 Security", line: "Armed response and a gated, watched community.", image: "/gallery/townhouse-facade.png" },
+    { title: "24/7 Armed Response & Security", line: "A gated, watched community with peace of mind.", image: "/gallery/townhouse-facade.png" },
 ];
 
 const RESIDENCE_TIERS = [
@@ -30,7 +35,6 @@ const RESIDENCE_TIERS = [
     { key: "townhouses", name: "Begonia Townhouses", image: "/gallery/townhouse-facade.png", test: (u) => u.total_surface >= 4000 },
 ];
 
-// Curves live on images/containers only — never as section dividers.
 const ROUND = "rounded-[1.75rem] md:rounded-[2.5rem]";
 
 const fadeUp = {
@@ -79,30 +83,18 @@ export default function HomePage() {
 
     return (
         <div data-testid="home-page" className="bg-brand-warm text-brand-ink">
-            {/* 1. HERO — large curved image container */}
-            <section className="container-x pb-12 pt-32 md:pt-40" data-testid="hero-section">
-                <div className={`relative h-[80vh] overflow-hidden ${ROUND}`}>
+            {/* 1. HERO — wide cinematic curved image */}
+            <section className="container-wide pb-12 pt-32 md:pt-36" data-testid="hero-section">
+                <div className={`relative h-[86vh] overflow-hidden ${ROUND}`}>
                     {HERO_VIDEO ? (
                         <video autoPlay muted loop playsInline poster={HERO_IMG} className="absolute inset-0 h-full w-full object-cover" data-testid="hero-video">
                             <source src={HERO_VIDEO} type="video/mp4" />
                         </video>
                     ) : (
-                        <motion.img
-                            initial={{ scale: 1.08 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-                            src={HERO_IMG}
-                            alt=""
-                            className="absolute inset-0 h-full w-full object-cover"
-                        />
+                        <motion.img initial={{ scale: 1.08 }} animate={{ scale: 1 }} transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }} src={HERO_IMG} alt="" className="absolute inset-0 h-full w-full object-cover" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/65 via-brand-ink/10 to-transparent" />
-                    <motion.div
-                        initial={{ opacity: 0, y: 28 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-                        className="absolute inset-x-0 bottom-0 p-8 md:p-14 lg:p-16"
-                    >
+                    <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }} className="absolute inset-x-0 bottom-0 p-8 md:p-16 lg:p-20">
                         <Eyebrow light>Grosvenor Heights · Kingston 8</Eyebrow>
                         <h1 className="lux-title mt-6 text-6xl text-white sm:text-7xl lg:text-8xl">Elevate Your View</h1>
                         <p className="mt-5 max-w-xl font-sans text-lg text-white/85">Luxury residences in Grosvenor Heights, Manor Park.</p>
@@ -114,57 +106,53 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 2. THE VIEW */}
-            <section className="container-x py-20 md:py-32" data-testid="home-view">
-                <motion.div {...fadeUp} className="mb-10 max-w-3xl">
+            {/* 2. THE VIEW — wide */}
+            <section className="container-wide py-20 md:py-28" data-testid="home-view">
+                <motion.div {...fadeUp} className="mb-10 max-w-3xl px-2 md:px-6">
                     <Eyebrow>The View</Eyebrow>
                     <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Wake up above Kingston</h2>
                     <p className="mt-6 font-sans text-lg text-brand-ink/70">Every day begins with a different horizon.</p>
                 </motion.div>
-                <ParallaxImage src={VIEW_IMG} className={`h-[72vh] ${ROUND}`} />
+                <ParallaxImage src={VIEW_IMG} className={`h-[78vh] ${ROUND}`} />
             </section>
 
-            {/* 3. LIFESTYLE */}
-            <section className="container-x py-20 md:py-32" data-testid="home-lifestyle">
-                <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24">
-                    <motion.div {...fadeUp}>
-                        <Eyebrow>The Lifestyle</Eyebrow>
-                        <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">A life, elevated</h2>
-                        <ul className="mt-10 divide-y divide-brand-beige border-y border-brand-beige">
-                            {["Privacy", "Elevation", "Modern Living", "Uninterrupted Views", "Effortless Convenience"].map((t) => (
-                                <li key={t} className="lux-title py-5 text-3xl font-light text-brand-ink/80 md:text-4xl">{t}</li>
-                            ))}
-                        </ul>
-                    </motion.div>
-                    <ParallaxImage src={LIFESTYLE_IMG} className={`h-[60vh] lg:h-[78vh] ${ROUND}`} />
-                </div>
-            </section>
-
-            {/* 4. AMENITIES */}
-            <section className="container-x py-20 md:py-32" data-testid="home-amenities">
-                <motion.div {...fadeUp} className="mb-16"><Eyebrow>The Experience</Eyebrow><h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Amenities for the everyday</h2></motion.div>
-                <div className="flex flex-col gap-20 md:gap-32">
-                    {AMENITIES.map((a, i) => (
+            {/* 3. LIFESTYLE — interactive hover cards */}
+            <section className="container-wide py-20 md:py-28" data-testid="home-lifestyle">
+                <motion.div {...fadeUp} className="mb-12 px-2 md:px-6">
+                    <Eyebrow>The Lifestyle</Eyebrow>
+                    <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">A life, elevated</h2>
+                </motion.div>
+                <div className="grid gap-6 md:grid-cols-3">
+                    {LIFESTYLE.map((l) => (
                         <motion.div
-                            key={a.title}
+                            key={l.title}
                             {...fadeUp}
-                            data-testid={`amenity-${i}`}
-                            className={`grid items-center gap-10 md:grid-cols-2 md:gap-20 ${i % 2 ? "md:[direction:rtl]" : ""}`}
+                            data-testid={`lifestyle-${l.title.toLowerCase().replace(/ /g, "-")}`}
+                            className={`group relative h-[68vh] overflow-hidden ${ROUND}`}
                         >
-                            <ParallaxImage src={a.image} className={`h-[52vh] md:h-[64vh] md:[direction:ltr] ${ROUND}`} />
-                            <div className="md:[direction:ltr]">
-                                <span className="lux-title text-6xl font-light text-brand-gold/30 md:text-7xl">{String(i + 1).padStart(2, "0")}</span>
-                                <h3 className="lux-title mt-2 text-4xl text-brand-blue md:text-5xl">{a.title}</h3>
-                                <p className="mt-4 max-w-sm font-sans text-lg text-brand-ink/70">{a.line}</p>
+                            <img src={l.image} alt={l.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/85 via-brand-ink/25 to-transparent transition-opacity duration-500 group-hover:from-brand-ink/90" />
+                            <div className="absolute inset-x-0 bottom-0 p-8">
+                                <h3 className="lux-title text-4xl text-white">{l.title}</h3>
+                                <ul className="mt-4 space-y-2 opacity-0 transition-all duration-500 group-hover:opacity-100">
+                                    {l.points.map((p) => (
+                                        <li key={p} className="flex items-center gap-3 font-sans text-white/85">
+                                            <span className="h-px w-5 bg-brand-gold" /> {p}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </motion.div>
                     ))}
                 </div>
             </section>
 
-            {/* 5. FULL-WIDTH VISUAL MOMENT — curved image container */}
-            <section className="container-x py-20 md:py-32" data-testid="home-moment">
-                <div className={`relative flex h-[70vh] items-center justify-center overflow-hidden ${ROUND}`}>
+            {/* 4. AMENITIES — pinned, evolving frame */}
+            <AmenitiesScroll />
+
+            {/* 5. FULL-WIDTH VISUAL MOMENT — wide curved image */}
+            <section className="container-wide py-20 md:py-28" data-testid="home-moment">
+                <div className={`relative flex h-[76vh] items-center justify-center overflow-hidden ${ROUND}`}>
                     <ParallaxImage src={MOMENT_IMG} className="absolute inset-0 h-full w-full" />
                     <div className="absolute inset-0 bg-brand-ink/35" />
                     <motion.h2 {...fadeUp} className="lux-title relative z-10 max-w-4xl px-6 text-center text-4xl text-white sm:text-6xl lg:text-7xl">
@@ -174,19 +162,14 @@ export default function HomePage() {
             </section>
 
             {/* 6. RESIDENCES */}
-            <section className="container-x py-20 md:py-32" data-testid="home-residences">
-                <div className="mb-14 flex flex-wrap items-end justify-between gap-6">
+            <section className="container-wide py-20 md:py-28" data-testid="home-residences">
+                <div className="mb-14 flex flex-wrap items-end justify-between gap-6 px-2 md:px-6">
                     <div><Eyebrow>The Residences</Eyebrow><h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Find your space</h2></div>
                     <p className="max-w-sm font-sans text-brand-ink/60">Forty-three residences, defined by space and position — from {STARTING_PRICE}.</p>
                 </div>
-                <div className="grid gap-8 md:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-3">
                     {tiers.map((t) => (
-                        <Link
-                            key={t.key}
-                            to="/residences"
-                            data-testid={`residence-tier-${t.key}`}
-                            className={`group relative block h-[64vh] overflow-hidden ${ROUND}`}
-                        >
+                        <Link key={t.key} to="/residences" data-testid={`residence-tier-${t.key}`} className={`group relative block h-[68vh] overflow-hidden ${ROUND}`}>
                             <img src={t.image} alt={t.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/85 via-brand-ink/15 to-transparent" />
                             <div className="absolute inset-x-0 bottom-0 p-8 text-white">
@@ -204,9 +187,9 @@ export default function HomePage() {
             </section>
 
             {/* 7. LOCATION PREVIEW */}
-            <section className="container-x py-20 md:py-32" data-testid="home-location">
-                <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-24">
-                    <motion.div {...fadeUp}>
+            <section className="container-wide py-20 md:py-28" data-testid="home-location">
+                <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
+                    <motion.div {...fadeUp} className="px-2 md:px-6">
                         <Eyebrow>The Setting</Eyebrow>
                         <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Perfectly positioned in Grosvenor Heights</h2>
                         <p className="mt-7 flex items-center gap-3 font-sans text-lg text-brand-ink/70"><MapPin className="h-5 w-5 text-brand-gold" /> Kingston, Jamaica</p>
@@ -215,7 +198,7 @@ export default function HomePage() {
                             <CtaButton to="/location" variant="outline" data-testid="home-explore-location">Explore Location</CtaButton>
                         </div>
                     </motion.div>
-                    <div className={`h-[50vh] overflow-hidden lg:h-[60vh] ${ROUND}`}>
+                    <div className={`h-[58vh] overflow-hidden lg:h-[64vh] ${ROUND}`}>
                         <iframe title="Grosvenor Vistas location" src={PROJECT.contact.mapEmbed} className="h-full w-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
                     </div>
                 </div>
@@ -224,9 +207,9 @@ export default function HomePage() {
             {/* 8. GALLERY PREVIEW */}
             <GalleryPreview />
 
-            {/* 9. FINAL CTA — curved image container */}
-            <section className="container-x py-20 md:py-32" data-testid="home-final-cta">
-                <div className={`relative flex min-h-[72vh] items-center justify-center overflow-hidden ${ROUND}`}>
+            {/* 9. FINAL CTA — wide curved image */}
+            <section className="container-wide py-20 md:py-28" data-testid="home-final-cta">
+                <div className={`relative flex min-h-[76vh] items-center justify-center overflow-hidden ${ROUND}`}>
                     <img src={FINAL_IMG} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
                     <div className="absolute inset-0 bg-brand-ink/55" />
                     <motion.div {...fadeUp} className="relative z-10 px-6 text-center text-white">
@@ -239,6 +222,67 @@ export default function HomePage() {
                 </div>
             </section>
         </div>
+    );
+}
+
+function AmenitiesScroll() {
+    const ref = useRef(null);
+    const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+    const [active, setActive] = useState(0);
+
+    useMotionValueEvent(scrollYProgress, "change", (v) => {
+        const idx = Math.min(AMENITIES.length - 1, Math.max(0, Math.floor(v * AMENITIES.length)));
+        setActive(idx);
+    });
+
+    const item = AMENITIES[active];
+
+    return (
+        <section ref={ref} style={{ height: `${AMENITIES.length * 90}vh` }} data-testid="home-amenities">
+            <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+                <div className="container-wide grid w-full items-center gap-10 md:grid-cols-2 md:gap-16">
+                    {/* Text frame */}
+                    <div className="order-2 px-2 md:order-1 md:px-6">
+                        <Eyebrow>The Experience</Eyebrow>
+                        <span className="lux-eyebrow mt-6 block text-brand-ink/40">{String(active + 1).padStart(2, "0")} / {String(AMENITIES.length).padStart(2, "0")}</span>
+                        <div className="relative mt-3 min-h-[200px]">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={active}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                >
+                                    <h3 className="lux-title text-5xl text-brand-blue md:text-6xl lg:text-7xl">{item.title}</h3>
+                                    <p className="mt-5 max-w-md font-sans text-lg text-brand-ink/70">{item.line}</p>
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+                        <div className="mt-10 flex gap-2">
+                            {AMENITIES.map((_, i) => (
+                                <span key={i} className={`h-px transition-all duration-500 ${i === active ? "w-12 bg-brand-gold" : "w-6 bg-brand-ink/20"}`} />
+                            ))}
+                        </div>
+                    </div>
+                    {/* Image frame */}
+                    <div className={`relative order-1 h-[48vh] overflow-hidden md:order-2 md:h-[72vh] ${ROUND}`}>
+                        <AnimatePresence mode="wait">
+                            <motion.img
+                                key={active}
+                                src={item.image}
+                                alt={item.title}
+                                initial={{ opacity: 0, scale: 1.06 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                                className="absolute inset-0 h-full w-full object-cover"
+                            />
+                        </AnimatePresence>
+                    </div>
+                </div>
+            </div>
+        </section>
     );
 }
 
@@ -260,8 +304,8 @@ function GalleryPreview() {
     };
 
     return (
-        <section className="py-20 md:py-32" data-testid="home-gallery">
-            <div className="container-x mb-12 flex flex-wrap items-end justify-between gap-6">
+        <section className="py-20 md:py-28" data-testid="home-gallery">
+            <div className="container-wide mb-12 flex flex-wrap items-end justify-between gap-6 px-2 md:px-8">
                 <div><Eyebrow>The Gallery</Eyebrow><h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Feel this luxury</h2></div>
                 <div className="flex items-center gap-5">
                     <span className="lux-eyebrow text-brand-ink/60">{String(index + 1).padStart(2, "0")} / {String(GALLERY.length).padStart(2, "0")}</span>
@@ -271,11 +315,11 @@ function GalleryPreview() {
                     </div>
                 </div>
             </div>
-            <div ref={ref} onScroll={onScroll} className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 md:px-12 lg:px-16" style={{ scrollbarWidth: "none" }} data-testid="gallery-scroller">
+            <div ref={ref} onScroll={onScroll} className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-4 md:px-8" style={{ scrollbarWidth: "none" }} data-testid="gallery-scroller">
                 {GALLERY.map((g, i) => (
-                    <figure key={i} className={`relative h-[58vh] w-[84vw] flex-shrink-0 snap-start overflow-hidden sm:w-[560px] ${ROUND}`}>
+                    <figure key={i} className={`relative h-[64vh] w-[88vw] flex-shrink-0 snap-start overflow-hidden sm:w-[640px] ${ROUND}`}>
                         <img src={g.src} alt={g.caption} loading="lazy" className="h-full w-full object-cover" />
-                        <figcaption className="absolute bottom-0 left-0 p-7"><span className="lux-eyebrow rounded-full bg-brand-warm/85 px-4 py-2 text-brand-ink backdrop-blur">{g.caption}</span></figcaption>
+                        <figcaption className="absolute bottom-0 left-0 p-7"><span className="lux-eyebrow rounded-full bg-brand-warm/90 px-4 py-2 text-brand-ink backdrop-blur">{g.caption}</span></figcaption>
                     </figure>
                 ))}
             </div>

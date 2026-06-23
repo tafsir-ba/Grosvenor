@@ -78,6 +78,9 @@
     .container-x {
         @apply mx-auto w-full max-w-[1400px] px-6 md:px-12 lg:px-16;
     }
+    .container-wide {
+        @apply mx-auto w-full max-w-[1820px] px-4 sm:px-6 md:px-8;
+    }
     /* Oversized, light editorial display heading */
     .display {
         font-family: "Source Sans 3", sans-serif;
