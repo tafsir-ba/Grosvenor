@@ -39,7 +39,7 @@ export default function Header() {
                     <SheetContent side="left" className="w-full border-none bg-brand-warm p-0 text-brand-ink [&>button]:hidden sm:max-w-lg" data-testid="menu-drawer">
                         <div className="flex h-full flex-col px-8 py-10 md:px-14 md:py-12">
                             <div className="mb-auto flex items-center justify-between">
-                                <img src="/brand/header-gold.svg" alt="Grosvenor Vistas" className="h-14 w-auto md:h-16" />
+                                <img src="/brand/header-gold.svg" alt="Grosvenor Vistas" className="h-24 w-auto md:h-32" />
                                 <SheetClose asChild>
                                     <button data-testid="menu-close" className="flex h-12 w-12 items-center justify-center rounded-full border border-brand-ink/20 text-brand-ink transition-colors hover:border-brand-gold hover:text-brand-gold"><X className="h-5 w-5" /></button>
                                 </SheetClose>
@@ -61,7 +61,6 @@ export default function Header() {
                                 ))}
                             </nav>
                             <div className="mt-auto space-y-1.5 border-t border-brand-beige pt-8 font-sans text-sm text-brand-ink/60">
-                                <a href={PROJECT.contact.phoneHref} className="block transition-colors hover:text-brand-gold">{PROJECT.contact.phone}</a>
                                 <a href={PROJECT.contact.emailHref} className="block transition-colors hover:text-brand-gold">{PROJECT.contact.email}</a>
                                 <p>{PROJECT.contact.address}</p>
                             </div>
