@@ -92,7 +92,7 @@ export const LEAD_TYPE_LABEL = {
 export const AMENITIES = [
     { title: "Rooftop Pool", body: "A serene rooftop pool with panoramic views across Manor Park.", image: "/gallery/rooftop-pool.png" },
     { title: "Private Terraces", body: "Generous outdoor terraces designed for entertaining and quiet evenings.", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Landscaped Grounds", body: "Lush, professionally landscaped gardens woven throughout the community.", image: "/gallery/terrace.png" },
+    { title: "Landscaped Grounds", body: "Lush, professionally landscaped gardens woven throughout the community.", image: "/gallery/heliconia-grounds.png" },
     { title: "Refined Interiors", body: "Considered finishes and natural light in every elegantly staged residence.", image: "/gallery/model-unit-living-and-dining-room.png" },
     { title: "Gourmet Kitchens", body: "Contemporary kitchens crafted for both everyday living and hosting.", image: "/gallery/model-unit-kitchen.png" },
     { title: "Secure Community", body: "A gated, well-managed community offering peace of mind and privacy.", image: "/gallery/buildings-01.png" },
@@ -117,9 +117,7 @@ export const FAQ = [
 // Curated lifestyle imagery (neutral captions — no room-spec labelling).
 export const GALLERY = [
     { src: "/gallery/buildings-01.png", caption: "The Development", group: "Exteriors" },
-    { src: "/gallery/townhouse-facade.png", caption: "Begonia Townhouses", group: "Exteriors" },
     { src: "/gallery/rooftop-pool.png", caption: "Rooftop Pool", group: "Amenities" },
-    { src: "/gallery/terrace.png", caption: "Terrace", group: "Amenities" },
     { src: "/gallery/terrace-2.png", caption: "Outdoor Living", group: "Amenities" },
     { src: "/gallery/homestaging-evening-terrace.png", caption: "Evening Terrace", group: "Amenities" },
     { src: "/gallery/model-unit-living-room.png", caption: "Model Residence", group: "Interiors" },
@@ -141,10 +139,10 @@ export const AERIAL_IMAGE = "/site/aerial-masterplan.jpg";
 export const AMENITY_GALLERY = [
     { title: "Panoramic Views", image: "/gallery/buildings-01.png" },
     { title: "Rooftop Pools & Gyms", image: "/gallery/rooftop-pool.png" },
-    { title: "Landscaped Gardens", image: "/gallery/terrace.png" },
+    { title: "Landscaped Gardens", image: "/gallery/heliconia-grounds.png" },
     { title: "Elevator Access", image: "/gallery/terrace-2.png" },
     { title: "Kid's Playground", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Underground Parking", image: "/gallery/townhouse-facade.png" },
+    { title: "Underground Parking", image: "/gallery/ext-aerial.png" },
     { title: "Smart-Lock Entry", image: "/gallery/model-unit-living-room.png" },
     { title: "Gated Security", image: "/gallery/model-unit-living-and-dining-room.png" },
 ];

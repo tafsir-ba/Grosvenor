@@ -7,8 +7,8 @@ const AMENITIES = [
     { title: "Infinity Pool", line: "A rooftop pool where the water meets the horizon — designed for slow mornings and golden evenings above Kingston.", image: "/gallery/rooftop-pool.png" },
     { title: "Gym", line: "An indoor gym with mountain and poolside views, designed for movement, wellness, and daily convenience.", image: "/gallery/gym.jpg" },
     { title: "Rooftop Spaces", line: "Open-air spaces made for gathering, hosting and unwinding, with uninterrupted outlooks across the hills.", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Landscaped Grounds", line: "Lush, professionally maintained gardens woven through the community for calm and privacy.", image: "/gallery/terrace.png" },
-    { title: "24/7 Armed Response & Security", line: "A gated, electronically controlled and strata-secured community offering complete peace of mind.", image: "/gallery/townhouse-facade.png" },
+    { title: "Landscaped Grounds", line: "Lush, professionally maintained gardens woven through the community for calm and privacy.", image: "/gallery/heliconia-grounds.png" },
+    { title: "Strata Approved Security", line: "A gated, electronically controlled and strata-secured community offering complete peace of mind.", image: "/gallery/gate-entrance.png" },
 ];
 
 export default function AmenitiesPage() {

@@ -30,8 +30,8 @@ const AMENITIES = [
     { title: "Infinity Pool", line: "Rooftop water that meets the horizon.", image: "/gallery/rooftop-pool.png" },
     { title: "Gym", line: "An indoor gym with mountain and poolside views, designed for movement, wellness, and daily convenience.", image: GYM_IMG },
     { title: "Rooftop Spaces", line: "Evenings made for gathering, above it all.", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Landscaped Grounds", line: "Greenery woven through the community.", image: "/gallery/terrace.png" },
-    { title: "24/7 Armed Response & Security", line: "A gated, watched community with peace of mind.", image: "/gallery/townhouse-facade.png" },
+    { title: "Landscaped Grounds", line: "Greenery woven through the community.", image: "/gallery/heliconia-grounds.png" },
+    { title: "Strata Approved Security", line: "A gated, watched community with peace of mind.", image: "/gallery/gate-entrance.png" },
 ];
 
 const RESIDENCE_TIERS = [

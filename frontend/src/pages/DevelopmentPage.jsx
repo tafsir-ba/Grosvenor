@@ -8,7 +8,7 @@ export default function DevelopmentPage() {
     return (
         <div data-testid="development-page">
             <Hero
-                image="/gallery/townhouse-facade.png"
+                image="/gallery/buildings-01.png"
                 height="min-h-[60vh]"
                 overline="The Development"
                 title="Grosvenor Vistas"
