@@ -1,29 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useMotionValueEvent, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
 import { PROJECT, GALLERY, STARTING_PRICE } from "@/lib/constants";
 
 // Hero media — looping video on desktop, image fallback on mobile (perf).
-const HERO_IMG = "/gallery/hero-rooftop-sunset.png";
+const HERO_IMG = "/gallery/hero-fallback.png";
 const HERO_VIDEO = "/video/hero.mp4";
+
+// Lifestyle media — looping rooftop video on desktop, image fallback on mobile.
+const LIFESTYLE_VIDEO = "/video/lifestyle.mp4";
+const LIFESTYLE_IMG = "/gallery/rooftop-pool.png";
 
 const VIEW_IMG = "/gallery/rooftop-pool.png";
 const MOMENT_IMG = "/gallery/terrace-2.png";
 const FINAL_IMG = "/gallery/homestaging-evening-terrace.png";
-const GYM_IMG = "https://images.unsplash.com/photo-1758957646695-ec8bce3df462?crop=entropy&cs=srgb&fm=jpg&q=80&w=1600";
+const GYM_IMG = "/gallery/gym.jpg";
 
 const LIFESTYLE = [
-    { title: "Privacy", image: "/gallery/townhouse-facade.png", points: ["Strata-approved security", "Private residential environment", "Controlled access"] },
-    { title: "Elevation", image: "/gallery/rooftop-pool.png", points: ["Hillside location", "Cooling breezes", "Elevated views over Kingston"] },
-    { title: "Modern Living", image: "/gallery/model-unit-living-and-dining-room.png", points: ["Contemporary architecture", "Thoughtful layouts", "Lifestyle-driven design"] },
+    { title: "Privacy", line: "Strata-approved security, controlled access, and a private residential setting." },
+    { title: "Elevation", line: "A hillside location designed to capture cooling breezes and elevated views over Kingston." },
+    { title: "Modern Living", line: "Contemporary residences with thoughtful layouts and spaces designed for everyday ease." },
 ];
 
 const AMENITIES = [
     { title: "Infinity Pool", line: "Rooftop water that meets the horizon.", image: "/gallery/rooftop-pool.png" },
-    { title: "Fitness Centre", line: "Move well, with the view as your backdrop.", image: GYM_IMG },
+    { title: "Gym", line: "An indoor gym with mountain and poolside views, designed for movement, wellness, and daily convenience.", image: GYM_IMG },
     { title: "Rooftop Spaces", line: "Evenings made for gathering, above it all.", image: "/gallery/homestaging-evening-terrace.png" },
     { title: "Landscaped Grounds", line: "Greenery woven through the community.", image: "/gallery/terrace.png" },
     { title: "24/7 Armed Response & Security", line: "A gated, watched community with peace of mind.", image: "/gallery/townhouse-facade.png" },
@@ -32,7 +36,7 @@ const AMENITIES = [
 const RESIDENCE_TIERS = [
     { key: "vista", name: "The Vista Residences", image: "/gallery/home-staging-kitchen-2.png", test: (u) => u.total_surface < 2500 },
     { key: "signature", name: "Signature Residences", image: "/gallery/homestaging-bathroom-4.png", test: (u) => u.total_surface >= 2500 && u.total_surface < 4000 },
-    { key: "townhouses", name: "Begonia Townhouses", image: "/gallery/townhouse-facade.png", test: (u) => u.total_surface >= 4000 },
+    { key: "townhouses", name: "Begonia Townhouses", image: "/gallery/townhouse-new.png", test: (u) => u.total_surface >= 4000 },
 ];
 
 const ROUND = "rounded-[1.75rem] md:rounded-[2.5rem]";
@@ -62,6 +66,18 @@ function ParallaxImage({ src, className = "" }) {
             <motion.img style={{ y }} src={src} alt="" loading="lazy" className="h-[116%] w-full object-cover" />
         </div>
     );
+}
+
+function useIsDesktop() {
+    const [desktop, setDesktop] = useState(false);
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 768px)");
+        const update = () => setDesktop(mq.matches);
+        update();
+        mq.addEventListener("change", update);
+        return () => mq.removeEventListener("change", update);
+    }, []);
+    return desktop;
 }
 
 export default function HomePage() {
@@ -95,11 +111,11 @@ export default function HomePage() {
                 <ParallaxImage src={VIEW_IMG} className={`h-[78vh] ${ROUND}`} />
             </section>
 
-            {/* 3. LIFESTYLE — editorial, text-left / image-right with hover reveal */}
+            {/* 3. LIFESTYLE */}
             <LifestyleSection />
 
-            {/* 4. AMENITIES — pinned, smooth scroll-synced crossfade */}
-            <AmenitiesScroll />
+            {/* 4. AMENITIES */}
+            <AmenitiesShowcase />
 
             {/* 5. FULL-WIDTH VISUAL MOMENT */}
             <section className="container-wide py-20 md:py-28" data-testid="home-moment">
@@ -137,7 +153,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 7. LOCATION PREVIEW — designed placeholder map */}
+            {/* 7. LOCATION PREVIEW */}
             <section className="container-wide py-20 md:py-28" data-testid="home-location">
                 <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
                     <motion.div {...fadeUp} className="px-2 md:px-6">
@@ -175,30 +191,12 @@ export default function HomePage() {
 }
 
 function HeroSection() {
-    const [desktop, setDesktop] = useState(false);
-
-    useEffect(() => {
-        const mq = window.matchMedia("(min-width: 768px)");
-        const update = () => setDesktop(mq.matches);
-        update();
-        mq.addEventListener("change", update);
-        return () => mq.removeEventListener("change", update);
-    }, []);
-
+    const desktop = useIsDesktop();
     return (
         <section className="container-wide pb-12 pt-32 md:pt-36" data-testid="hero-section">
             <div className={`relative h-[86vh] overflow-hidden ${ROUND}`}>
                 {desktop ? (
-                    <video
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        poster={HERO_IMG}
-                        data-testid="hero-video"
-                        className="absolute inset-0 h-full w-full object-cover"
-                    >
+                    <video autoPlay muted loop playsInline preload="metadata" poster={HERO_IMG} data-testid="hero-video" className="absolute inset-0 h-full w-full object-cover">
                         <source src={HERO_VIDEO} type="video/mp4" />
                     </video>
                 ) : (
@@ -221,10 +219,12 @@ function HeroSection() {
 
 function LifestyleSection() {
     const [active, setActive] = useState(0);
+    const desktop = useIsDesktop();
 
     return (
         <section className="container-wide py-20 md:py-28" data-testid="home-lifestyle">
-            <div className="grid items-center gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+            <div className="grid items-center gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+                {/* Left: editorial text, only this area changes on hover */}
                 <motion.div {...fadeUp} className="px-2 md:px-6">
                     <Eyebrow>The Lifestyle</Eyebrow>
                     <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">A life, elevated</h2>
@@ -234,111 +234,76 @@ function LifestyleSection() {
                                 key={l.title}
                                 data-testid={`lifestyle-item-${l.title.toLowerCase().replace(/ /g, "-")}`}
                                 onMouseEnter={() => setActive(i)}
-                                className="group cursor-default py-6"
+                                className="cursor-default py-6"
                             >
                                 <h3 className={`lux-title text-3xl font-light transition-colors duration-300 md:text-4xl ${active === i ? "text-brand-gold" : "text-brand-ink/80"}`}>{l.title}</h3>
-                                <ul className={`grid transition-all duration-500 ease-out ${active === i ? "mt-4 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-                                    <li className="overflow-hidden">
-                                        <div className="space-y-2">
-                                            {l.points.map((p) => (
-                                                <p key={p} className="flex items-center gap-3 font-sans text-base text-brand-ink/65">
-                                                    <span className="h-px w-5 bg-brand-gold" /> {p}
-                                                </p>
-                                            ))}
-                                        </div>
-                                    </li>
-                                </ul>
+                                <div className={`grid transition-all duration-500 ease-out ${active === i ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                                    <p className="max-w-md overflow-hidden font-sans text-base text-brand-ink/65">{l.line}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
                 </motion.div>
 
-                {/* Right: large image, subtly changes with hovered item */}
-                <div className={`relative h-[62vh] overflow-hidden lg:h-[82vh] ${ROUND}`}>
-                    {LIFESTYLE.map((l, i) => (
-                        <motion.img
-                            key={l.title}
-                            src={l.image}
-                            alt={l.title}
-                            loading="lazy"
-                            animate={{ opacity: active === i ? 1 : 0, scale: active === i ? 1 : 1.05 }}
-                            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                            className="absolute inset-0 h-full w-full object-cover"
-                        />
-                    ))}
+                {/* Right: one strong visual — looping video on desktop, image on mobile */}
+                <div className={`relative h-[64vh] overflow-hidden lg:h-[84vh] ${ROUND}`}>
+                    {desktop ? (
+                        <video autoPlay muted loop playsInline preload="metadata" poster={LIFESTYLE_IMG} data-testid="lifestyle-video" className="absolute inset-0 h-full w-full object-cover">
+                            <source src={LIFESTYLE_VIDEO} type="video/mp4" />
+                        </video>
+                    ) : (
+                        <img src={LIFESTYLE_IMG} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                    )}
                 </div>
             </div>
         </section>
     );
 }
 
-function AmenityLayer({ i, total, progress, children }) {
-    const seg = 1 / total;
-    const center = (i + 0.5) * seg;
-    const start = i === 0 ? -1 : center - seg;
-    const end = i === total - 1 ? 2 : center + seg;
-    const opacity = useTransform(progress, [start, center, end], [0, 1, 0]);
-    return (
-        <motion.div style={{ opacity }} className="absolute inset-0">
-            {children}
-        </motion.div>
-    );
-}
-
-function AmenityText({ item, i, total, progress }) {
-    const seg = 1 / total;
-    const center = (i + 0.5) * seg;
-    const start = i === 0 ? -1 : center - seg;
-    const end = i === total - 1 ? 2 : center + seg;
-    const opacity = useTransform(progress, [start, center, end], [0, 1, 0]);
-    const y = useTransform(progress, [start, center, end], [26, 0, -26]);
-    return (
-        <motion.div style={{ opacity, y }} className="absolute inset-0">
-            <h3 className="lux-title text-5xl text-brand-blue md:text-6xl lg:text-7xl">{item.title}</h3>
-            <p className="mt-5 max-w-md font-sans text-lg text-brand-ink/70">{item.line}</p>
-        </motion.div>
-    );
-}
-
-function AmenitiesScroll() {
-    const ref = useRef(null);
-    const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-    // Spring-smoothed progress for fluid, non-mechanical crossfades.
-    const progress = useSpring(scrollYProgress, { stiffness: 70, damping: 22, mass: 0.4 });
-    const total = AMENITIES.length;
+function AmenitiesShowcase() {
     const [active, setActive] = useState(0);
 
-    useMotionValueEvent(progress, "change", (v) => {
-        setActive(Math.min(total - 1, Math.max(0, Math.round(v * (total - 1)))));
-    });
-
     return (
-        <section ref={ref} style={{ height: `${total * 100}vh` }} data-testid="home-amenities">
-            <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-                <div className="container-wide grid w-full items-center gap-10 md:grid-cols-2 md:gap-16">
-                    {/* Text frame */}
-                    <div className="order-2 px-2 md:order-1 md:px-6">
-                        <Eyebrow>The Experience</Eyebrow>
-                        <span className="lux-eyebrow mt-6 block text-brand-ink/40">{String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
-                        <div className="relative mt-3 min-h-[210px]">
-                            {AMENITIES.map((a, i) => (
-                                <AmenityText key={a.title} item={a} i={i} total={total} progress={progress} />
-                            ))}
-                        </div>
-                        <div className="mt-10 flex gap-2">
-                            {AMENITIES.map((_, i) => (
-                                <span key={i} className={`h-px transition-all duration-500 ${i === active ? "w-12 bg-brand-gold" : "w-6 bg-brand-ink/20"}`} />
-                            ))}
-                        </div>
-                    </div>
-                    {/* Image frame */}
-                    <div className={`relative order-1 h-[48vh] overflow-hidden md:order-2 md:h-[72vh] ${ROUND}`}>
-                        {AMENITIES.map((a, i) => (
-                            <AmenityLayer key={a.title} i={i} total={total} progress={progress}>
-                                <img src={a.image} alt={a.title} loading="lazy" className="h-full w-full object-cover" />
-                            </AmenityLayer>
-                        ))}
-                    </div>
+        <section className="container-wide py-20 md:py-28" data-testid="home-amenities">
+            <motion.div {...fadeUp} className="mb-12 px-2 md:px-6">
+                <Eyebrow>The Experience</Eyebrow>
+                <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Amenities for the everyday</h2>
+            </motion.div>
+            <div className="grid items-center gap-12 md:grid-cols-[0.85fr_1.15fr] md:gap-16">
+                {/* List — hover or tap to explore */}
+                <div className="order-2 md:order-1">
+                    {AMENITIES.map((a, i) => (
+                        <button
+                            key={a.title}
+                            type="button"
+                            onMouseEnter={() => setActive(i)}
+                            onClick={() => setActive(i)}
+                            data-testid={`amenity-item-${i}`}
+                            className="block w-full border-b border-brand-beige py-5 text-left"
+                        >
+                            <span className="flex items-baseline gap-4">
+                                <span className="lux-eyebrow text-brand-ink/40">{String(i + 1).padStart(2, "0")}</span>
+                                <span className={`lux-title text-3xl font-light transition-colors duration-300 md:text-4xl ${active === i ? "text-brand-gold" : "text-brand-ink/80"}`}>{a.title}</span>
+                            </span>
+                            <span className={`grid transition-all duration-500 ease-out ${active === i ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                                <span className="overflow-hidden"><span className="block max-w-md pl-10 font-sans text-base text-brand-ink/65">{a.line}</span></span>
+                            </span>
+                        </button>
+                    ))}
+                </div>
+                {/* Big image — smooth crossfade */}
+                <div className={`relative order-1 h-[58vh] overflow-hidden md:order-2 md:h-[80vh] ${ROUND}`}>
+                    {AMENITIES.map((a, i) => (
+                        <motion.img
+                            key={a.title}
+                            src={a.image}
+                            alt={a.title}
+                            loading="lazy"
+                            animate={{ opacity: active === i ? 1 : 0, scale: active === i ? 1 : 1.05 }}
+                            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                            className="absolute inset-0 h-full w-full object-cover"
+                        />
+                    ))}
                 </div>
             </div>
         </section>
@@ -357,38 +322,24 @@ function PlaceholderMap() {
         >
             <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" className="h-full w-full">
                 <rect width="800" height="600" fill="#F2EFE9" />
-                {/* soft land blocks */}
                 <path d="M0 0H320V210H0Z" fill="#EAE5DB" opacity="0.7" />
                 <path d="M470 90H800V330H470Z" fill="#EAE5DB" opacity="0.6" />
                 <path d="M120 380H520V600H120Z" fill="#EAE5DB" opacity="0.55" />
-                {/* minimal street lines */}
                 <g stroke="#D8CFBF" strokeWidth="6" fill="none" strokeLinecap="round">
-                    <path d="M-20 250H820" />
-                    <path d="M400 -20V620" />
-                    <path d="M-20 430H820" />
-                    <path d="M180 -20V620" />
-                    <path d="M620 -20V620" />
-                    <path d="M-20 120H820" />
+                    <path d="M-20 250H820" /><path d="M400 -20V620" /><path d="M-20 430H820" /><path d="M180 -20V620" /><path d="M620 -20V620" /><path d="M-20 120H820" />
                 </g>
                 <g stroke="#E3DACB" strokeWidth="3" fill="none" strokeLinecap="round">
-                    <path d="M-20 340H820" />
-                    <path d="M300 -20V620" />
-                    <path d="M520 -20V620" />
+                    <path d="M-20 340H820" /><path d="M300 -20V620" /><path d="M520 -20V620" />
                 </g>
-                {/* subtle greenery */}
                 <circle cx="690" cy="470" r="60" fill="#C9D2BE" opacity="0.5" />
                 <circle cx="80" cy="520" r="40" fill="#C9D2BE" opacity="0.45" />
             </svg>
-
-            {/* Gold marker */}
             <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2">
                 <span className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-brand-gold/25" />
                 <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-brand-gold text-white shadow-[0_10px_30px_rgba(198,134,43,0.45)]">
                     <MapPin className="h-6 w-6" />
                 </span>
             </div>
-
-            {/* Label + hint */}
             <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-6">
                 <span className="lux-title text-2xl text-brand-blue md:text-3xl">Grosvenor Heights</span>
                 <span className="lux-eyebrow flex items-center gap-2 rounded-full bg-brand-warm/90 px-4 py-2 text-brand-ink backdrop-blur transition-colors group-hover:text-brand-gold">
