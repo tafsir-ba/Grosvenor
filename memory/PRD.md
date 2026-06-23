@@ -65,6 +65,18 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Verified: all sections render, FAB brochure dialog opens, residence hover reveal works, gallery scrolls.
 - NOTE: inner pages (Residences/Amenities/Development/Location/Contact/etc.) still use the previous blue/Source Sans style — to be migrated to the new luxury system next, per user (homepage first).
 
+## Forms, Legal, Footer & CRM-Ready (2026-06-23, fork)
+- All lead forms now use SEPARATE fields: First name, Last name, Telephone, Email, Message (single LeadForm — DRY). No single "Name" field anywhere.
+- Required data-processing consent checkbox on every form (Evo Home wording) with inline Privacy Policy + Legal links. Backend enforces first_name+last_name+email+consent for non-click leads; same rule on gated brochure download.
+- Download Brochure forms (DownloadForm + FAB) include split fields + optional message + consent before file access.
+- Removed ALL "agent" language sitewide → neutral "Contact Us / Book a Visit / our team". Admin login renamed "Admin Login".
+- Footer: Privacy (evo-home.ch/en/privacy) + Legal (evo-home.ch/en/legal) links (new tab), "Designed and developed by Evohome" credit, and the full sitewide legal disclaimer (subtle small text; placeholders [ADDRESS]/[DV-XXXXXX]/[APPROVAL DATE] left for client).
+- Elegant warm-luxury cookie notice (CookieNotice.jsx) — Accept All / Manage Preferences (analytics toggle) / Privacy link; persists via localStorage `gv_cookie_consent`.
+- Lead model migrated: name → first_name + last_name; added consent + project="Grosvenor Vistas". CRM payload (services/crm.py) maps first/last name, project, inquiry_type, residence_ref, source_page, consent_accepted — ready to wire (sync still DISABLED via env until Evohome webhook URL/key confirmed). /api/track restricted to click events only.
+- Admin leads table + CSV export updated to first_name/last_name + project + consent columns.
+- Image swaps: Landscaped Grounds → new Heliconia view (home + amenities); "24/7 Armed Response" → "Strata Approved Security" with gate-entrance image; removed terrace.png & townhouse-facade.png sitewide + files.
+- Tested: 29/29 backend pytest pass; all frontend form/consent/cookie/footer flows pass (iteration_2.json).
+
 ## Backlog / Next
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
 - P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).

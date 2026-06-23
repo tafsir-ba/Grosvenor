@@ -18,7 +18,6 @@ export const PROJECT = {
         mapEmbed:
             "https://maps.google.com/maps?q=Grosvenor%20Heights%2C%20Manor%20Park%2C%20Kingston%208%2C%20Jamaica&t=k&z=17&output=embed",
     },
-    agentLabel: "Grosvenor Vistas",
 };
 
 // Legal / compliance — single source of truth.
