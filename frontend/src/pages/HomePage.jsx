@@ -1,14 +1,14 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
 import { PROJECT, GALLERY, STARTING_PRICE } from "@/lib/constants";
 
-// Temporary aspirational hero. Drop a 6–10s loop into HERO_VIDEO when footage is ready.
+// Hero media — looping video on desktop, image fallback on mobile (perf).
 const HERO_IMG = "/gallery/hero-rooftop-sunset.png";
-const HERO_VIDEO = null;
+const HERO_VIDEO = "/video/hero.mp4";
 
 const VIEW_IMG = "/gallery/rooftop-pool.png";
 const MOMENT_IMG = "/gallery/terrace-2.png";
@@ -83,30 +83,9 @@ export default function HomePage() {
 
     return (
         <div data-testid="home-page" className="bg-brand-warm text-brand-ink">
-            {/* 1. HERO — wide cinematic curved image */}
-            <section className="container-wide pb-12 pt-32 md:pt-36" data-testid="hero-section">
-                <div className={`relative h-[86vh] overflow-hidden ${ROUND}`}>
-                    {HERO_VIDEO ? (
-                        <video autoPlay muted loop playsInline poster={HERO_IMG} className="absolute inset-0 h-full w-full object-cover" data-testid="hero-video">
-                            <source src={HERO_VIDEO} type="video/mp4" />
-                        </video>
-                    ) : (
-                        <motion.img initial={{ scale: 1.08 }} animate={{ scale: 1 }} transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }} src={HERO_IMG} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/65 via-brand-ink/10 to-transparent" />
-                    <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }} className="absolute inset-x-0 bottom-0 p-8 md:p-16 lg:p-20">
-                        <Eyebrow light>Grosvenor Heights · Kingston 8</Eyebrow>
-                        <h1 className="lux-title mt-6 text-6xl text-white sm:text-7xl lg:text-8xl">Elevate Your View</h1>
-                        <p className="mt-5 max-w-xl font-sans text-lg text-white/85">Luxury residences in Grosvenor Heights, Manor Park.</p>
-                        <div className="mt-9 flex flex-wrap gap-4">
-                            <CtaButton to="/contact" variant="primary" data-testid="hero-book-visit">Book a Visit</CtaButton>
-                            <CtaButton to="/residences" variant="outline-light" data-testid="hero-explore">Explore Residences</CtaButton>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
+            <HeroSection />
 
-            {/* 2. THE VIEW — wide */}
+            {/* 2. THE VIEW */}
             <section className="container-wide py-20 md:py-28" data-testid="home-view">
                 <motion.div {...fadeUp} className="mb-10 max-w-3xl px-2 md:px-6">
                     <Eyebrow>The View</Eyebrow>
@@ -116,41 +95,13 @@ export default function HomePage() {
                 <ParallaxImage src={VIEW_IMG} className={`h-[78vh] ${ROUND}`} />
             </section>
 
-            {/* 3. LIFESTYLE — interactive hover cards */}
-            <section className="container-wide py-20 md:py-28" data-testid="home-lifestyle">
-                <motion.div {...fadeUp} className="mb-12 px-2 md:px-6">
-                    <Eyebrow>The Lifestyle</Eyebrow>
-                    <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">A life, elevated</h2>
-                </motion.div>
-                <div className="grid gap-6 md:grid-cols-3">
-                    {LIFESTYLE.map((l) => (
-                        <motion.div
-                            key={l.title}
-                            {...fadeUp}
-                            data-testid={`lifestyle-${l.title.toLowerCase().replace(/ /g, "-")}`}
-                            className={`group relative h-[68vh] overflow-hidden ${ROUND}`}
-                        >
-                            <img src={l.image} alt={l.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/85 via-brand-ink/25 to-transparent transition-opacity duration-500 group-hover:from-brand-ink/90" />
-                            <div className="absolute inset-x-0 bottom-0 p-8">
-                                <h3 className="lux-title text-4xl text-white">{l.title}</h3>
-                                <ul className="mt-4 space-y-2 opacity-0 transition-all duration-500 group-hover:opacity-100">
-                                    {l.points.map((p) => (
-                                        <li key={p} className="flex items-center gap-3 font-sans text-white/85">
-                                            <span className="h-px w-5 bg-brand-gold" /> {p}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-            </section>
+            {/* 3. LIFESTYLE — editorial, text-left / image-right with hover reveal */}
+            <LifestyleSection />
 
-            {/* 4. AMENITIES — pinned, evolving frame */}
+            {/* 4. AMENITIES — pinned, smooth scroll-synced crossfade */}
             <AmenitiesScroll />
 
-            {/* 5. FULL-WIDTH VISUAL MOMENT — wide curved image */}
+            {/* 5. FULL-WIDTH VISUAL MOMENT */}
             <section className="container-wide py-20 md:py-28" data-testid="home-moment">
                 <div className={`relative flex h-[76vh] items-center justify-center overflow-hidden ${ROUND}`}>
                     <ParallaxImage src={MOMENT_IMG} className="absolute inset-0 h-full w-full" />
@@ -186,7 +137,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 7. LOCATION PREVIEW */}
+            {/* 7. LOCATION PREVIEW — designed placeholder map */}
             <section className="container-wide py-20 md:py-28" data-testid="home-location">
                 <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
                     <motion.div {...fadeUp} className="px-2 md:px-6">
@@ -198,16 +149,14 @@ export default function HomePage() {
                             <CtaButton to="/location" variant="outline" data-testid="home-explore-location">Explore Location</CtaButton>
                         </div>
                     </motion.div>
-                    <div className={`h-[58vh] overflow-hidden lg:h-[64vh] ${ROUND}`}>
-                        <iframe title="Grosvenor Vistas location" src={PROJECT.contact.mapEmbed} className="h-full w-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
-                    </div>
+                    <PlaceholderMap />
                 </div>
             </section>
 
             {/* 8. GALLERY PREVIEW */}
             <GalleryPreview />
 
-            {/* 9. FINAL CTA — wide curved image */}
+            {/* 9. FINAL CTA */}
             <section className="container-wide py-20 md:py-28" data-testid="home-final-cta">
                 <div className={`relative flex min-h-[76vh] items-center justify-center overflow-hidden ${ROUND}`}>
                     <img src={FINAL_IMG} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
@@ -225,39 +174,154 @@ export default function HomePage() {
     );
 }
 
+function HeroSection() {
+    const [desktop, setDesktop] = useState(false);
+
+    useEffect(() => {
+        const mq = window.matchMedia("(min-width: 768px)");
+        const update = () => setDesktop(mq.matches);
+        update();
+        mq.addEventListener("change", update);
+        return () => mq.removeEventListener("change", update);
+    }, []);
+
+    return (
+        <section className="container-wide pb-12 pt-32 md:pt-36" data-testid="hero-section">
+            <div className={`relative h-[86vh] overflow-hidden ${ROUND}`}>
+                {desktop ? (
+                    <video
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        poster={HERO_IMG}
+                        data-testid="hero-video"
+                        className="absolute inset-0 h-full w-full object-cover"
+                    >
+                        <source src={HERO_VIDEO} type="video/mp4" />
+                    </video>
+                ) : (
+                    <img src={HERO_IMG} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/65 via-brand-ink/10 to-transparent" />
+                <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }} className="absolute inset-x-0 bottom-0 p-8 md:p-16 lg:p-20">
+                    <Eyebrow light>Grosvenor Heights · Kingston 8</Eyebrow>
+                    <h1 className="lux-title mt-6 text-6xl text-white sm:text-7xl lg:text-8xl">Elevate Your View</h1>
+                    <p className="mt-5 max-w-xl font-sans text-lg text-white/85">Luxury residences in Grosvenor Heights, Manor Park.</p>
+                    <div className="mt-9 flex flex-wrap gap-4">
+                        <CtaButton to="/contact" variant="primary" data-testid="hero-book-visit">Book a Visit</CtaButton>
+                        <CtaButton to="/residences" variant="outline-light" data-testid="hero-explore">Explore Residences</CtaButton>
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+
+function LifestyleSection() {
+    const [active, setActive] = useState(0);
+
+    return (
+        <section className="container-wide py-20 md:py-28" data-testid="home-lifestyle">
+            <div className="grid items-center gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+                <motion.div {...fadeUp} className="px-2 md:px-6">
+                    <Eyebrow>The Lifestyle</Eyebrow>
+                    <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">A life, elevated</h2>
+                    <div className="mt-10 divide-y divide-brand-beige border-y border-brand-beige">
+                        {LIFESTYLE.map((l, i) => (
+                            <div
+                                key={l.title}
+                                data-testid={`lifestyle-item-${l.title.toLowerCase().replace(/ /g, "-")}`}
+                                onMouseEnter={() => setActive(i)}
+                                className="group cursor-default py-6"
+                            >
+                                <h3 className={`lux-title text-3xl font-light transition-colors duration-300 md:text-4xl ${active === i ? "text-brand-gold" : "text-brand-ink/80"}`}>{l.title}</h3>
+                                <ul className={`grid transition-all duration-500 ease-out ${active === i ? "mt-4 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+                                    <li className="overflow-hidden">
+                                        <div className="space-y-2">
+                                            {l.points.map((p) => (
+                                                <p key={p} className="flex items-center gap-3 font-sans text-base text-brand-ink/65">
+                                                    <span className="h-px w-5 bg-brand-gold" /> {p}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+
+                {/* Right: large image, subtly changes with hovered item */}
+                <div className={`relative h-[62vh] overflow-hidden lg:h-[82vh] ${ROUND}`}>
+                    {LIFESTYLE.map((l, i) => (
+                        <motion.img
+                            key={l.title}
+                            src={l.image}
+                            alt={l.title}
+                            loading="lazy"
+                            animate={{ opacity: active === i ? 1 : 0, scale: active === i ? 1 : 1.05 }}
+                            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                            className="absolute inset-0 h-full w-full object-cover"
+                        />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+function AmenityLayer({ i, total, progress, children }) {
+    const seg = 1 / total;
+    const center = (i + 0.5) * seg;
+    const start = i === 0 ? -1 : center - seg;
+    const end = i === total - 1 ? 2 : center + seg;
+    const opacity = useTransform(progress, [start, center, end], [0, 1, 0]);
+    return (
+        <motion.div style={{ opacity }} className="absolute inset-0">
+            {children}
+        </motion.div>
+    );
+}
+
+function AmenityText({ item, i, total, progress }) {
+    const seg = 1 / total;
+    const center = (i + 0.5) * seg;
+    const start = i === 0 ? -1 : center - seg;
+    const end = i === total - 1 ? 2 : center + seg;
+    const opacity = useTransform(progress, [start, center, end], [0, 1, 0]);
+    const y = useTransform(progress, [start, center, end], [26, 0, -26]);
+    return (
+        <motion.div style={{ opacity, y }} className="absolute inset-0">
+            <h3 className="lux-title text-5xl text-brand-blue md:text-6xl lg:text-7xl">{item.title}</h3>
+            <p className="mt-5 max-w-md font-sans text-lg text-brand-ink/70">{item.line}</p>
+        </motion.div>
+    );
+}
+
 function AmenitiesScroll() {
     const ref = useRef(null);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+    const total = AMENITIES.length;
     const [active, setActive] = useState(0);
 
     useMotionValueEvent(scrollYProgress, "change", (v) => {
-        const idx = Math.min(AMENITIES.length - 1, Math.max(0, Math.floor(v * AMENITIES.length)));
-        setActive(idx);
+        setActive(Math.min(total - 1, Math.max(0, Math.floor(v * total))));
     });
 
-    const item = AMENITIES[active];
-
     return (
-        <section ref={ref} style={{ height: `${AMENITIES.length * 90}vh` }} data-testid="home-amenities">
+        <section ref={ref} style={{ height: `${total * 100}vh` }} data-testid="home-amenities">
             <div className="sticky top-0 flex h-screen items-center overflow-hidden">
                 <div className="container-wide grid w-full items-center gap-10 md:grid-cols-2 md:gap-16">
                     {/* Text frame */}
                     <div className="order-2 px-2 md:order-1 md:px-6">
                         <Eyebrow>The Experience</Eyebrow>
-                        <span className="lux-eyebrow mt-6 block text-brand-ink/40">{String(active + 1).padStart(2, "0")} / {String(AMENITIES.length).padStart(2, "0")}</span>
-                        <div className="relative mt-3 min-h-[200px]">
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={active}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                                >
-                                    <h3 className="lux-title text-5xl text-brand-blue md:text-6xl lg:text-7xl">{item.title}</h3>
-                                    <p className="mt-5 max-w-md font-sans text-lg text-brand-ink/70">{item.line}</p>
-                                </motion.div>
-                            </AnimatePresence>
+                        <span className="lux-eyebrow mt-6 block text-brand-ink/40">{String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+                        <div className="relative mt-3 min-h-[210px]">
+                            {AMENITIES.map((a, i) => (
+                                <AmenityText key={a.title} item={a} i={i} total={total} progress={scrollYProgress} />
+                            ))}
                         </div>
                         <div className="mt-10 flex gap-2">
                             {AMENITIES.map((_, i) => (
@@ -267,22 +331,69 @@ function AmenitiesScroll() {
                     </div>
                     {/* Image frame */}
                     <div className={`relative order-1 h-[48vh] overflow-hidden md:order-2 md:h-[72vh] ${ROUND}`}>
-                        <AnimatePresence mode="wait">
-                            <motion.img
-                                key={active}
-                                src={item.image}
-                                alt={item.title}
-                                initial={{ opacity: 0, scale: 1.06 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                                className="absolute inset-0 h-full w-full object-cover"
-                            />
-                        </AnimatePresence>
+                        {AMENITIES.map((a, i) => (
+                            <AmenityLayer key={a.title} i={i} total={total} progress={scrollYProgress}>
+                                <img src={a.image} alt={a.title} loading="lazy" className="h-full w-full object-cover" />
+                            </AmenityLayer>
+                        ))}
                     </div>
                 </div>
             </div>
         </section>
+    );
+}
+
+function PlaceholderMap() {
+    return (
+        <a
+            href={PROJECT.contact.mapUrl}
+            target="_blank"
+            rel="noreferrer"
+            data-testid="home-map"
+            aria-label="Open Grosvenor Vistas location in Google Maps"
+            className={`group relative block h-[58vh] overflow-hidden border border-brand-beige lg:h-[64vh] ${ROUND}`}
+        >
+            <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" className="h-full w-full">
+                <rect width="800" height="600" fill="#F2EFE9" />
+                {/* soft land blocks */}
+                <path d="M0 0H320V210H0Z" fill="#EAE5DB" opacity="0.7" />
+                <path d="M470 90H800V330H470Z" fill="#EAE5DB" opacity="0.6" />
+                <path d="M120 380H520V600H120Z" fill="#EAE5DB" opacity="0.55" />
+                {/* minimal street lines */}
+                <g stroke="#D8CFBF" strokeWidth="6" fill="none" strokeLinecap="round">
+                    <path d="M-20 250H820" />
+                    <path d="M400 -20V620" />
+                    <path d="M-20 430H820" />
+                    <path d="M180 -20V620" />
+                    <path d="M620 -20V620" />
+                    <path d="M-20 120H820" />
+                </g>
+                <g stroke="#E3DACB" strokeWidth="3" fill="none" strokeLinecap="round">
+                    <path d="M-20 340H820" />
+                    <path d="M300 -20V620" />
+                    <path d="M520 -20V620" />
+                </g>
+                {/* subtle greenery */}
+                <circle cx="690" cy="470" r="60" fill="#C9D2BE" opacity="0.5" />
+                <circle cx="80" cy="520" r="40" fill="#C9D2BE" opacity="0.45" />
+            </svg>
+
+            {/* Gold marker */}
+            <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2">
+                <span className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-brand-gold/25" />
+                <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-brand-gold text-white shadow-[0_10px_30px_rgba(198,134,43,0.45)]">
+                    <MapPin className="h-6 w-6" />
+                </span>
+            </div>
+
+            {/* Label + hint */}
+            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-6">
+                <span className="lux-title text-2xl text-brand-blue md:text-3xl">Grosvenor Heights</span>
+                <span className="lux-eyebrow flex items-center gap-2 rounded-full bg-brand-warm/90 px-4 py-2 text-brand-ink backdrop-blur transition-colors group-hover:text-brand-gold">
+                    Open in Maps <ArrowRight className="h-4 w-4" />
+                </span>
+            </div>
+        </a>
     );
 }
 
