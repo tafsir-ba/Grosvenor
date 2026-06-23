@@ -26,17 +26,16 @@ export default function Header() {
             data-testid="site-header"
             className={cn(
                 "fixed top-0 z-40 w-full transition-all duration-500",
-                atTop ? "bg-transparent" : "border-b border-border bg-white/90 shadow-[0_1px_40px_rgba(15,40,70,0.07)] backdrop-blur-xl"
+                atTop ? "bg-transparent" : "bg-brand-warm/80 shadow-[0_12px_50px_rgba(74,69,63,0.10)] backdrop-blur-xl"
             )}
         >
-            {/* Gold hairline accent */}
-            <div className={cn("h-[2px] w-full bg-brand-gold transition-opacity duration-500", atTop ? "opacity-60" : "opacity-100")} />
+            {/* Gold hairline accent removed for a lighter, more integrated header */}
 
             {/* Concierge utility strip — present only over the hero */}
             <div
                 className={cn(
                     "overflow-hidden transition-all duration-500",
-                    atTop ? "max-h-12 border-b border-white/15 opacity-100" : "max-h-0 border-b border-transparent opacity-0"
+                    atTop ? "max-h-12 opacity-100" : "max-h-0 opacity-0"
                 )}
             >
                 <div className="container-x flex h-11 items-center justify-between text-[0.7rem] uppercase tracking-[0.24em] text-white/75">

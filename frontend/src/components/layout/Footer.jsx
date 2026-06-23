@@ -1,66 +1,79 @@
 import { Link } from "react-router-dom";
-import { Phone, Mail, MapPin, Instagram } from "lucide-react";
+import { Phone, Mail, MapPin, Instagram, ArrowUpRight } from "lucide-react";
 import Logo from "@/components/brand/Logo";
 import { PROJECT, NAV, LEAD_TYPE } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
 
 export default function Footer() {
     return (
-        <footer className="bg-brand-blue text-white" data-testid="site-footer">
-            {/* Top: logo + statement */}
-            <div className="container-x border-b border-white/10 py-16">
-                <div className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
+        <footer
+            className="relative z-10 -mt-12 overflow-hidden rounded-t-[2.5rem] bg-brand-ivory text-brand-ink md:-mt-24 md:rounded-t-[5rem]"
+            data-testid="site-footer"
+        >
+            {/* Oversized faint brand wordmark */}
+            <span aria-hidden="true" className="lux-title pointer-events-none absolute -bottom-6 left-1/2 -translate-x-1/2 select-none whitespace-nowrap text-[18vw] leading-none text-brand-blue/[0.04]">
+                Grosvenor Vistas
+            </span>
+
+            <div className="container-x relative pb-16 pt-24 md:pt-32">
+                <div className="grid gap-16 md:grid-cols-[1.15fr_1fr]">
+                    {/* Brand + statement + CTA */}
                     <div>
-                        <Logo color="white" layout="wide" className="h-20 w-auto md:h-24" />
-                        <p className="mt-6 max-w-md font-display text-2xl font-light leading-snug text-white/90 md:text-3xl">
+                        <Logo color="blue" layout="wide" className="h-16 w-auto md:h-20" />
+                        <p className="lux-title mt-8 max-w-md text-4xl leading-tight text-brand-blue md:text-5xl">
                             Elevate your view in {PROJECT.location.split(" · ")[0]}.
                         </p>
-                    </div>
-                    <Link
-                        to="/contact"
-                        className="rounded-sm border border-white/40 px-9 py-4 text-sm font-medium uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-brand-blue"
-                        data-testid="footer-cta"
-                    >
-                        Book a Visit
-                    </Link>
-                </div>
-            </div>
-
-            {/* Links + contact */}
-            <div className="container-x grid gap-10 py-14 md:grid-cols-3">
-                <nav className="grid grid-cols-2 gap-x-6 gap-y-3 text-base md:col-span-2">
-                    {NAV.map((n) => (
-                        <Link key={n.to} to={n.to} className="text-white/70 transition-colors hover:text-white" data-testid={`footer-nav-${n.to.replace("/", "")}`}>
-                            {n.label}
+                        <Link
+                            to="/contact"
+                            data-testid="footer-cta"
+                            className="group mt-10 inline-flex items-center gap-3 text-brand-ink transition-colors hover:text-brand-gold"
+                        >
+                            <span className="lux-eyebrow">Book a Visit</span>
+                            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-gold text-white transition-transform duration-300 group-hover:translate-x-1">
+                                <ArrowUpRight className="h-5 w-5" />
+                            </span>
                         </Link>
-                    ))}
-                </nav>
+                    </div>
 
-                <ul className="space-y-4 text-base">
-                    <li>
-                        <a href={PROJECT.contact.phoneHref} onClick={() => trackClick(LEAD_TYPE.PHONE_CLICK)} data-testid="footer-phone" className="flex items-center gap-3 text-white/80 transition-colors hover:text-white">
-                            <Phone className="h-4 w-4" /> {PROJECT.contact.phone}
-                        </a>
-                    </li>
-                    <li>
-                        <a href={PROJECT.contact.emailHref} onClick={() => trackClick(LEAD_TYPE.EMAIL_CLICK)} data-testid="footer-email" className="flex items-center gap-3 text-white/80 transition-colors hover:text-white">
-                            <Mail className="h-4 w-4" /> {PROJECT.contact.email}
-                        </a>
-                    </li>
-                    <li className="flex items-start gap-3 text-white/80">
-                        <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" /> {PROJECT.contact.address}
-                    </li>
-                    <li>
-                        <a href="https://instagram.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 text-white/80 transition-colors hover:text-white">
-                            <Instagram className="h-4 w-4" /> Instagram
-                        </a>
-                    </li>
-                </ul>
-            </div>
+                    {/* Nav + contact */}
+                    <div className="grid grid-cols-2 gap-10">
+                        <nav className="flex flex-col gap-3.5">
+                            {NAV.map((n) => (
+                                <Link
+                                    key={n.to}
+                                    to={n.to}
+                                    data-testid={`footer-nav-${n.to.replace("/", "")}`}
+                                    className="font-sans text-base text-brand-ink/65 transition-colors hover:text-brand-blue"
+                                >
+                                    {n.label}
+                                </Link>
+                            ))}
+                        </nav>
+                        <ul className="flex flex-col gap-4 font-sans text-base">
+                            <li>
+                                <a href={PROJECT.contact.phoneHref} onClick={() => trackClick(LEAD_TYPE.PHONE_CLICK)} data-testid="footer-phone" className="flex items-center gap-3 text-brand-ink/75 transition-colors hover:text-brand-gold">
+                                    <Phone className="h-4 w-4 text-brand-gold" /> {PROJECT.contact.phone}
+                                </a>
+                            </li>
+                            <li>
+                                <a href={PROJECT.contact.emailHref} onClick={() => trackClick(LEAD_TYPE.EMAIL_CLICK)} data-testid="footer-email" className="flex items-center gap-3 text-brand-ink/75 transition-colors hover:text-brand-gold">
+                                    <Mail className="h-4 w-4 text-brand-gold" /> {PROJECT.contact.email}
+                                </a>
+                            </li>
+                            <li className="flex items-start gap-3 text-brand-ink/75">
+                                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-gold" /> {PROJECT.contact.address}
+                            </li>
+                            <li>
+                                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 text-brand-ink/75 transition-colors hover:text-brand-gold">
+                                    <Instagram className="h-4 w-4 text-brand-gold" /> Instagram
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
-            <div className="border-t border-white/10">
-                <div className="container-x flex flex-col items-center justify-between gap-2 py-6 text-xs text-white/40 md:flex-row">
-                    <p>© {new Date().getFullYear()} {PROJECT.name}. All rights reserved.</p>
+                <div className="mt-20 flex flex-col items-center justify-between gap-2 border-t border-brand-ink/10 pt-8 text-xs uppercase tracking-[0.18em] text-brand-ink/45 md:flex-row">
+                    <p>© {new Date().getFullYear()} {PROJECT.name}</p>
                     <p>{PROJECT.location}</p>
                 </div>
             </div>
