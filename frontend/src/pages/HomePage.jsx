@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValueEvent, useSpring } from "framer-motion";
 import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
@@ -30,8 +30,8 @@ const AMENITIES = [
 ];
 
 const RESIDENCE_TIERS = [
-    { key: "vista", name: "The Vista Residences", image: "/gallery/model-unit-living-room.png", test: (u) => u.total_surface < 2500 },
-    { key: "signature", name: "Signature Residences", image: "/gallery/model-unit-living-and-dining-room.png", test: (u) => u.total_surface >= 2500 && u.total_surface < 4000 },
+    { key: "vista", name: "The Vista Residences", image: "/gallery/home-staging-kitchen-2.png", test: (u) => u.total_surface < 2500 },
+    { key: "signature", name: "Signature Residences", image: "/gallery/homestaging-bathroom-4.png", test: (u) => u.total_surface >= 2500 && u.total_surface < 4000 },
     { key: "townhouses", name: "Begonia Townhouses", image: "/gallery/townhouse-facade.png", test: (u) => u.total_surface >= 4000 },
 ];
 
@@ -303,11 +303,13 @@ function AmenityText({ item, i, total, progress }) {
 function AmenitiesScroll() {
     const ref = useRef(null);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+    // Spring-smoothed progress for fluid, non-mechanical crossfades.
+    const progress = useSpring(scrollYProgress, { stiffness: 70, damping: 22, mass: 0.4 });
     const total = AMENITIES.length;
     const [active, setActive] = useState(0);
 
-    useMotionValueEvent(scrollYProgress, "change", (v) => {
-        setActive(Math.min(total - 1, Math.max(0, Math.floor(v * total))));
+    useMotionValueEvent(progress, "change", (v) => {
+        setActive(Math.min(total - 1, Math.max(0, Math.round(v * (total - 1)))));
     });
 
     return (
@@ -320,7 +322,7 @@ function AmenitiesScroll() {
                         <span className="lux-eyebrow mt-6 block text-brand-ink/40">{String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
                         <div className="relative mt-3 min-h-[210px]">
                             {AMENITIES.map((a, i) => (
-                                <AmenityText key={a.title} item={a} i={i} total={total} progress={scrollYProgress} />
+                                <AmenityText key={a.title} item={a} i={i} total={total} progress={progress} />
                             ))}
                         </div>
                         <div className="mt-10 flex gap-2">
@@ -332,7 +334,7 @@ function AmenitiesScroll() {
                     {/* Image frame */}
                     <div className={`relative order-1 h-[48vh] overflow-hidden md:order-2 md:h-[72vh] ${ROUND}`}>
                         {AMENITIES.map((a, i) => (
-                            <AmenityLayer key={a.title} i={i} total={total} progress={scrollYProgress}>
+                            <AmenityLayer key={a.title} i={i} total={total} progress={progress}>
                                 <img src={a.image} alt={a.title} loading="lazy" className="h-full w-full object-cover" />
                             </AmenityLayer>
                         ))}
