@@ -59,7 +59,7 @@ export default function AdminDashboard() {
                         {stats.recent_leads.map((l) => (
                             <li key={l.id || l._id} className="flex items-center justify-between border-b border-border py-2 text-sm">
                                 <div>
-                                    <p className="font-medium text-brand-ink">{l.name || "Anonymous"}</p>
+                                    <p className="font-medium text-brand-ink">{[l.first_name, l.last_name].filter(Boolean).join(" ") || "Anonymous"}</p>
                                     <p className="text-xs text-muted-foreground">{LEAD_TYPE_LABEL[l.lead_type] || l.lead_type}</p>
                                 </div>
                                 <span className="text-xs text-muted-foreground">{(l.created_at || "").slice(0, 10)}</span>

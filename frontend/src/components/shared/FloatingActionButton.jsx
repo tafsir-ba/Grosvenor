@@ -106,8 +106,8 @@ export default function FloatingActionButton() {
                     </DialogHeader>
                     <LeadForm
                         leadType={LEAD_TYPE.DOWNLOAD_BROCHURE}
-                        fields={["name", "email", "phone"]}
                         submitLabel="Get the Brochure"
+                        messagePlaceholder="Anything we should know? (optional)"
                         testIdPrefix="fab-brochure"
                         submitFn={gatedSubmit}
                     />

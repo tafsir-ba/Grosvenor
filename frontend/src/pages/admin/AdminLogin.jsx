@@ -33,7 +33,7 @@ export default function AdminLogin() {
         <div className="flex min-h-screen items-center justify-center bg-brand-ink px-6" data-testid="admin-login-page">
             <div className="w-full max-w-sm rounded-sm bg-card p-10">
                 <Logo color="blue" className="mx-auto mb-8 h-10" />
-                <h1 className="text-center font-display text-2xl text-brand-ink">Agent Login</h1>
+                <h1 className="text-center font-display text-2xl text-brand-ink">Admin Login</h1>
                 <form onSubmit={submit} className="mt-8 space-y-5" data-testid="admin-login-form">
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>

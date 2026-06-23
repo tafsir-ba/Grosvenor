@@ -121,11 +121,14 @@ class TestUnits:
 class TestLeads:
     def test_create_general_contact_lead(self, session):
         payload = {
-            "name": "TEST User",
+            "first_name": "TEST",
+            "last_name": "User",
             "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
             "phone": "+18761112222",
             "message": "Hi, please contact me.",
+            "consent": True,
             "lead_type": "general_contact",
+            "source_page": "/contact",
             "source_url": "https://example.com/contact",
             "utm_source": "test",
             "utm_medium": "pytest",
@@ -137,8 +140,45 @@ class TestLeads:
         assert data.get("ok") is True
         assert isinstance(data.get("id"), str) and len(data["id"]) > 0
 
-    def test_create_lead_missing_name_email_422(self, session):
-        payload = {"lead_type": "general_contact", "message": "no contact"}
+    def test_create_lead_missing_consent_422(self, session):
+        payload = {
+            "first_name": "TEST",
+            "last_name": "NoConsent",
+            "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "lead_type": "general_contact",
+            "message": "no consent",
+            "consent": False,
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 422, f"expected 422 got {r.status_code} {r.text}"
+
+    def test_create_lead_missing_first_name_422(self, session):
+        payload = {
+            "last_name": "Only",
+            "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "lead_type": "general_contact",
+            "consent": True,
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 422, f"expected 422 got {r.status_code} {r.text}"
+
+    def test_create_lead_missing_last_name_422(self, session):
+        payload = {
+            "first_name": "Only",
+            "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "lead_type": "general_contact",
+            "consent": True,
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 422, f"expected 422 got {r.status_code} {r.text}"
+
+    def test_create_lead_missing_email_422(self, session):
+        payload = {
+            "first_name": "First",
+            "last_name": "Last",
+            "lead_type": "general_contact",
+            "consent": True,
+        }
         r = session.post(f"{API}/leads", json=payload)
         assert r.status_code == 422, f"expected 422 got {r.status_code} {r.text}"
 
@@ -150,6 +190,46 @@ class TestLeads:
         data = r.json()
         assert data.get("ok") is True
         assert data.get("id")
+
+    def test_track_phone_anonymous_click(self, session):
+        r = session.post(f"{API}/track",
+                         json={"lead_type": "phone_click",
+                               "source_url": "https://example.com"})
+        assert r.status_code == 200, r.text
+
+    def test_track_email_anonymous_click(self, session):
+        r = session.post(f"{API}/track",
+                         json={"lead_type": "email_click",
+                               "source_url": "https://example.com"})
+        assert r.status_code == 200, r.text
+
+    def test_lead_persisted_with_new_fields(self, session, admin_session):
+        # Create lead and verify it appears in admin list with new schema fields
+        unique_email = f"test_persist_{uuid.uuid4().hex[:8]}@example.com"
+        payload = {
+            "first_name": "TESTPersist",
+            "last_name": "User",
+            "email": unique_email,
+            "phone": "+12025550199",
+            "message": "Persistence check",
+            "consent": True,
+            "lead_type": "general_contact",
+            "source_page": "/contact",
+            "source_unit": "A101",
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 200, r.text
+
+        r = admin_session.get(f"{API}/admin/leads")
+        assert r.status_code == 200
+        leads = r.json()
+        match = next((l for l in leads if l.get("email") == unique_email), None)
+        assert match is not None, "lead not found in admin list"
+        assert match.get("first_name") == "TESTPersist"
+        assert match.get("last_name") == "User"
+        assert match.get("consent") is True
+        assert match.get("project") == "Grosvenor Vistas"
+        assert match.get("source_unit") == "A101"
 
 
 # -------------------- downloads --------------------
@@ -181,8 +261,10 @@ class TestDownloads:
         items = session.get(f"{API}/downloads").json()
         broch = next(d for d in items if d["type"] == "brochure")
         lead = {
-            "name": "TEST Brochure",
+            "first_name": "TEST",
+            "last_name": "Brochure",
             "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "consent": True,
             "lead_type": "download_brochure",
         }
         r = session.post(f"{API}/downloads/{broch['_id']}/access",
@@ -268,8 +350,10 @@ class TestAdmin:
     def test_lead_status_update(self, admin_session, session):
         # create a fresh lead
         lead_payload = {
-            "name": "TEST LeadPatch",
+            "first_name": "TEST",
+            "last_name": "LeadPatch",
             "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "consent": True,
             "lead_type": "general_contact",
         }
         r = session.post(f"{API}/leads", json=lead_payload)

@@ -40,8 +40,10 @@ async def access_download(download_id: str, lead: Optional[LeadCreate]) -> dict:
         raise HTTPException(status_code=404, detail="Download not found")
 
     if download.type in GATED_DOWNLOAD_TYPES:
-        if not lead or not lead.name or not lead.email:
+        if not lead or not lead.first_name or not lead.last_name or not lead.email:
             raise HTTPException(status_code=422, detail="Please provide your details to download.")
+        if not lead.consent:
+            raise HTTPException(status_code=422, detail="Please accept the data processing consent to continue.")
         lead.lead_type = DOWNLOAD_LEAD_TYPE[download.type]
         await leads_service.create_lead(lead)
 

@@ -16,7 +16,7 @@ export default function ContactPage() {
 
     return (
         <div data-testid="contact-page">
-            <Hero image="/gallery/homestaging-living-dinning-room-kitchen-2.png" overline="Contact" title="Let's talk" subtitle="Book a showroom visit or send a message — the Grosvenor Agent will be in touch." />
+            <Hero image="/gallery/homestaging-living-dinning-room-kitchen-2.png" overline="Contact" title="Let's talk" subtitle="Book a showroom visit or send a message — we'll be in touch." />
 
             <section className="container-wide py-16 md:py-24">
                 <div className="grid gap-14 px-2 md:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">

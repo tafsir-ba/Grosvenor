@@ -18,7 +18,20 @@ export const PROJECT = {
         mapEmbed:
             "https://maps.google.com/maps?q=Grosvenor%20Heights%2C%20Manor%20Park%2C%20Kingston%208%2C%20Jamaica&t=k&z=17&output=embed",
     },
-    agentLabel: "Grosvenor Agent",
+    agentLabel: "Grosvenor Vistas",
+};
+
+// Legal / compliance — single source of truth.
+export const LEGAL = {
+    privacyUrl: "https://evo-home.ch/en/privacy",
+    legalUrl: "https://evo-home.ch/en/legal",
+    consentText:
+        "By completing the form, you authorize Evo Home to store and process the personal data submitted above to provide you the requested content.",
+    credit: "Designed and developed by Evohome",
+    disclaimer:
+        "Grosvenor Vistas is a development of Niaviv Ltd., located at [ADDRESS], Company Registration No. [DV-XXXXXX]. The development comprises 43 apartments ranging in size from 1,671 sq ft to 3,644 sq ft, and 2 townhouses measuring 4,845 sq ft each. The buildings are constructed with reinforced concrete slab roofs and feature polished concrete and laminate flooring. Estimated completion is scheduled for 2026. No price escalation applies. The development was approved by the Kingston & St. Andrew Municipal Corporation on [APPROVAL DATE]. Approved plans may be viewed at 3A Grosvenor Heights, Kingston, Jamaica.",
+    disclaimerSecondary:
+        "All images, renderings, dimensions, specifications, finishes, and other information contained on this website and in associated marketing materials are provided for illustrative purposes only. The developer reserves the right to modify, amend, substitute, or vary any aspect of the development, including but not limited to layouts, floor plans, specifications, materials, finishes, and amenities, without prior notice or obligation.",
 };
 
 // Authoritative starting price for marketing display.
@@ -101,17 +114,17 @@ export const AMENITIES = [
 export const BUYING_PROCESS = [
     { step: "01", title: "Enquire", body: "Reach out or book a visit to the on-site showroom." },
     { step: "02", title: "Visit the Showroom", body: "Experience the model residence and tour the grounds in person." },
-    { step: "03", title: "Reserve", body: "Select your residence and place a reservation with the Grosvenor Agent." },
+    { step: "03", title: "Reserve", body: "Select your residence and place a reservation with our team." },
     { step: "04", title: "Finance & Close", body: "Finalise mortgage or financing arrangements and complete your purchase." },
 ];
 
 export const FAQ = [
     { q: "Where is Grosvenor Vistas located?", a: "Grosvenor Vistas is in Grosvenor Heights, Manor Park, Kingston 8, Jamaica — an established, sought-after residential area." },
-    { q: "Can I visit in person?", a: "Yes. A showroom and model residence are available on the property. Book a showroom visit and the Grosvenor Agent will arrange a convenient time." },
+    { q: "Can I visit in person?", a: "Yes. A showroom and model residence are available on the property. Book a showroom visit and we'll arrange a convenient time." },
     { q: "How many residences are there?", a: "The development comprises 43 residences across three blocks — Heliconia, Hibiscus and Ginger Lily — plus the Begonia townhouses." },
     { q: "How is pricing presented?", a: "Each residence is listed with its total surface, balcony surface and price in USD. Availability updates as residences are reserved or sold." },
-    { q: "Do you offer financing?", a: "Yes. See the Mortgage & Financing page and request information — the Grosvenor Agent can guide you through the available options." },
-    { q: "How do I reserve a residence?", a: "Contact the Grosvenor Agent to discuss availability and place a reservation. We keep the process simple and clear." },
+    { q: "Do you offer financing?", a: "Yes. See the Mortgage & Financing page and request information — our team can guide you through the available options." },
+    { q: "How do I reserve a residence?", a: "Contact us to discuss availability and place a reservation. We keep the process simple and clear." },
 ];
 
 // Curated lifestyle imagery (neutral captions — no room-spec labelling).

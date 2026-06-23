@@ -1,0 +1,42 @@
+{
+  "summary": "Full regression for new split lead form + consent + cookie notice + Evohome legal footer. Backend: 29/29 pytest cases pass (incl. new consent/first_name/last_name 422 cases, click tracking for whatsapp/phone/email, end-to-end persistence in admin list). Frontend: contact tabs (general/visit), unit-detail enquiry, FAB brochure dialog, cookie notice (Accept All + Manage Preferences + persistence in gv_cookie_consent), footer privacy/legal/credit/disclaimer, admin CSV export columns all verified. No 'agent' wording remains on Contact / FAQ / Mortgage / Residences / Unit Detail. Fixed one critical backend bug introduced by the schema migration (downloads_service still referenced old lead.name).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/track", "issue": "Accepts the full LeadCreate payload — non-click lead_types could be POSTed here and bypass the form validations because /track doesn't restrict lead_type. Defensive hardening recommended (reject anything not in CLICK_LEAD_TYPES)."},
+      {"endpoint": "POST /api/leads", "issue": "Returns 200 (not 201) on resource creation; functional but not REST-strict. Matches existing pattern across the API."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "DownloadForm / Gallery lightbox dialogs", "issues": ["Radix DialogContent missing DialogDescription / aria-describedby — a11y console warning persists from previous iteration."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_grosvenor_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Reject non-click lead_types on POST /api/track to prevent the public endpoint from being used to create form leads without consent.",
+    "(Optional) Remove the now-unused 'agentLabel' string from /app/frontend/src/lib/constants.js — dead reference after agent-language removal.",
+    "(Optional) Silence Radix Dialog a11y warning by adding <DialogDescription/> to brochure and gallery dialogs."
+  ],
+  "critical_code_review_comments": [
+    "BUG FIXED: /app/backend/services/downloads_service.py was still referencing lead.name on the gated-brochure path (line 43), which caused POST /api/downloads/{id}/access to 500 with the new schema. Updated to check first_name + last_name + email + consent, mirroring leads_service.create_lead validation.",
+    "constants.js still defines 'agentLabel: Grosvenor Vistas' even though no component references it any more — leftover from the agent-language cleanup.",
+    "routes/leads.py POST /track and POST /leads share the exact same handler signature/model. /track should explicitly restrict lead_type ∈ CLICK_LEAD_TYPES to keep the anonymous surface tight."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_grosvenor_api.py",
+    "/app/backend/services/downloads_service.py"
+  ],
+  "success_rate": {"backend": "100% (29/29)", "frontend": "100% of requested flows"},
+  "test_credentials": "admin@grosvenorvistas.com / Grosvenor2026! (per /app/memory/test_credentials.md)",
+  "seed_data_creation": "Several TEST_/TESTPersist prefixed leads created via pytest and Playwright (visible in admin leads list as TEST User / TESTPersist User / TEST LeadPatch / TEST Brochure). Anonymous Email/Phone/WhatsApp click events also stored.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Lead schema is now {first_name,last_name,email,phone,message,consent,project,lead_type,source_*,utm_*}. Backend enforces first_name+last_name+email+consent for non-click lead_types; /api/track is for click events only. /api/downloads/{id}/access now requires the same. Cookie notice persists via localStorage key 'gv_cookie_consent'. Admin CSV export endpoint is client-side built (frontend admin LeadsPage Export button) — header is: created_at,first_name,last_name,email,phone,lead_type,status,project,source_unit,source_building,source_page,consent,message. Use Playwright page.expect_download() to capture it. FAB brochure dialog testid='fab-brochure-dialog' with prefix 'fab-brochure-' on LeadForm fields.",
+  "rca of the issue": "POST /api/downloads/{id}/access with a valid lead returned 500 because downloads_service.access_download still validated lead.name after the schema migrated name -> first_name+last_name. Updated to validate first_name + last_name + email + consent. Verified with TestDownloads.test_brochure_gated_with_lead_succeeds (passes)."
+}

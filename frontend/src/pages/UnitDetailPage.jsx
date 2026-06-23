@@ -70,7 +70,7 @@ export default function UnitDetailPage() {
                                 Enquire on WhatsApp
                             </CtaButton>
                             <CtaButton href={PROJECT.contact.phoneHref} variant="outline" onClick={() => trackClick(LEAD_TYPE.PHONE_CLICK, { unit: unit.unit_number, building: unit.building })}>
-                                Call the Agent
+                                Call Us
                             </CtaButton>
                         </div>
                     </div>
@@ -78,7 +78,7 @@ export default function UnitDetailPage() {
                     {/* Enquiry form */}
                     <div className="h-fit rounded-sm border border-border bg-card p-8 lg:sticky lg:top-28" data-testid="unit-enquiry">
                         <h2 className="font-display text-2xl text-brand-ink">Enquire about {unit.unit_number}</h2>
-                        <p className="mt-2 text-sm text-muted-foreground">The Grosvenor Agent will respond promptly.</p>
+                        <p className="mt-2 text-sm text-muted-foreground">We'll respond promptly.</p>
                         <div className="mt-6">
                             <LeadForm
                                 leadType={LEAD_TYPE.CONTACT_ABOUT_UNIT}

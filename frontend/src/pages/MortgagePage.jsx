@@ -28,7 +28,7 @@ export default function MortgagePage() {
             <section className="container-x py-24 md:py-32">
                 <div className="grid gap-16 lg:grid-cols-[1.1fr_1fr]">
                     <div>
-                        <SectionHeading overline="Getting Started" title="A straightforward route to ownership" subtitle="Grosvenor Vistas residences are priced in USD. Whether you are buying locally or from overseas, the Grosvenor Agent can help you understand your options." />
+                        <SectionHeading overline="Getting Started" title="A straightforward route to ownership" subtitle="Grosvenor Vistas residences are priced in USD. Whether you are buying locally or from overseas, our team can help you understand your options." />
                         <div className="mt-10 space-y-8">
                             {STEPS.map((s, i) => (
                                 <div key={s.title} data-testid={`mortgage-step-${i}`} className="flex gap-5">

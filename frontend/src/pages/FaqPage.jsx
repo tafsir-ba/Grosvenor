@@ -16,10 +16,10 @@ export default function FaqPage() {
             />
             <section className="container-x py-24 md:py-32">
                 <div className="grid gap-14 lg:grid-cols-[1fr_1.4fr]">
-                    <SectionHeading overline="Questions" title="Everything you need, simply explained" subtitle="Still have a question? The Grosvenor Agent is happy to help." />
+                    <SectionHeading overline="Questions" title="Everything you need, simply explained" subtitle="Still have a question? We're happy to help." />
                     <div>
                         <FaqAccordion items={FAQ} />
-                        <CtaButton to="/contact" variant="primary" className="mt-10">Contact the Agent</CtaButton>
+                        <CtaButton to="/contact" variant="primary" className="mt-10">Contact Us</CtaButton>
                     </div>
                 </div>
             </section>

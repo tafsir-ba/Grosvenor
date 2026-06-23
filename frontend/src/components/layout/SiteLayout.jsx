@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FloatingActionButton from "@/components/shared/FloatingActionButton";
+import CookieNotice from "@/components/shared/CookieNotice";
 import { captureAttribution } from "@/lib/tracking";
 
 export default function SiteLayout() {
@@ -24,6 +25,7 @@ export default function SiteLayout() {
             </main>
             <Footer />
             <FloatingActionButton />
+            <CookieNotice />
         </div>
     );
 }

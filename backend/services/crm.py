@@ -17,15 +17,19 @@ def build_lead_payload(lead: dict) -> dict:
     """Map an internal Lead document to the CRM's expected contact payload."""
     return {
         "contact": {
-            "name": lead.get("name"),
+            "first_name": lead.get("first_name"),
+            "last_name": lead.get("last_name"),
             "email": lead.get("email"),
             "phone": lead.get("phone"),
         },
         "note": lead.get("message"),
-        "lead_type": lead.get("lead_type"),
-        "unit_ref": lead.get("source_unit"),
+        "project": lead.get("project"),
+        "inquiry_type": lead.get("lead_type"),
+        "residence_ref": lead.get("source_unit"),
         "building_ref": lead.get("source_building"),
+        "source_page": lead.get("source_page"),
         "source_url": lead.get("source_url"),
+        "consent_accepted": lead.get("consent"),
         "attribution": {
             "utm_source": lead.get("utm_source"),
             "utm_medium": lead.get("utm_medium"),

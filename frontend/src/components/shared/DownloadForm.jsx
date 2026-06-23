@@ -36,8 +36,8 @@ export default function DownloadForm({ download, dark = false, compact = false }
                 </DialogHeader>
                 <LeadForm
                     leadType={LEAD_TYPE.DOWNLOAD_BROCHURE}
-                    fields={["name", "email", "phone"]}
                     submitLabel="Get the Brochure"
+                    messagePlaceholder="Anything we should know? (optional)"
                     testIdPrefix="brochure"
                     submitFn={gatedSubmit}
                 />

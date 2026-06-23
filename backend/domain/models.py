@@ -53,12 +53,15 @@ class Unit(BaseDocument, UnitBase):
 
 # ----------------------------- Leads -----------------------------
 class LeadCreate(BaseModel):
-    # name/email are optional at the schema level to support anonymous click
-    # tracking; the leads service enforces them for real form submissions.
-    name: Optional[str] = None
+    # first/last name + email are optional at the schema level to support
+    # anonymous click tracking; the leads service enforces them for real forms.
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: Optional[EmailStr] = None
     phone: Optional[str] = None
     message: Optional[str] = None
+    consent: bool = False
+    project: str = "Grosvenor Vistas"
     lead_type: LeadType = LeadType.GENERAL_CONTACT
     # Attribution / context (captured automatically by the shared LeadForm)
     source_page: Optional[str] = None

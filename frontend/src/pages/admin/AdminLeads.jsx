@@ -25,7 +25,7 @@ export default function AdminLeads() {
     };
 
     const exportCsv = () => {
-        const cols = ["created_at", "name", "email", "phone", "lead_type", "status", "source_unit", "source_building", "message"];
+        const cols = ["created_at", "first_name", "last_name", "email", "phone", "lead_type", "status", "project", "source_unit", "source_building", "source_page", "consent", "message"];
         const rows = leads.map((l) => cols.map((c) => `"${(l[c] ?? "").toString().replace(/"/g, '""')}"`).join(","));
         const csv = [cols.join(","), ...rows].join("\n");
         const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
@@ -66,7 +66,7 @@ export default function AdminLeads() {
                         {leads.map((l) => (
                             <TableRow key={l._id} data-testid={`lead-row-${l._id}`}>
                                 <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{(l.created_at || "").slice(0, 16).replace("T", " ")}</TableCell>
-                                <TableCell className="font-medium">{l.name || "—"}</TableCell>
+                                <TableCell className="font-medium">{[l.first_name, l.last_name].filter(Boolean).join(" ") || "—"}</TableCell>
                                 <TableCell className="text-sm">
                                     {l.email && <div>{l.email}</div>}
                                     {l.phone && <div className="text-muted-foreground">{l.phone}</div>}

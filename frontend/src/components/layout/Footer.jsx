@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Instagram, ArrowUpRight } from "lucide-react";
 import Logo from "@/components/brand/Logo";
-import { PROJECT, NAV, LEAD_TYPE } from "@/lib/constants";
+import { PROJECT, NAV, LEAD_TYPE, LEGAL } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
 
 export default function Footer() {
@@ -72,9 +72,23 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="mt-20 flex flex-col items-center justify-between gap-2 border-t border-brand-ink/10 pt-8 text-xs uppercase tracking-[0.18em] text-brand-ink/45 md:flex-row">
-                    <p>© {new Date().getFullYear()} {PROJECT.name}</p>
-                    <p>{PROJECT.location}</p>
+                {/* Legal disclaimer — sitewide, intentionally subtle */}
+                <div className="mt-20 border-t border-brand-ink/10 pt-10" data-testid="footer-disclaimer">
+                    <p className="max-w-4xl font-sans text-[0.7rem] leading-relaxed text-brand-ink/40">
+                        {LEGAL.disclaimer}
+                    </p>
+                    <p className="mt-4 max-w-4xl font-sans text-[0.7rem] leading-relaxed text-brand-ink/40">
+                        {LEGAL.disclaimerSecondary}
+                    </p>
+                </div>
+
+                <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-brand-ink/10 pt-8 text-xs tracking-[0.14em] text-brand-ink/45 md:flex-row">
+                    <p className="uppercase">© {new Date().getFullYear()} {PROJECT.name}</p>
+                    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                        <a href={LEGAL.privacyUrl} target="_blank" rel="noreferrer" data-testid="footer-privacy-link" className="uppercase transition-colors hover:text-brand-gold">Privacy Policy</a>
+                        <a href={LEGAL.legalUrl} target="_blank" rel="noreferrer" data-testid="footer-legal-link" className="uppercase transition-colors hover:text-brand-gold">Legal</a>
+                        <span className="normal-case tracking-normal text-brand-ink/40" data-testid="footer-credit">{LEGAL.credit}</span>
+                    </div>
                 </div>
             </div>
         </footer>

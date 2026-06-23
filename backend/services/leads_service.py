@@ -14,10 +14,12 @@ COLLECTION = "leads"
 
 
 async def create_lead(payload: LeadCreate) -> Lead:
-    # Real form submissions require contact info; click events do not.
+    # Real form submissions require contact info + consent; click events do not.
     if payload.lead_type not in CLICK_LEAD_TYPES:
-        if not payload.name or not payload.email:
-            raise HTTPException(status_code=422, detail="Name and email are required.")
+        if not payload.first_name or not payload.last_name or not payload.email:
+            raise HTTPException(status_code=422, detail="First name, last name and email are required.")
+        if not payload.consent:
+            raise HTTPException(status_code=422, detail="Please accept the data processing consent to continue.")
 
     lead = Lead(**payload.model_dump())
     doc = lead.to_mongo()
