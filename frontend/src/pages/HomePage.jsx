@@ -12,11 +12,12 @@ const HERO_VIDEO = "/video/hero.mp4";
 
 // Lifestyle media — looping rooftop video on desktop, image fallback on mobile.
 const LIFESTYLE_VIDEO = "/video/lifestyle.mp4";
-const LIFESTYLE_IMG = "/gallery/rooftop-pool.png";
+const LIFESTYLE_IMG = "/gallery/ext-heliconia-view.png";
 
-const VIEW_IMG = "/gallery/rooftop-pool.png";
-const MOMENT_IMG = "/gallery/terrace-2.png";
-const FINAL_IMG = "/gallery/homestaging-evening-terrace.png";
+const VIEW_IMG = "/gallery/ext-rooftop-seaview.png";
+const MOMENT_VIDEO = "/video/poolside-shower.mp4";
+const MOMENT_IMG = "/gallery/ext-rooftop-mountain.png";
+const FINAL_IMG = "/gallery/ext-aerial.png";
 const GYM_IMG = "/gallery/gym.jpg";
 
 const LIFESTYLE = [
@@ -36,7 +37,7 @@ const AMENITIES = [
 const RESIDENCE_TIERS = [
     { key: "vista", name: "The Vista Residences", image: "/gallery/home-staging-kitchen-2.png", test: (u) => u.total_surface < 2500 },
     { key: "signature", name: "Signature Residences", image: "/gallery/homestaging-bathroom-4.png", test: (u) => u.total_surface >= 2500 && u.total_surface < 4000 },
-    { key: "townhouses", name: "Begonia Townhouses", image: "/gallery/townhouse-new.png", test: (u) => u.total_surface >= 4000 },
+    { key: "townhouses", name: "Begonia Townhouses", image: "/gallery/ext-townhouse-begonia.png", test: (u) => u.total_surface >= 4000 },
 ];
 
 const ROUND = "rounded-[1.75rem] md:rounded-[2.5rem]";
@@ -82,6 +83,7 @@ function useIsDesktop() {
 
 export default function HomePage() {
     const { units } = useUnits({ status: "available", sort: "price_asc" });
+    const desktop = useIsDesktop();
 
     const tiers = useMemo(() => {
         return RESIDENCE_TIERS.map((b) => {
@@ -117,10 +119,16 @@ export default function HomePage() {
             {/* 4. AMENITIES */}
             <AmenitiesShowcase />
 
-            {/* 5. FULL-WIDTH VISUAL MOMENT */}
+            {/* 5. FULL-WIDTH VISUAL MOMENT — poolside shower loop */}
             <section className="container-wide py-20 md:py-28" data-testid="home-moment">
                 <div className={`relative flex h-[76vh] items-center justify-center overflow-hidden ${ROUND}`}>
-                    <ParallaxImage src={MOMENT_IMG} className="absolute inset-0 h-full w-full" />
+                    {desktop ? (
+                        <video autoPlay muted loop playsInline preload="metadata" poster={MOMENT_IMG} data-testid="moment-video" className="absolute inset-0 h-full w-full object-cover">
+                            <source src={MOMENT_VIDEO} type="video/mp4" />
+                        </video>
+                    ) : (
+                        <img src={MOMENT_IMG} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                    )}
                     <div className="absolute inset-0 bg-brand-ink/35" />
                     <motion.h2 {...fadeUp} className="lux-title relative z-10 max-w-4xl px-6 text-center text-4xl text-white sm:text-6xl lg:text-7xl">
                         Elevated living.<br />Uninterrupted views.
