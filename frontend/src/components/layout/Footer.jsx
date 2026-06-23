@@ -7,7 +7,7 @@ import { trackClick } from "@/lib/tracking";
 export default function Footer() {
     return (
         <footer
-            className="relative z-10 -mt-12 overflow-hidden rounded-t-[2.5rem] bg-brand-ivory text-brand-ink md:-mt-24 md:rounded-t-[5rem]"
+            className="relative overflow-hidden border-t border-brand-beige bg-brand-ivory text-brand-ink"
             data-testid="site-footer"
         >
             {/* Oversized faint brand wordmark */}

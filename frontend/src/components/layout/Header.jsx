@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Instagram, X, Phone } from "lucide-react";
+import { Instagram, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import Logo from "@/components/brand/Logo";
-import { NAV, PROJECT, LEAD_TYPE } from "@/lib/constants";
-import { trackClick } from "@/lib/tracking";
+import { NAV, PROJECT } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export default function Header() {
@@ -17,54 +16,19 @@ export default function Header() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    const atTop = !scrolled;
-    const lightTone = atTop;
-    const tone = lightTone ? "text-white" : "text-brand-blue";
-
     return (
         <header
             data-testid="site-header"
             className={cn(
                 "fixed top-0 z-40 w-full transition-all duration-500",
-                atTop ? "bg-transparent" : "bg-brand-warm/80 shadow-[0_12px_50px_rgba(74,69,63,0.10)] backdrop-blur-xl"
+                scrolled ? "bg-brand-warm/85 shadow-[0_12px_50px_rgba(74,69,63,0.08)] backdrop-blur-xl" : "bg-transparent"
             )}
         >
-            {/* Gold hairline accent removed for a lighter, more integrated header */}
-
-            {/* Concierge utility strip — present only over the hero */}
-            <div
-                className={cn(
-                    "overflow-hidden transition-all duration-500",
-                    atTop ? "max-h-12 opacity-100" : "max-h-0 opacity-0"
-                )}
-            >
-                <div className="container-x flex h-11 items-center justify-between text-[0.7rem] uppercase tracking-[0.24em] text-white/75">
-                    <a
-                        href={PROJECT.contact.phoneHref}
-                        onClick={() => trackClick(LEAD_TYPE.PHONE_CLICK)}
-                        data-testid="header-utility-phone"
-                        className="hidden items-center gap-2 transition-colors hover:text-brand-gold sm:flex"
-                    >
-                        <Phone className="h-3.5 w-3.5" /> {PROJECT.contact.phone}
-                    </a>
-                    <span className="hidden text-center tracking-[0.3em] md:block">Grosvenor Heights · Manor Park · Kingston 8</span>
-                    <a
-                        href={PROJECT.contact.emailHref}
-                        onClick={() => trackClick(LEAD_TYPE.EMAIL_CLICK)}
-                        data-testid="header-utility-email"
-                        className="transition-colors hover:text-brand-gold"
-                    >
-                        {PROJECT.contact.email}
-                    </a>
-                </div>
-            </div>
-
-            {/* Main bar */}
-            <div className={cn("container-x flex items-center justify-between transition-all duration-500", atTop ? "h-28 md:h-32" : "h-20 md:h-24")}>
-                {/* Left: Menu drawer */}
+            <div className={cn("container-x flex items-center justify-between transition-all duration-500", scrolled ? "h-20 md:h-24" : "h-28 md:h-32")}>
+                {/* Left: Menu */}
                 <Sheet>
                     <SheetTrigger asChild>
-                        <button data-testid="menu-trigger" className={cn("group flex items-center gap-3.5 transition-colors", tone)}>
+                        <button data-testid="menu-trigger" className="group flex items-center gap-3.5 text-brand-ink">
                             <span className="flex flex-col items-start gap-[6px]">
                                 <span className="h-px w-7 bg-current transition-all duration-300 group-hover:w-4" />
                                 <span className="h-px w-7 bg-current" />
@@ -78,7 +42,7 @@ export default function Header() {
                             <div className="mb-12 flex items-center justify-between">
                                 <Logo color="white" layout="horizontal" className="h-10" />
                                 <SheetClose asChild>
-                                    <button data-testid="menu-close" className="flex h-11 w-11 items-center justify-center rounded-none border border-white/30 transition-colors hover:border-brand-gold hover:text-brand-gold"><X className="h-5 w-5" /></button>
+                                    <button data-testid="menu-close" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 transition-colors hover:border-brand-gold hover:text-brand-gold"><X className="h-5 w-5" /></button>
                                 </SheetClose>
                             </div>
                             <nav className="flex flex-1 flex-col justify-center gap-1">
@@ -88,15 +52,15 @@ export default function Header() {
                                             to={item.to}
                                             data-testid={`nav-${item.to.replace("/", "")}`}
                                             className={({ isActive }) =>
-                                                cn("font-display text-3xl font-light tracking-tight transition-colors hover:text-brand-gold md:text-4xl", isActive ? "text-brand-gold" : "text-white")
+                                                cn("lux-title text-4xl font-light tracking-tight transition-colors hover:text-brand-gold md:text-5xl", isActive ? "text-brand-gold" : "text-white")
                                             }
                                         >
-                                            <span className="mr-3 align-top text-xs text-white/40">0{i + 1}</span>{item.label}
+                                            <span className="mr-3 align-top font-sans text-xs text-white/40">0{i + 1}</span>{item.label}
                                         </NavLink>
                                     </SheetClose>
                                 ))}
                             </nav>
-                            <div className="mt-10 space-y-1 border-t border-white/15 pt-8 text-sm text-white/70">
+                            <div className="mt-10 space-y-1 border-t border-white/15 pt-8 font-sans text-sm text-white/70">
                                 <a href={PROJECT.contact.phoneHref} className="block hover:text-white">{PROJECT.contact.phone}</a>
                                 <a href={PROJECT.contact.emailHref} className="block hover:text-white">{PROJECT.contact.email}</a>
                                 <p>{PROJECT.contact.address}</p>
@@ -108,42 +72,31 @@ export default function Header() {
                 {/* Center: Logo */}
                 <Link to="/" data-testid="header-logo-link" className="absolute left-1/2 -translate-x-1/2">
                     <img
-                        src={lightTone ? "/brand/header-white.svg" : "/brand/header-gold.svg"}
+                        src="/brand/header-gold.svg"
                         alt="Grosvenor Vistas"
                         data-testid="brand-logo"
-                        className={cn("w-auto transition-all duration-500", atTop ? "h-20 md:h-28" : "h-12 md:h-16")}
+                        className={cn("w-auto transition-all duration-500", scrolled ? "h-12 md:h-16" : "h-20 md:h-28")}
                     />
                 </Link>
 
-                {/* Right: Instagram + Contact */}
-                <div className="flex items-center gap-6">
+                {/* Right: Instagram + Book a Visit pill */}
+                <div className="flex items-center gap-5 md:gap-7">
                     <a
                         href="https://instagram.com"
                         target="_blank"
                         rel="noreferrer"
                         data-testid="header-instagram"
                         aria-label="Instagram"
-                        className={cn("hidden transition-colors hover:text-brand-gold sm:inline-flex", tone)}
+                        className="hidden text-brand-ink transition-colors hover:text-brand-gold sm:inline-flex"
                     >
                         <Instagram className="h-5 w-5" />
                     </a>
                     <Link
                         to="/contact"
                         data-testid="header-contact"
-                        className={cn(
-                            "group relative overflow-hidden rounded-none border px-7 py-3.5 text-[0.72rem] font-medium uppercase tracking-[0.24em] transition-colors duration-300",
-                            lightTone ? "border-white/45 text-white" : "border-brand-blue/35 text-brand-blue"
-                        )}
+                        className="rounded-full bg-brand-gold px-7 py-3 text-[0.9rem] font-medium tracking-wide text-white transition-all duration-300 hover:bg-brand-gold/90 hover:shadow-[0_10px_30px_rgba(198,134,43,0.35)]"
                     >
-                        <span
-                            className={cn(
-                                "absolute inset-0 origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100",
-                                lightTone ? "bg-white" : "bg-brand-blue"
-                            )}
-                        />
-                        <span className={cn("relative transition-colors duration-300", lightTone ? "group-hover:text-brand-blue" : "group-hover:text-white")}>
-                            Book a Visit
-                        </span>
+                        Book a Visit
                     </Link>
                 </div>
             </div>
