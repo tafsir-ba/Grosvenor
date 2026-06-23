@@ -1,152 +1,182 @@
 {
-  "project_name": "Grosvenor Vistas",
-  "theme": "LIGHT",
-  "archetype": "5 (Luxury) combined with Warm Organic Elements",
-  "design_philosophy": {
-    "core_concept": "Premium Real-Estate Aesthetic",
-    "description": "Elegant, high-end property branding. Utilizes generous white space, large typographic contrast, and sophisticated warm neutrals to evoke an 'Old Money' and refined atmosphere.",
-    "anti_patterns": [
-      "No purple or teal gradients.",
-      "No Inter font for headings or body.",
-      "No generic 'Bootstrap' symmetric column layouts in marketing sections.",
-      "No heavy drop shadows on cards."
-    ]
+  "theme_archetype": {
+    "theme": "Light",
+    "archetype": "5 (Luxury Light Variant) / 1 (Organic & Earthy)",
+    "description": "Premium, image-driven luxury hospitality brand experience. Aspirational, emotional, editorial storytelling."
+  },
+  "design_principles": [
+    "Less boxes, less cards, less grids, less visible section boundaries.",
+    "Continuous visual journey, smooth scrolling, generous whitespace.",
+    "Cinematic full-bleed imagery and large editorial layouts.",
+    "Elegant, thin typography with high contrast."
+  ],
+  "colors": {
+    "backgrounds": {
+      "warm_white": "#FCFAF8",
+      "soft_ivory": "#F2EFE9",
+      "light_beige": "#EAE5DB"
+    },
+    "hsl_values": {
+      "warm_white": "40 33% 98%",
+      "soft_ivory": "40 24% 93%",
+      "light_beige": "40 21% 89%",
+      "champagne_gold": "35 64% 47%",
+      "grosvenor_blue": "210 42% 30%",
+      "warm_ink": "34 8% 27%",
+      "brand_green": "146 74% 20%"
+    },
+    "text": {
+      "primary": "#332F2A",
+      "secondary": "#5C564D",
+      "eyebrow": "#948A7A"
+    },
+    "brand_accents": {
+      "champagne_gold": "#C6862B",
+      "champagne_gold_light": "#DFD3C3",
+      "grosvenor_blue": "#2C4D6D",
+      "warm_ink": "#4A453F",
+      "brand_green": "#0D572D"
+    }
+  },
+  "tailwind_config": {
+    "theme": {
+      "extend": {
+        "colors": {
+          "brand": {
+            "white": "#FCFAF8",
+            "ivory": "#F2EFE9",
+            "beige": "#EAE5DB",
+            "gold": "#C6862B",
+            "blue": "#2C4D6D",
+            "ink": "#4A453F",
+            "green": "#0D572D"
+          }
+        },
+        "fontFamily": {
+          "heading": ["Cormorant Garamond", "serif"],
+          "body": ["Signika", "sans-serif"]
+        }
+      }
+    }
   },
   "typography": {
-    "primary_font": {
-      "family": "'Cormorant Garamond', serif",
-      "usage": "Headings (H1, H2, H3), large numbers, quotes",
-      "import_url": "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap",
-      "styling": "tracking-tight for large text, leading-none for hero headings. Use Light (300) or Regular (400) for massive headers to retain elegance."
+    "headings": {
+      "font_family": "Cormorant Garamond, serif",
+      "weights": ["300", "400"],
+      "usage": "Large, elegant, thin-to-medium weights for all major section titles. No bold/heavy headlines."
     },
-    "secondary_font": {
-      "family": "'Outfit', sans-serif",
-      "usage": "Body text, UI labels, buttons, navigation, admin dashboard",
-      "import_url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap",
-      "styling": "Clean, highly legible sans-serif. Use uppercase with wide tracking (tracking-widest, text-xs) for overlines and structural labels."
+    "body": {
+      "font_family": "Signika, sans-serif",
+      "weights": ["300", "400"],
+      "usage": "Clean, legible body copy."
+    },
+    "scale": {
+      "h1": "text-5xl md:text-7xl lg:text-8xl tracking-tight leading-none",
+      "h2": "text-4xl md:text-5xl lg:text-6xl tracking-tight leading-tight",
+      "h3": "text-2xl md:text-3xl leading-snug",
+      "eyebrow": "text-xs md:text-sm tracking-[0.2em] uppercase text-brand-gold",
+      "body": "text-base md:text-lg leading-relaxed text-secondary",
+      "stat_numbers": "text-6xl md:text-8xl lg:text-9xl font-light text-brand-gold"
     }
   },
-  "colors": {
-    "css_variables": {
-      "--brand-bg": "#F9F8F6",
-      "--brand-surface": "#FFFFFF",
-      "--brand-text": "#1A1C19",
-      "--brand-text-muted": "#6B6D69",
-      "--brand-primary": "#A68A64",
-      "--brand-primary-foreground": "#FFFFFF",
-      "--brand-secondary": "#2C3531",
-      "--brand-secondary-foreground": "#FFFFFF",
-      "--brand-border": "#E5E3DC",
-      "--brand-ring": "#A68A64"
-    },
-    "tailwind_config": {
-      "background": "var(--brand-bg)",
-      "foreground": "var(--brand-text)",
-      "card": {
-        "DEFAULT": "var(--brand-surface)",
-        "foreground": "var(--brand-text)"
-      },
-      "popover": {
-        "DEFAULT": "var(--brand-surface)",
-        "foreground": "var(--brand-text)"
-      },
-      "primary": {
-        "DEFAULT": "var(--brand-primary)",
-        "foreground": "var(--brand-primary-foreground)"
-      },
-      "secondary": {
-        "DEFAULT": "var(--brand-secondary)",
-        "foreground": "var(--brand-secondary-foreground)"
-      },
-      "muted": {
-        "DEFAULT": "#F0EFEA",
-        "foreground": "var(--brand-text-muted)"
-      },
-      "accent": {
-        "DEFAULT": "var(--brand-primary)",
-        "foreground": "var(--brand-primary-foreground)"
-      },
-      "border": "var(--brand-border)",
-      "input": "var(--brand-border)",
-      "ring": "var(--brand-ring)"
-    },
-    "guidelines": "Use pure white (#FFFFFF) for cards and modals. Use the warm off-white (--brand-bg) for the main body background. The primary color (--brand-primary) is a muted luxe gold/bronze for CTAs and highlights. Secondary is a deep charcoal/olive for contrast sections (e.g., dark footers or dark hero overlays)."
+  "spacing_and_layout": {
+    "padding": "py-24 md:py-32 lg:py-40 for major sections to ensure generous whitespace.",
+    "border_radius": "rounded-2xl to rounded-[2rem] for large cinematic imagery.",
+    "grid": "Asymmetric, bento-style editorial layouts. Avoid equal-width columns. Use overlapping layers."
   },
-  "layout_and_spacing": {
-    "marketing_pages": {
-      "strategy": "Asymmetric bento layouts (Mode A: The Tetris Grid). Break the grid intentionally. Mix large full-bleed imagery with elegant typography blocks.",
-      "spacing": "Generous. Use p-12, p-16, py-24 to let content breathe. Containers with borders must have internal padding.",
-      "hero_overlay": "Gradient overlay or max bg-black/40. If image is dark, use bg-black/30. Ensure high contrast for text (APCA standard)."
+  "components_and_sections": [
+    {
+      "name": "Header",
+      "layout": "Left: Hamburger + Menu text. Center: Brand Logo. Right: Pill buttons (Brochure, Plan, Contact Us in champagne).",
+      "behavior": "Option 1 reference. Transparent with white SVGs on hero, transitions to white background with gold SVGs on scroll."
     },
-    "admin_dashboard": {
-      "strategy": "Strict grid hierarchy (Mode B: The Control Room). Dense and compact spacing.",
-      "style": "Sharp edges, flat surfaces, or very subtle rounded corners (max 8px border-radius). 1px subtle borders (border-border). Avoid heavy shadows.",
-      "spacing": "Tight gaps (gap-4, gap-6), standard padding (p-4, p-6)."
+    {
+      "name": "1. Hero",
+      "content": "Full-screen immersive image, 'Elevate Your View / Luxury Residences in Grosvenor Heights'. Minimal text.",
+      "ctas": "Book a Visit (primary), Download Brochure (secondary).",
+      "style": "Text reveal, fade-up, gentle parallax. Minimal overlay (max bg-black/30) to let image shine."
+    },
+    {
+      "name": "2. The View",
+      "content": "Large full-width imagery, minimal copy ('Wake Up Above Kingston', 'Elevated Living. Uninterrupted Views.'). No paragraphs.",
+      "style": "Generous whitespace, oversized typography, image-driven."
+    },
+    {
+      "name": "3. Lifestyle",
+      "content": "Themes: Privacy, Elevation, Modern Living, Views, Convenience. Minimal text.",
+      "style": "Editorial layout, large imagery + oversized typography overlapping."
+    },
+    {
+      "name": "4. Amenities Experience",
+      "content": "Infinity Pool, Fitness Centre, Rooftop Spaces, Landscaped Grounds, 24/7 Security.",
+      "style": "Immersive scrolling. Each amenity reveals individually via large imagery. NO icon grids/boxes."
+    },
+    {
+      "name": "5. Full-Width Visual Moment",
+      "content": "Large panoramic image, minimal text overlay, pure emotional pause.",
+      "style": "Parallax scroll effect, cinematic feel."
+    },
+    {
+      "name": "6. Residences",
+      "content": "Organize by SIZE ('From 1,671 sq ft', 'From 2,322 sq ft', 'Signature Penthouses'). Hover/click reveals square footage, price USD, availability.",
+      "style": "Premium, image-focused, no spreadsheet on homepage. Smooth hover reveals."
+    },
+    {
+      "name": "7. Location Preview",
+      "content": "Perfectly Positioned in Grosvenor Heights, Kingston, Jamaica. CTAs: Get Directions, Explore Location. Google Maps embed.",
+      "style": "Clean, minimal. No long neighborhood lists."
+    },
+    {
+      "name": "8. Gallery Preview",
+      "content": "FEEL THIS LUXURY 01/12 with circular arrow buttons.",
+      "style": "Luxury editorial gallery, large images, horizontal scroll, subtle animation, magazine-inspired."
+    },
+    {
+      "name": "9. Final CTA",
+      "content": "Ready to Elevate Your View? CTAs: Book a Visit, Download Brochure.",
+      "style": "Strong emotional ending, large image, minimal copy."
+    },
+    {
+      "name": "Floating Action Button (FAB)",
+      "content": "One champagne-gold circular FAB bottom-right. Expands into: Download Brochure, Book a Visit, WhatsApp.",
+      "style": "Replaces left rail and old WhatsApp button. Primary conversion tool, visible throughout."
     }
+  ],
+  "animations": {
+    "framer_motion_patterns": [
+      "Fade-up reveals for typography (y: 20, opacity: 0 to 1, duration: 0.8, ease: easeOut).",
+      "Image masking reveals (clip-path or scale from 1.1 to 1.0 with overflow hidden).",
+      "Scroll-triggered transitions and gentle parallax for large images.",
+      "Staggered typography reveals for headings.",
+      "Smooth zoom on image hover."
+    ],
+    "restrictions": "Avoid bouncing, fast, gimmicky, or excessive motion. Defer non-critical animations for performance."
   },
-  "components": {
-    "marketing": {
-      "structure": "Pure HTML/Tailwind for layouts, overlapping elements, pure CSS for complex grid spanning.",
-      "interactive": "Shadcn components (Forms, Dialogs, Select, Inputs) BUT heavily customized to match the luxe branding. Strip Vercel-look defaults.",
-      "buttons": "Sharp corners or very slight rounding (rounded-sm). Use uppercase text-xs tracking-widest for an editorial feel, or elegant normal casing. Hover state must lighten the bg or use an outline shift.",
-      "navigation": "Crystal glassmorphism if overlapping hero (backdrop-blur-xl bg-white/70 or bg-black/40 depending on contrast), or solid white header. Never purely transparent."
-    },
-    "admin": {
-      "structure": "Shadcn components (Tables, Cards, Badges, Tabs, Dropdowns).",
-      "charts": "Shadcn charts or Recharts for unit status analytics.",
-      "forms": "Clean, structured, using Shadcn Form."
-    }
+  "hard_rules": [
+    "NEVER mention bedrooms, bathrooms, floor plans, construction timelines, or 'near completion'.",
+    "Single 'Grosvenor Agent' only (no multi-agent mentions).",
+    "Use existing brand SVG logo set.",
+    "Residences shown by SIZE in SQUARE FEET (do not convert).",
+    "All interactive elements MUST include data-testid attribute.",
+    "Avoid generic AI layouts, heavy cards, thick typography, large blue sections."
+  ],
+  "image_urls": {
+    "hero_and_views": [
+      "https://images.pexels.com/photos/23696832/pexels-photo-23696832.jpeg",
+      "https://images.pexels.com/photos/7722162/pexels-photo-7722162.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    ],
+    "lifestyle_and_interiors": [
+      "https://images.pexels.com/photos/20418771/pexels-photo-20418771.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "https://images.pexels.com/photos/33529500/pexels-photo-33529500.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "https://images.pexels.com/photos/36903893/pexels-photo-36903893.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+    ],
+    "amenities": [
+      "https://images.pexels.com/photos/11118953/pexels-photo-11118953.jpeg",
+      "https://images.unsplash.com/photo-1561501900-3701fa6a0864"
+    ]
   },
-  "motion_and_interactions": {
-    "scroll": "MANDATORY: Use `lenis` for smooth scrolling on marketing pages to provide a premium feel.",
-    "animations": "Subtle, slow fade-ins and slide-ups (using Framer Motion). No bouncy or frantic animations. Slow reveal matches the luxury tone.",
-    "hover_states": "Images slightly scale up (scale-105) inside hidden overflow containers. Buttons gently shift colors. Always explicitly set hover text color."
+  "testing_guidelines": {
+    "data_testid": "Add data-testid attributes to all buttons, links, form inputs, and FAB."
   },
-  "testing_requirements": {
-    "attributes": "All interactive and key informational elements MUST include `data-testid` attribute (e.g., data-testid='hero-cta-button', data-testid='lead-form-submit')."
-  },
-  "media": {
-    "image_strategy": "High-resolution architectural and interior photography. Images must not exceed 80vh on mobile. Never use placeholder services like dummyimage.com.",
-    "assets": {
-      "hero_exterior": [
-        {
-          "url": "https://images.pexels.com/photos/15577446/pexels-photo-15577446.jpeg",
-          "description": "Contemporary modern architecture with glass facade - Use for main hero."
-        },
-        {
-          "url": "https://images.pexels.com/photos/37582309/pexels-photo-37582309.jpeg",
-          "description": "Unique modern building facade - Use for exterior gallery."
-        }
-      ],
-      "interiors": [
-        {
-          "url": "https://images.unsplash.com/photo-1757924461488-ef9ad0670978?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBtb2Rlcm4lMjBhcGFydG1lbnQlMjBpbnRlcmlvcnxlbnwwfHx8fDE3ODIxMzE2OTN8MA&ixlib=rb-4.1.0&q=85",
-          "description": "Modern living room - Use for Units/Floor-plans overview."
-        },
-        {
-          "url": "https://images.pexels.com/photos/8135492/pexels-photo-8135492.jpeg",
-          "description": "Spacious elegant apartment - Use for interior gallery."
-        }
-      ],
-      "amenities": [
-        {
-          "url": "https://images.unsplash.com/photo-1680609989998-6183fcea718b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwzfHxzd2ltbWluZyUyMHBvb2wlMjBsdXh1cnl8ZW58MHx8fHwxNzgxODY0NzU3fDA&ixlib=rb-4.1.0&q=85",
-          "description": "Large indoor swimming pool - Use for Amenities section."
-        },
-        {
-          "url": "https://images.unsplash.com/photo-1727579674528-600120447183?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHw0fHxzd2ltbWluZyUyMHBvb2wlMjBsdXh1cnl8ZW58MHx8fHwxNzgxODY0NzU3fDA&ixlib=rb-4.1.0&q=85",
-          "description": "Luxury pool with lush trees - Alternative for Amenities."
-        }
-      ]
-    }
-  },
-  "instructions_to_main_agent": [
-    "Inject the provided CSS variables into the global stylesheet (e.g., index.css) inside the :root block.",
-    "Update tailwind.config.js to map to these CSS variables.",
-    "Add 'Cormorant Garamond' and 'Outfit' to the HTML document head via Google Fonts.",
-    "Ensure all marketing sections use <section> and pure Tailwind layouts with generous padding (e.g., py-24).",
-    "Integrate Shadcn UI components for the lead capture forms and admin dashboard.",
-    "Implement Lenis smooth scrolling globally for the marketing site routes.",
-    "Strictly adhere to the data-testid rules for every interactive element."
-  ]
+  "instructions_to_main_agent": "Use this JSON as the absolute source of truth for the Grosvenor Vistas redesign. Ensure the color tokens strictly use the defined warm palette with Grosvenor Blue ONLY as an accent. Implement the defined font stack (Cormorant Garamond + Signika). Respect all hard content rules regarding property details. Construct the UI using raw HTML/Tailwind for the editorial sections, and Shadcn ONLY for complex interactive elements (like the FAB dropdown or forms). Ensure responsive mobile-first implementation with performance-focused lazy loading. Apply data-testid to all interactive and key informational elements."
 }
