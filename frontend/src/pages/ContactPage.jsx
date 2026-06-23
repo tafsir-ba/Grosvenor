@@ -1,9 +1,9 @@
 import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
-import SectionHeading from "@/components/shared/SectionHeading";
 import LeadForm from "@/components/shared/LeadForm";
-import MapSection from "@/components/shared/MapSection";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Eyebrow, fadeUp, PlaceholderMap, ROUND } from "@/components/shared/luxe";
 import { PROJECT, LEAD_TYPE } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
 
@@ -16,20 +16,15 @@ export default function ContactPage() {
 
     return (
         <div data-testid="contact-page">
-            <Hero
-                image="/gallery/homestaging-living-dinning-room-kitchen-2.png"
-                height="min-h-[52vh]"
-                overline="Contact"
-                title="Let's talk"
-                subtitle="Book a showroom visit or send us a message — the Grosvenor Agent will be in touch."
-            />
+            <Hero image="/gallery/homestaging-living-dinning-room-kitchen-2.png" overline="Contact" title="Let's talk" subtitle="Book a showroom visit or send a message — the Grosvenor Agent will be in touch." />
 
-            <section className="container-x py-24 md:py-32">
-                <div className="grid gap-16 lg:grid-cols-[1fr_1.2fr]">
+            <section className="container-wide py-16 md:py-24">
+                <div className="grid gap-14 px-2 md:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
                     {/* Details */}
-                    <div>
-                        <SectionHeading overline="Get in Touch" title="We're here to help" />
-                        <div className="mt-10 space-y-4">
+                    <motion.div {...fadeUp}>
+                        <Eyebrow>Get in Touch</Eyebrow>
+                        <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">We're here to help</h2>
+                        <div className="mt-10 space-y-3">
                             {channels.map((c) => (
                                 <a
                                     key={c.label}
@@ -37,55 +32,45 @@ export default function ContactPage() {
                                     onClick={() => trackClick(c.type)}
                                     data-testid={c.testid}
                                     {...(c.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                                    className="flex items-center gap-4 rounded-none border border-border bg-card p-5 transition-colors hover:border-brand-gold"
+                                    className="flex items-center gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5 transition-colors hover:border-brand-gold"
                                 >
                                     <c.icon className="h-5 w-5 text-brand-gold" />
                                     <div>
-                                        <p className="overline text-muted-foreground">{c.label}</p>
-                                        <p className="font-medium text-brand-ink">{c.value}</p>
+                                        <p className="lux-eyebrow text-brand-ink/50">{c.label}</p>
+                                        <p className="font-sans font-medium text-brand-ink">{c.value}</p>
                                     </div>
                                 </a>
                             ))}
-                            <div className="flex items-start gap-4 rounded-none border border-border bg-card p-5">
+                            <div className="flex items-start gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5">
                                 <MapPin className="mt-1 h-5 w-5 text-brand-gold" />
                                 <div>
-                                    <p className="overline text-muted-foreground">Showroom</p>
-                                    <p className="font-medium text-brand-ink">{PROJECT.contact.address}</p>
+                                    <p className="lux-eyebrow text-brand-ink/50">Showroom</p>
+                                    <p className="font-sans font-medium text-brand-ink">{PROJECT.contact.address}</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    {/* Form with tabs */}
-                    <div className="rounded-none border border-border bg-card p-8 md:p-10" data-testid="contact-form-card">
+                    {/* Form */}
+                    <motion.div {...fadeUp} className="rounded-[1.75rem] border border-brand-beige bg-brand-ivory p-8 md:p-10" data-testid="contact-form-card">
                         <Tabs defaultValue="visit">
                             <TabsList className="mb-8 grid w-full grid-cols-2" data-testid="contact-tabs">
                                 <TabsTrigger value="visit" data-testid="tab-visit">Book Showroom Visit</TabsTrigger>
                                 <TabsTrigger value="general" data-testid="tab-general">General Contact</TabsTrigger>
                             </TabsList>
                             <TabsContent value="visit">
-                                <LeadForm
-                                    leadType={LEAD_TYPE.BOOK_SHOWROOM_VISIT}
-                                    submitLabel="Request a Visit"
-                                    messagePlaceholder="Let us know your preferred day or time."
-                                    testIdPrefix="visit"
-                                />
+                                <LeadForm leadType={LEAD_TYPE.BOOK_SHOWROOM_VISIT} submitLabel="Request a Visit" messagePlaceholder="Let us know your preferred day or time." testIdPrefix="visit" />
                             </TabsContent>
                             <TabsContent value="general">
-                                <LeadForm
-                                    leadType={LEAD_TYPE.GENERAL_CONTACT}
-                                    submitLabel="Send Message"
-                                    messagePlaceholder="How can we help?"
-                                    testIdPrefix="general"
-                                />
+                                <LeadForm leadType={LEAD_TYPE.GENERAL_CONTACT} submitLabel="Send Message" messagePlaceholder="How can we help?" testIdPrefix="general" />
                             </TabsContent>
                         </Tabs>
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
-            <section className="container-x pb-24 md:pb-32">
-                <MapSection />
+            <section className="container-wide pb-24 md:pb-32">
+                <PlaceholderMap className={`h-[56vh] lg:h-[64vh] ${ROUND}`} />
             </section>
         </div>
     );

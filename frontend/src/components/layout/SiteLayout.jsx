@@ -17,7 +17,7 @@ export default function SiteLayout() {
     }, [pathname]);
 
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-screen flex-col bg-brand-warm text-brand-ink">
             <Header />
             <main className="flex-1">
                 <Outlet />
