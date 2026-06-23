@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Instagram, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import Logo from "@/components/brand/Logo";
 import { NAV, PROJECT } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -37,32 +36,33 @@ export default function Header() {
                             <span className="hidden text-[0.72rem] font-medium uppercase tracking-[0.3em] sm:inline">Menu</span>
                         </button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-full border-none bg-brand-blue p-0 text-white sm:max-w-md" data-testid="menu-drawer">
-                        <div className="flex h-full flex-col p-10">
-                            <div className="mb-12 flex items-center justify-between">
-                                <Logo color="white" layout="horizontal" className="h-10" />
+                    <SheetContent side="left" className="w-full border-none bg-brand-warm p-0 text-brand-ink [&>button]:hidden sm:max-w-lg" data-testid="menu-drawer">
+                        <div className="flex h-full flex-col px-8 py-10 md:px-14 md:py-12">
+                            <div className="mb-auto flex items-center justify-between">
+                                <img src="/brand/header-gold.svg" alt="Grosvenor Vistas" className="h-14 w-auto md:h-16" />
                                 <SheetClose asChild>
-                                    <button data-testid="menu-close" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 transition-colors hover:border-brand-gold hover:text-brand-gold"><X className="h-5 w-5" /></button>
+                                    <button data-testid="menu-close" className="flex h-12 w-12 items-center justify-center rounded-full border border-brand-ink/20 text-brand-ink transition-colors hover:border-brand-gold hover:text-brand-gold"><X className="h-5 w-5" /></button>
                                 </SheetClose>
                             </div>
-                            <nav className="flex flex-1 flex-col justify-center gap-1">
+                            <nav className="flex flex-col py-10">
                                 {NAV.map((item, i) => (
                                     <SheetClose asChild key={item.to}>
                                         <NavLink
                                             to={item.to}
                                             data-testid={`nav-${item.to.replace("/", "")}`}
                                             className={({ isActive }) =>
-                                                cn("lux-title text-4xl font-light tracking-tight transition-colors hover:text-brand-gold md:text-5xl", isActive ? "text-brand-gold" : "text-white")
+                                                cn("group flex items-baseline gap-5 py-2.5 transition-colors md:py-3", isActive ? "text-brand-gold" : "text-brand-blue hover:text-brand-gold")
                                             }
                                         >
-                                            <span className="mr-3 align-top font-sans text-xs text-white/40">0{i + 1}</span>{item.label}
+                                            <span className="lux-eyebrow w-6 text-brand-gold/60">0{i + 1}</span>
+                                            <span className="lux-title text-4xl font-light leading-none md:text-5xl lg:text-6xl">{item.label}</span>
                                         </NavLink>
                                     </SheetClose>
                                 ))}
                             </nav>
-                            <div className="mt-10 space-y-1 border-t border-white/15 pt-8 font-sans text-sm text-white/70">
-                                <a href={PROJECT.contact.phoneHref} className="block hover:text-white">{PROJECT.contact.phone}</a>
-                                <a href={PROJECT.contact.emailHref} className="block hover:text-white">{PROJECT.contact.email}</a>
+                            <div className="mt-auto space-y-1.5 border-t border-brand-beige pt-8 font-sans text-sm text-brand-ink/60">
+                                <a href={PROJECT.contact.phoneHref} className="block transition-colors hover:text-brand-gold">{PROJECT.contact.phone}</a>
+                                <a href={PROJECT.contact.emailHref} className="block transition-colors hover:text-brand-gold">{PROJECT.contact.email}</a>
                                 <p>{PROJECT.contact.address}</p>
                             </div>
                         </div>
