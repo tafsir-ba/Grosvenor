@@ -77,6 +77,14 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Image swaps: Landscaped Grounds → new Heliconia view (home + amenities); "24/7 Armed Response" → "Strata Approved Security" with gate-entrance image; removed terrace.png & townhouse-facade.png sitewide + files.
 - Tested: 29/29 backend pytest pass; all frontend form/consent/cookie/footer flows pass (iteration_2.json).
 
+## Residences + Unit Detail Redesign (2026-06-23, fork)
+- Residences page: expanded to 6 lifestyle collections (Vista/Signature/Grand/Skyline/Penthouse/Begonia Townhouses) mapped to real inventory by total surface (from listing PDF). Card design preserved; each collection card auto-filters the inventory below (client-side, removable chip). Added a zoomed aerial orientation section with subtle block labels (Heliconia/Hibiscus/Ginger Lily/Begonia).
+- Collections centralised in constants.js `COLLECTIONS` + `collectionForSurface()` — single source of truth shared by Residences (TIERS) and Unit Detail.
+- Unit Detail page fully rebuilt to the warm-luxury system: premium cinematic hero (Residence <no.>, building · collection, size, status), representative interior gallery (5 large captioned images per collection + "indicative, not exact photos" disclaimer), editorial overview list (NO bedroom/room counts), collection context link, "Request Floor Plan" lead form (split fields + required consent), WhatsApp/Call CTAs, and "Explore similar residences" related cards.
+- CRM-ready: lead payload now also carries collection, unit_surface, unit_balcony (backend LeadCreate + crm.py mapping). source_page now = route pathname. CRM sync still DISABLED.
+- Representative images assigned per collection (item 9) so units inherit imagery by size band; all imagery lazy-loaded + decoding=async.
+- Tested: 31/31 backend pytest pass; all unit-detail + residences flows pass (iteration_3.json).
+
 ## Backlog / Next
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
 - P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).

@@ -24,7 +24,7 @@ function getAttribution() {
     if (typeof window === "undefined") return {};
     const utm = JSON.parse(sessionStorage.getItem(STORE_KEY) || "{}");
     return {
-        source_page: document.title,
+        source_page: window.location.pathname,
         source_url: window.location.href,
         ...utm,
     };
