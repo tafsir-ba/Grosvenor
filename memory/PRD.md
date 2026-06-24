@@ -120,6 +120,7 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 
 
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
+- POST-DEPLOY: "Send to buyer" action in the Residence Explorer — one-click email of a residence's floor-plan PDF + pricing/details (+ optional custom note, CC sales rep, reply-to). Needs an email provider (Resend/SendGrid) + verified sending domain. Decisions/keys pending.
 - ~~P1: Replace placeholder brochure/pricelist PDFs~~ — DONE 2026-06-24 (real PDFs in /public/downloads).
 - P2: Reserved-status units (none currently) styling already supported.
 - P2: Optional — interactive site map, multilingual, analytics provider (GA4) hook in tracking.js.
