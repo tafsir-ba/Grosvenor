@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import StatusBadge from "@/components/shared/StatusBadge";
-import { formatPrice, formatSurface, floorLabel } from "@/lib/format";
+import { formatPrice, formatSurface, unitFloor } from "@/lib/format";
 import { BUILDINGS } from "@/lib/constants";
 
 function shortBuilding(value) {
@@ -11,6 +11,7 @@ function shortBuilding(value) {
 // Clean borderless unit row — no overline labels.
 export default function UnitCard({ unit }) {
     const sold = unit.status === "sold";
+    const living = unit.living_area ?? unit.total_surface;
     return (
         <Link
             to={`/residences/${unit.slug}`}
@@ -21,11 +22,12 @@ export default function UnitCard({ unit }) {
                 <h3 className="font-display text-4xl font-light text-brand-blue transition-colors group-hover:text-brand-gold md:text-5xl">
                     {unit.unit_number}
                 </h3>
-                <span className="text-sm uppercase tracking-[0.18em] text-muted-foreground">{shortBuilding(unit.building)} · {floorLabel(unit.floor)}</span>
+                <span className="text-sm uppercase tracking-[0.18em] text-muted-foreground">{shortBuilding(unit.building)} · {unitFloor(unit)}</span>
             </div>
 
-            <div className="flex items-center gap-8 md:gap-12">
-                <span className="text-base text-brand-ink">{formatSurface(unit.total_surface)}</span>
+            <div className="flex items-center gap-8 md:gap-10">
+                <span className="text-base text-brand-ink">{formatSurface(unit.total_surface)} <span className="text-xs uppercase tracking-[0.12em] text-muted-foreground">total</span></span>
+                <span className="hidden text-sm text-muted-foreground lg:inline">{formatSurface(living)} living</span>
                 <span className="hidden text-sm text-muted-foreground sm:inline">+{formatSurface(unit.balcony_surface)} balcony</span>
                 <span className="min-w-[120px] font-display text-xl text-brand-ink">{sold ? "—" : formatPrice(unit.price, unit.currency)}</span>
                 <StatusBadge status={unit.status} />

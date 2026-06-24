@@ -24,3 +24,7 @@ export function floorLabel(floor) {
     const map = { 1: "1st floor", 2: "2nd floor", 3: "3rd floor" };
     return map[floor] || `${floor}th floor`;
 }
+
+export function unitFloor(unit) {
+    return unit.floor_label || floorLabel(unit.floor);
+}

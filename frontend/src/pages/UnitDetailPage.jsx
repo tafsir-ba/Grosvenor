@@ -122,14 +122,18 @@ export default function UnitDetailPage() {
 
                         <div className="mt-8 space-y-4 border-y border-brand-beige py-7">
                             <div className="flex items-baseline justify-between">
-                                <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Interior</span>
-                                <span className="font-display text-2xl text-brand-ink">{formatSurface(unit.total_surface)}</span>
+                                <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Living Area</span>
+                                <span className="font-display text-2xl text-brand-ink">{formatSurface(unit.living_area ?? unit.total_surface)}</span>
                             </div>
                             <div className="flex items-baseline justify-between">
                                 <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Balcony</span>
                                 <span className="font-display text-2xl text-brand-ink">{formatSurface(unit.balcony_surface)}</span>
                             </div>
                             <div className="flex items-baseline justify-between">
+                                <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Total Surface</span>
+                                <span className="font-display text-2xl text-brand-ink">{formatSurface(unit.total_surface)}</span>
+                            </div>
+                            <div className="flex items-baseline justify-between pt-1">
                                 <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Price</span>
                                 <span className="font-display text-3xl text-brand-gold">{priceText}</span>
                             </div>

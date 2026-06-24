@@ -4,6 +4,7 @@ Inventory is loaded from `units.csv` (the single source of truth for unit data
 until the live CRM is wired). Edit that CSV and re-seed to update inventory.
 """
 import csv
+import re
 from pathlib import Path
 
 from core.db import db
@@ -20,17 +21,25 @@ _BLOCK_TO_BUILDING = {
 }
 
 
+def _first_floor(label: str) -> int:
+    m = re.search(r"\d+", label or "")
+    return int(m.group()) if m else 1
+
+
 def load_units_from_csv():
     docs = []
     with open(CSV_PATH, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             price = row["price_usd"].strip()
+            floor_label = row["floor_label"].strip()
             docs.append({
                 "building": _BLOCK_TO_BUILDING.get(row["block"].strip(), row["block"].strip()),
                 "unit_number": row["unit_number"].strip(),
-                "floor": int(row["floor"]),
-                "total_surface": float(row["interior_sqft"]),
+                "floor": _first_floor(floor_label),
+                "floor_label": floor_label or None,
+                "total_surface": float(row["total_sqft"]),
                 "balcony_surface": float(row["balcony_sqft"]),
+                "living_area": float(row["living_sqft"]),
                 "price": float(price) if price else None,
                 "currency": "USD",
                 "status": row["status"].strip().lower(),

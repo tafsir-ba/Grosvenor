@@ -19,8 +19,10 @@ class UnitBase(BaseModel):
     building: str
     unit_number: str
     floor: int
-    total_surface: float          # interior surface
+    floor_label: Optional[str] = None
+    total_surface: float          # total surface (living + balcony)
     balcony_surface: float = 0
+    living_area: Optional[float] = None   # interior living area
     price: Optional[float] = None      # None => "Price on request"
     currency: str = "USD"
     status: UnitStatus = UnitStatus.AVAILABLE
@@ -36,8 +38,10 @@ class UnitUpdate(BaseModel):
     building: Optional[str] = None
     unit_number: Optional[str] = None
     floor: Optional[int] = None
+    floor_label: Optional[str] = None
     total_surface: Optional[float] = None
     balcony_surface: Optional[float] = None
+    living_area: Optional[float] = None
     price: Optional[float] = None
     currency: Optional[str] = None
     status: Optional[UnitStatus] = None

@@ -1,44 +1,44 @@
-block,unit_number,floor,interior_sqft,balcony_sqft,price_usd,status
-Heliconia,A101,1,1671,139,402000,available
-Heliconia,A102,1,1671,139,393000,available
-Heliconia,A103,1,1671,139,398000,available
-Heliconia,A104,1,1671,139,400000,available
-Heliconia,A201,2,1671,139,403000,available
-Heliconia,A202,2,1671,139,401000,available
-Heliconia,A203,2,1671,139,406000,available
-Heliconia,A204,2,1671,139,406000,available
-Heliconia,A301,3,1671,139,408000,available
-Heliconia,A302,3,1671,139,406000,available
-Heliconia,A303,3,1671,139,,sold
-Heliconia,A304,3,1671,139,412000,available
-Heliconia,A401,4,1671,139,418000,available
-Heliconia,A402,4,3135,467,890000,available
-Heliconia,A403,4,1671,139,,sold
-Heliconia,A404,4,3135,467,890000,available
-Hibiscus,B101,1,1671,139,398000,available
-Hibiscus,B102,1,1671,139,398000,available
-Hibiscus,B103,1,1779,139,420000,available
-Hibiscus,B104,1,1779,139,427000,available
-Hibiscus,B201,2,1671,139,401000,available
-Hibiscus,B202,2,1671,139,401000,available
-Hibiscus,B203,2,1779,139,433000,available
-Hibiscus,B204,2,1779,139,430000,available
-Hibiscus,B301,3,1671,139,404000,available
-Hibiscus,B302,3,1671,139,404000,available
-Hibiscus,B303,3,1779,139,,sold
-Hibiscus,B304,3,1779,139,458000,reserved
-Hibiscus,B401,4,1671,139,415000,available
-Hibiscus,B402,4,1671,139,,sold
-Hibiscus,B403,4,3644,883,,sold
-Hibiscus,B404,4,3644,883,,sold
-Ginger Lily,C101,1,2322,409,599000,available
-Ginger Lily,C102,1,1671,139,405000,available
-Ginger Lily,C103,1,1671,139,405000,available
-Ginger Lily,C201,2,2141,228,,sold
-Ginger Lily,C202,2,1671,139,,sold
-Ginger Lily,C203,2,1671,139,412000,available
-Ginger Lily,C301,3,2141,228,,sold
-Ginger Lily,C302,3,3135,467,880000,reserved
-Ginger Lily,C303,3,3135,467,890000,available
-Begonia,Townhouse 1,1,4845,1682,1145000,available
-Begonia,Townhouse 2,1,4845,1682,1145000,available
+block,unit_number,floor_label,total_sqft,balcony_sqft,living_sqft,price_usd,status
+Heliconia,A101,1st Floor,1671,139,1532,402000,available
+Heliconia,A102,1st Floor,1671,139,1532,393000,available
+Heliconia,A103,1st Floor,1671,139,1532,398000,available
+Heliconia,A104,1st Floor,1671,139,1532,400000,available
+Heliconia,A201,2nd Floor,1671,139,1532,403000,available
+Heliconia,A202,2nd Floor,1671,139,1532,401000,available
+Heliconia,A203,2nd Floor,1671,139,1532,406000,available
+Heliconia,A204,2nd Floor,1671,139,1532,406000,available
+Heliconia,A301,3rd Floor,1671,139,1532,408000,available
+Heliconia,A302,3rd Floor,1671,139,1532,406000,available
+Heliconia,A303,3rd Floor,1671,139,1532,,sold
+Heliconia,A304,3rd Floor,1671,139,1532,412000,available
+Heliconia,A401,4th Floor,1671,139,1532,418000,available
+Heliconia,A402,4th & 5th Floor,3135,467,2668,890000,available
+Heliconia,A403,4th Floor,1671,139,1532,,sold
+Heliconia,A404,4th & 5th Floor,3135,467,2668,890000,available
+Hibiscus,B101,1st Floor,1671,139,1532,398000,available
+Hibiscus,B102,1st Floor,1671,139,1532,398000,available
+Hibiscus,B103,1st Floor,1779,139,1640,427000,reserved
+Hibiscus,B104,1st Floor,1779,139,1640,427000,available
+Hibiscus,B201,2nd Floor,1671,139,1532,401000,available
+Hibiscus,B202,2nd Floor,1671,139,1532,401000,available
+Hibiscus,B203,2nd Floor,1779,139,1640,433000,available
+Hibiscus,B204,2nd Floor,1779,139,1640,430000,available
+Hibiscus,B301,3rd Floor,1671,139,1532,404000,available
+Hibiscus,B302,3rd Floor,1671,139,1532,404000,available
+Hibiscus,B303,3rd Floor,1779,139,1640,,sold
+Hibiscus,B304,3rd Floor,1779,139,1640,458000,reserved
+Hibiscus,B401,4th Floor,1671,139,1532,415000,available
+Hibiscus,B402,4th Floor,1671,139,1532,,sold
+Hibiscus,B403,4th & 5th Floor,3644,883,2761,,sold
+Hibiscus,B404,4th & 5th Floor,3644,883,2761,,sold
+Ginger Lily,C101,1st Floor,2322,409,1913,599000,available
+Ginger Lily,C102,1st Floor,1671,139,1532,405000,available
+Ginger Lily,C103,1st Floor,1671,139,1532,405000,available
+Ginger Lily,C201,2nd Floor,2141,228,1913,,sold
+Ginger Lily,C202,2nd Floor,1671,139,1532,,sold
+Ginger Lily,C203,2nd Floor,1671,139,1532,412000,available
+Ginger Lily,C301,3rd Floor,2141,228,1913,,sold
+Ginger Lily,C302,3rd & 4th Floor,3135,467,2668,880000,reserved
+Ginger Lily,C303,3rd & 4th Floor,3135,467,2668,890000,available
+Begonia,Townhouse 1,Townhouse,4845,1682,3136,1145000,available
+Begonia,Townhouse 2,Townhouse,4845,1682,3136,1145000,available
