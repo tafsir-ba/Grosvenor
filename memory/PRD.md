@@ -85,6 +85,12 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Representative images assigned per collection (item 9) so units inherit imagery by size band; all imagery lazy-loaded + decoding=async.
 - Tested: 31/31 backend pytest pass; all unit-detail + residences flows pass (iteration_3.json).
 
+## Phase-2: Development & Mortgage Pages (2026-06-23, fork)
+- **Development** page rebuilt in the warm luxury system: project overview with 43/3/2 stat blocks, a Masterplan section using the brochure aerial (colored leaf markers) + 4 building legend cards, "At a Glance" feature list, four building collection cards (→ Residences filter), amenities preview (→ Amenities), and a final CTA. Route: `/the-development`.
+- **Mortgage** page made action-oriented: intro, 5-step buying journey (Choose → Apply → Review → Reserve → Welcome), a working client-side **Mortgage Calculator** (price/deposit/rate/term → monthly payment + loan amount), a Sagicor financing-partner section (CTAs to sagicor.com), prominent "Start Your Application" lead form (`#apply`), a FAQ accordion (shared FAQ data), and final CTA. Route: `/mortgage`.
+- New shared data in constants: COLLECTIONS reuse, DEVELOPMENT_BUILDINGS, DEV_STATS, DEV_FEATURES, AMENITY_PREVIEW, MORTGAGE_STEPS, SAGICOR. New MortgageCalculator component. Masterplan image at /site/masterplan.png.
+- Verified via screenshots; calculator math confirmed (420k − 63k @ 9.5%/25y → ~US$3,119/mo).
+
 ## Backlog / Next
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
 - P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).

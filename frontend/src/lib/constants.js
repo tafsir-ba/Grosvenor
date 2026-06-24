@@ -233,6 +233,72 @@ export const GALLERY = [
 
 export const HERO_IMAGE = "/gallery/buildings-01.png";
 export const AERIAL_IMAGE = "/site/aerial-masterplan.jpg";
+export const MASTERPLAN_IMAGE = "/site/masterplan.png";
+
+// Masterplan — the four buildings (colours match the brochure leaf markers).
+export const DEVELOPMENT_BUILDINGS = [
+    {
+        name: "Begonia", block: "Townhouses", units: 2, color: "#4B2E6B",
+        building: "Townhouses — Begonia", collection: "townhouses",
+        items: ["Two private townhouses", "4,845 sq ft each"],
+    },
+    {
+        name: "Ginger Lily", block: "Block C", units: 9, color: "#B5571F",
+        building: "Block C — Ginger Lily", collection: "vista",
+        items: ["Four 1,671 sq ft residences", "Three 2,141–2,322 sq ft residences", "Two 3,135 sq ft penthouses"],
+    },
+    {
+        name: "Hibiscus", block: "Block B", units: 16, color: "#1F3A5F",
+        building: "Block B — Hibiscus", collection: "vista",
+        items: ["Eight 1,671 sq ft residences", "Six 1,779 sq ft residences", "Two 3,644 sq ft penthouses"],
+    },
+    {
+        name: "Heliconia", block: "Block A", units: 16, color: "#C6862B",
+        building: "Block A — Heliconia", collection: "vista",
+        items: ["Fourteen 1,671 sq ft residences", "Two 3,135 sq ft penthouses"],
+    },
+];
+
+// Development at a glance — headline stats then feature points.
+export const DEV_STATS = [
+    { value: "43", label: "Residences" },
+    { value: "3", label: "Apartment Buildings" },
+    { value: "2", label: "Townhouses" },
+];
+export const DEV_FEATURES = [
+    "Rooftop swimming pools",
+    "Gyms for each block",
+    "Convenient elevator access",
+    "Underground parking",
+    "Strata approved security",
+    "Electronic gate access",
+    "Landscaped outdoor areas",
+    "Children's playground",
+];
+
+// Amenities preview (links through to the full Amenities page).
+export const AMENITY_PREVIEW = [
+    { title: "Rooftop Pools", image: "/gallery/rooftop-pool.png" },
+    { title: "Gym", image: "/gallery/homestaging-living-dinning-room-kitchen-2.png" },
+    { title: "Landscaped Grounds", image: "/gallery/heliconia-grounds.png" },
+    { title: "Children's Playground", image: "/gallery/homestaging-evening-terrace.png" },
+    { title: "Security", image: "/gallery/gate-entrance.png" },
+    { title: "Outdoor Gathering Spaces", image: "/gallery/terrace-2.png" },
+];
+
+// Mortgage — buyer journey + financing partner.
+export const MORTGAGE_STEPS = [
+    { title: "Choose Your Residence", body: "Browse availability and select the residence that suits you." },
+    { title: "Submit Your Application", body: "Complete a short online application to get started." },
+    { title: "Financing Review", body: "Your financing options are reviewed with our partner." },
+    { title: "Reservation & Agreement", body: "Place your reservation and sign the sale agreement." },
+    { title: "Welcome to Grosvenor Vistas", body: "Complete your purchase and collect your keys." },
+];
+export const SAGICOR = {
+    name: "Sagicor",
+    blurb: "Our preferred financing partner. Sagicor offers tailored mortgage solutions for local and overseas buyers, with competitive rates and clear, supportive guidance throughout.",
+    url: "https://www.sagicor.com/en-JM/banking/loans/mortgage",
+};
 
 // Image-led amenity showcase — short titles only, drawn from the real amenity list.
 export const AMENITY_GALLERY = [

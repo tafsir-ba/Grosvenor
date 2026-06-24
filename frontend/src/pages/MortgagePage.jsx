@@ -1,61 +1,110 @@
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
-import SectionHeading from "@/components/shared/SectionHeading";
 import LeadForm from "@/components/shared/LeadForm";
-import DownloadForm from "@/components/shared/DownloadForm";
-import { useDownloads } from "@/hooks/useData";
-import { LEAD_TYPE } from "@/lib/constants";
+import CtaButton from "@/components/shared/CtaButton";
+import MortgageCalculator from "@/components/shared/MortgageCalculator";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR, FAQ } from "@/lib/constants";
+import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
-const STEPS = [
-    { title: "Understand your budget", body: "Review your deposit and the financing you may qualify for in USD terms." },
-    { title: "Speak with a lender", body: "We can point you to mortgage options suited to overseas and local buyers." },
-    { title: "Reserve with confidence", body: "Place a reservation once your financing path is clear and straightforward." },
-];
+const scrollToApply = () => document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" });
 
 export default function MortgagePage() {
-    const downloads = useDownloads();
-    const priceList = downloads.find((d) => d.type === "pricelist");
-
     return (
         <div data-testid="mortgage-page">
-            <Hero
-                image="/gallery/model-unit-living-and-dining-room.png"
-                height="min-h-[56vh]"
-                overline="Mortgage & Financing"
-                title="Financing made simple"
-                subtitle="Clear guidance to help you move forward with confidence."
-            />
+            <Hero image="/gallery/model-unit-living-and-dining-room.png" height="min-h-[58vh]" overline="Mortgage & Financing" title="Financing made simple" subtitle="Clear, supportive guidance to help you move forward with confidence." />
 
-            <section className="container-x py-24 md:py-32">
-                <div className="grid gap-16 lg:grid-cols-[1.1fr_1fr]">
-                    <div>
-                        <SectionHeading overline="Getting Started" title="A straightforward route to ownership" subtitle="Grosvenor Vistas residences are priced in USD. Whether you are buying locally or from overseas, our team can help you understand your options." />
-                        <div className="mt-10 space-y-8">
-                            {STEPS.map((s, i) => (
-                                <div key={s.title} data-testid={`mortgage-step-${i}`} className="flex gap-5">
-                                    <span className="font-display text-3xl text-brand-gold/40">{String(i + 1).padStart(2, "0")}</span>
-                                    <div>
-                                        <h3 className="font-display text-xl text-brand-ink">{s.title}</h3>
-                                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        {priceList && <div className="mt-12"><DownloadForm download={priceList} /></div>}
-                    </div>
+            {/* 1. Intro */}
+            <section className="container-wide py-16 md:py-24">
+                <motion.div {...fadeUp} className="max-w-3xl px-2 md:px-6">
+                    <Eyebrow>Financing Your Residence</Eyebrow>
+                    <h2 className="lux-title mt-6 text-4xl text-brand-blue sm:text-5xl">A straightforward route to ownership</h2>
+                    <p className="mt-6 font-sans text-lg leading-relaxed text-brand-ink/65">Residences are priced in USD. Whether buying locally or from overseas, our financing partner helps you understand your options and take the next step with ease.</p>
+                </motion.div>
+            </section>
 
-                    <div className="h-fit rounded-none border border-border bg-card p-8 lg:sticky lg:top-28" data-testid="mortgage-enquiry">
-                        <h2 className="font-display text-2xl text-brand-ink">Request mortgage information</h2>
-                        <p className="mt-2 text-sm text-muted-foreground">Tell us a little about you and we'll share relevant financing details.</p>
-                        <div className="mt-6">
-                            <LeadForm
-                                leadType={LEAD_TYPE.MORTGAGE_INFO_REQUEST}
-                                submitLabel="Request Information"
-                                messagePlaceholder="Anything we should know about your plans?"
-                                testIdPrefix="mortgage"
-                            />
-                        </div>
+            {/* 2. Buying process */}
+            <section className="bg-brand-ivory py-16 md:py-24">
+                <div className="container-wide px-2 md:px-6">
+                    <motion.div {...fadeUp} className="mb-12"><Eyebrow>The Journey</Eyebrow><h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Five simple steps</h2></motion.div>
+                    <div className="grid gap-6 md:grid-cols-5" data-testid="mortgage-process">
+                        {MORTGAGE_STEPS.map((s, i) => (
+                            <motion.div {...fadeUp} key={s.title} className="border-t-2 border-brand-gold/30 pt-5" data-testid={`process-step-${i}`}>
+                                <span className="font-display text-4xl text-brand-gold/40">{String(i + 1).padStart(2, "0")}</span>
+                                <h3 className="lux-title mt-3 text-xl text-brand-blue">{s.title}</h3>
+                                <p className="mt-2 font-sans text-sm leading-relaxed text-brand-ink/60">{s.body}</p>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
+            </section>
+
+            {/* 4. Calculator */}
+            <section className="container-wide py-16 md:py-24">
+                <motion.div {...fadeUp} className="mb-10 px-2 md:px-6"><Eyebrow>Affordability</Eyebrow><h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Mortgage calculator</h2></motion.div>
+                <motion.div {...fadeUp} className="px-2 md:px-6"><MortgageCalculator /></motion.div>
+            </section>
+
+            {/* 5. Financing partner */}
+            <section className="container-wide pb-16 md:pb-24">
+                <motion.div {...fadeUp} className={`grid items-center gap-10 bg-brand-blue p-10 md:p-16 lg:grid-cols-[1fr_1.2fr] ${ROUND}`} data-testid="sagicor-section">
+                    <div className="flex items-center justify-center rounded-[1.5rem] bg-white px-8 py-14">
+                        <span className="font-display text-5xl tracking-tight text-brand-blue">{SAGICOR.name}</span>
+                    </div>
+                    <div>
+                        <Eyebrow light>Financing Partner</Eyebrow>
+                        <h2 className="lux-title mt-6 text-3xl text-white sm:text-4xl">Mortgages with {SAGICOR.name}</h2>
+                        <p className="mt-5 max-w-lg font-sans text-base leading-relaxed text-white/75">{SAGICOR.blurb}</p>
+                        <div className="mt-8 flex flex-wrap gap-3">
+                            <CtaButton href={SAGICOR.url} target="_blank" rel="noreferrer" variant="white" data-testid="sagicor-visit">Visit {SAGICOR.name}</CtaButton>
+                            <CtaButton href={SAGICOR.url} target="_blank" rel="noreferrer" variant="outline-light" data-testid="sagicor-learn">Learn More</CtaButton>
+                        </div>
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* 3. Online application */}
+            <section id="apply" className="container-wide pb-16 md:pb-24">
+                <motion.div {...fadeUp} className={`overflow-hidden bg-brand-ivory ${ROUND}`}>
+                    <div className="grid lg:grid-cols-2">
+                        <div className="flex flex-col justify-center p-10 md:p-14">
+                            <Eyebrow>Online Application</Eyebrow>
+                            <h2 className="lux-title mt-6 text-4xl text-brand-blue sm:text-5xl">Start your application</h2>
+                            <p className="mt-6 max-w-md font-sans text-lg text-brand-ink/65">Share your details to begin. Once submitted, our team reviews your request and follows up with financing options and next steps — usually within one business day.</p>
+                        </div>
+                        <div className="border-t border-brand-beige bg-brand-warm/60 p-10 md:p-14 lg:border-l lg:border-t-0" data-testid="mortgage-enquiry">
+                            <LeadForm leadType={LEAD_TYPE.MORTGAGE_INFO_REQUEST} submitLabel="Start Your Application" messagePlaceholder="Tell us about your plans (residence of interest, budget, timeline)…" testIdPrefix="mortgage" />
+                        </div>
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* 6. FAQ */}
+            <section className="container-wide pb-16 md:pb-24">
+                <motion.div {...fadeUp} className="mb-8 px-2 md:px-6"><Eyebrow>Questions</Eyebrow><h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Good to know</h2></motion.div>
+                <motion.div {...fadeUp} className="px-2 md:px-6">
+                    <Accordion type="single" collapsible className="border-t border-brand-beige" data-testid="mortgage-faq">
+                        {FAQ.map((f, i) => (
+                            <AccordionItem key={i} value={`faq-${i}`} className="border-b border-brand-beige">
+                                <AccordionTrigger className="py-6 text-left font-display text-lg text-brand-ink hover:text-brand-gold hover:no-underline">{f.q}</AccordionTrigger>
+                                <AccordionContent className="font-sans text-base text-brand-ink/65">{f.a}</AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </motion.div>
+            </section>
+
+            {/* 7. Final CTA */}
+            <section className="container-wide pb-24 md:pb-32">
+                <motion.div {...fadeUp} className={`flex flex-col items-center gap-8 bg-brand-blue px-8 py-20 text-center ${ROUND}`}>
+                    <Eyebrow light>Begin</Eyebrow>
+                    <h2 className="lux-title max-w-2xl text-4xl text-white sm:text-5xl">Ready to begin?</h2>
+                    <div className="flex flex-wrap justify-center gap-4">
+                        <CtaButton variant="white" onClick={scrollToApply} data-testid="mortgage-cta-apply">Start Application</CtaButton>
+                        <CtaButton to="/contact" variant="outline-light" data-testid="mortgage-cta-contact">Contact Us</CtaButton>
+                    </div>
+                </motion.div>
             </section>
         </div>
     );
