@@ -1,0 +1,70 @@
+{
+  "summary": "Full backend + frontend regression for new PROTECTED /admin/residence-explorer (sales tool). 32/32 pytest backend tests pass (added 1 new sales_explorer-with-protected-fields test). Frontend explorer fully verified: auth gate, 4 building cards w/ correct counts, building->floor->unit drilldown, detail panel (Bed/Bath/Surface/Living/Balcony/Price/Status), 2-plan penthouse, 4-plan townhouse, floorplan modal, room breakdown, full-plan-set Dropbox link, inquiry form (consent gating + successful submit), filters (status & type), reset, breadcrumb, noindex meta, /robots.txt Disallow /admin. Lead persistence verified end-to-end: A101 inquiry shows up in /api/admin/leads with lead_type=sales_explorer + unit_living=1532, unit_floor='1st Floor', unit_status=available, residence_type='2 Bedroom Residence'. PUBLIC compliance check: /residences list and /residences/a102 do NOT display bedroom/bathroom counts, per-unit floor plan images, or per-unit room breakdown (feature copy mentioning 'master bedroom' / 'open floor plans' is generic spec text, not per-unit data).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "LeadForm (used in /admin/residence-explorer inquiry & all public forms)", "issues": ["Consent copy in src/lib/constants.js LEGAL.consentText references 'Evo Home' instead of 'Grosvenor Vistas' — visible to admin sales team and public visitors. Branding leak."]}
+    ]
+  },
+  "verification_details": {
+    "auth_gate": "Visiting /admin/residence-explorer logged out -> 302 to /admin/login (verified)",
+    "login_creds_used": "admin@grosvenorvistas.com / Grosvenor2026!",
+    "meta_robots": "noindex, nofollow (injected via useEffect)",
+    "robots_txt": "Disallow: /admin and Disallow: /admin/ confirmed",
+    "building_cards": {
+      "heliconia": "16 total, 14 available",
+      "hibiscus": "16 total, 10 available",
+      "ginger-lily": "9 total, 5 available",
+      "begonia": "2 total, 2 available"
+    },
+    "drilldown": "Heliconia -> 1st Floor -> A101 opens detail panel with Bed/Bath/Total/Living/Balcony/Price/Status, 1 floor plan (Residence Plan), 8-row room breakdown, Dropbox download link present",
+    "penthouse_a402": "Floor 4 -> A402 (3,135 sqft) shows 2 plans: floorplan-lower-level + floorplan-upper-level — opens floorplan-modal",
+    "townhouse_begonia": "Townhouse 1 & 2 (4,845 sqft) each show 4 plans: Basement, 1st Floor, 2nd Floor, Rooftop",
+    "filters": "filter-status=sold -> Heliconia count drops to 2; filter-type='4 Bedroom Townhouse' -> Heliconia=0, Begonia=2; explorer-reset returns to 4-building grid",
+    "inquiry_submission": {
+      "no_consent": "submit blocked (form not submitted, no success toast)",
+      "with_consent": "submission succeeded — lead created and form area reset",
+      "backend_lead_record": {
+        "lead_type": "sales_explorer",
+        "source_unit": "A101",
+        "source_building": "Heliconia",
+        "residence_type": "2 Bedroom Residence",
+        "unit_surface": 1671.0,
+        "unit_living": 1532.0,
+        "unit_balcony": 139.0,
+        "unit_floor": "1st Floor",
+        "unit_status": "available",
+        "collection": "2 Bedroom Residence"
+      }
+    },
+    "public_compliance": {
+      "/residences": "no bedroom/bathroom counts, no per-unit floor-plan images (0 imgs matching /floorplan/)",
+      "/residences/a102": "header shows Living Area / Balcony / Total Surface / Price ONLY — no Bed/Bath count, no room breakdown, no floor plan image. Generic features list mentions 'master bedroom with ensuite bathroom' and 'open floor plans' as standard spec text — not a per-unit disclosure."
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_grosvenor_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Update LEGAL.consentText in /app/frontend/src/lib/constants.js — replace 'Evo Home' with 'Grosvenor Vistas' (or correct legal entity). This text is shown to BOTH the public AND the admin sales team in every lead form."
+  ],
+  "critical_code_review_comments": [
+    "LeadForm consent text leaks 'Evo Home' branding (constants.js line 28) — must be rebranded.",
+    "ResidenceExplorer.jsx pickBuilding(null) trick on line 101 ('onClick={() => pickBuilding(null) || setBuilding(null)}') is a no-op double-call — pickBuilding(null) already sets building=null. Cosmetic.",
+    "explorerData.js getUnitType keys on surface alone; if CRM ever returns a 1,671 sqft unit in Begonia it would be classified as 2BR — consider keying on (building, unit_number) or adding a unit_type column server-side for robustness.",
+    "FULL_PLANS_URL is a hard-coded Dropbox link in client code — fine for now but easily leaked if anyone copies the URL; consider a server-side gated endpoint that checks JWT before redirecting."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_grosvenor_api.py (added test_create_sales_explorer_lead_with_protected_fields)"
+  ],
+  "success_rate": {"backend": "100% (32/32 pytest)", "frontend": "100% — only minor branding copy issue"},
+  "test_credentials": "Admin: admin@grosvenorvistas.com / Grosvenor2026! (works)",
+  "seed_data_creation": "1 sales_explorer lead created via UI for A101; 1 sales_explorer lead created via pytest for A402 — both visible in /api/admin/leads",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All 32 backend tests pass via pytest at /app/backend/tests/test_grosvenor_api.py. ResidenceExplorer page is fully wired and integration with backend leads + sales_explorer enum + new schema fields (unit_living/unit_floor/unit_status/residence_type) is end-to-end verified. Single remaining issue is the 'Evo Home' string in constants.js consent text which affects every form site-wide.",
+  "rca of the issue": "LEGAL.consentText in /app/frontend/src/lib/constants.js (line 28) is a generic template string that was not customized for Grosvenor Vistas during the white-label rebrand. Replace 'Evo Home' with the correct legal entity. No functional impact, but legal/branding compliance issue."
+}

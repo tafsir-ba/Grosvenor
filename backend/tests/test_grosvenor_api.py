@@ -249,6 +249,46 @@ class TestLeads:
             f"{r.status_code}: {r.text}"
         )
 
+    def test_create_sales_explorer_lead_with_protected_fields(self, session, admin_session):
+        """sales_explorer lead carries unit_living, unit_floor, unit_status, residence_type."""
+        unique_email = f"test_explorer_{uuid.uuid4().hex[:8]}@example.com"
+        payload = {
+            "first_name": "TESTExplorer",
+            "last_name": "Sales",
+            "email": unique_email,
+            "phone": "+18761234567",
+            "message": "Notes about Residence A402.",
+            "consent": True,
+            "lead_type": "sales_explorer",
+            "source_page": "/admin/residence-explorer",
+            "source_unit": "A402",
+            "source_building": "Heliconia",
+            "collection": "3 Bedroom Penthouse — Type C",
+            "residence_type": "3 Bedroom Penthouse — Type C",
+            "unit_surface": 3135.0,
+            "unit_living": 2700.0,
+            "unit_balcony": 435.0,
+            "unit_floor": "4th Floor",
+            "unit_status": "available",
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 200, r.text
+        assert r.json().get("ok") is True
+
+        r = admin_session.get(f"{API}/admin/leads")
+        assert r.status_code == 200
+        match = next((l for l in r.json() if l.get("email") == unique_email), None)
+        assert match is not None, "sales_explorer lead not found in admin list"
+        assert match.get("lead_type") == "sales_explorer"
+        assert match.get("source_unit") == "A402"
+        assert match.get("source_building") == "Heliconia"
+        assert match.get("residence_type") == "3 Bedroom Penthouse — Type C"
+        assert match.get("unit_surface") == 3135.0
+        assert match.get("unit_living") == 2700.0
+        assert match.get("unit_balcony") == 435.0
+        assert match.get("unit_floor") == "4th Floor"
+        assert match.get("unit_status") == "available"
+
     def test_lead_persisted_with_new_fields(self, session, admin_session):
         # Create lead and verify it appears in admin list with new schema fields
         unique_email = f"test_persist_{uuid.uuid4().hex[:8]}@example.com"

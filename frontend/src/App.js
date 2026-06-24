@@ -20,6 +20,7 @@ import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminUnits from "@/pages/admin/AdminUnits";
 import AdminLeads from "@/pages/admin/AdminLeads";
 import AdminDownloads from "@/pages/admin/AdminDownloads";
+import ResidenceExplorer from "@/pages/admin/ResidenceExplorer";
 
 function App() {
     return (
@@ -44,6 +45,7 @@ function App() {
                     <Route path="/admin" element={<AdminLayout />}>
                         <Route index element={<AdminDashboard />} />
                         <Route path="units" element={<AdminUnits />} />
+                        <Route path="residence-explorer" element={<ResidenceExplorer />} />
                         <Route path="leads" element={<AdminLeads />} />
                         <Route path="downloads" element={<AdminDownloads />} />
                     </Route>

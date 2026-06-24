@@ -76,6 +76,10 @@ class LeadCreate(BaseModel):
     collection: Optional[str] = None
     unit_surface: Optional[float] = None
     unit_balcony: Optional[float] = None
+    unit_living: Optional[float] = None
+    unit_floor: Optional[str] = None
+    unit_status: Optional[str] = None
+    residence_type: Optional[str] = None
     source_url: Optional[str] = None
     utm_source: Optional[str] = None
     utm_medium: Optional[str] = None

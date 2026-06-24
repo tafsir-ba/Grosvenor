@@ -40,6 +40,10 @@ export function buildLeadPayload(formData, leadType, ctx = {}) {
         collection: ctx.collection || null,
         unit_surface: ctx.unit_surface ?? null,
         unit_balcony: ctx.unit_balcony ?? null,
+        unit_living: ctx.unit_living ?? null,
+        unit_floor: ctx.unit_floor || null,
+        unit_status: ctx.unit_status || null,
+        residence_type: ctx.residence_type || null,
         ...getAttribution(),
     };
 }

@@ -28,6 +28,7 @@ class LeadType(str, Enum):
     DOWNLOAD_PRICE_LIST = "download_price_list"
     CONTACT_ABOUT_UNIT = "contact_about_unit"
     MORTGAGE_INFO_REQUEST = "mortgage_info_request"
+    SALES_EXPLORER = "sales_explorer"
     WHATSAPP_CLICK = "whatsapp_click"
     PHONE_CLICK = "phone_click"
     EMAIL_CLICK = "email_click"
