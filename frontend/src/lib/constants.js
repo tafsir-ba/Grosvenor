@@ -238,10 +238,10 @@ export const MASTERPLAN_IMAGE = "/site/masterplan.png";
 // Masterplan — the four buildings (colours match the brochure leaf markers).
 // Stats (counts, sizes, prices) are computed live from inventory.
 export const DEVELOPMENT_BUILDINGS = [
-    { name: "Heliconia", block: "Block A", color: "#C6862B", building: "Block A — Heliconia", collection: "vista", pin: { x: 76.5, y: 39 } },
-    { name: "Hibiscus", block: "Block B", color: "#1F3A5F", building: "Block B — Hibiscus", collection: "vista", pin: { x: 60.5, y: 39 } },
-    { name: "Ginger Lily", block: "Block C", color: "#B5571F", building: "Block C — Ginger Lily", collection: "vista", pin: { x: 35.5, y: 41 } },
-    { name: "Begonia", block: "Townhouses", color: "#4B2E6B", building: "Townhouses — Begonia", collection: "townhouses", pin: { x: 21.5, y: 43 } },
+    { name: "Heliconia", block: "Block A", color: "#C6862B", building: "Block A — Heliconia", collection: "vista" },
+    { name: "Hibiscus", block: "Block B", color: "#1F3A5F", building: "Block B — Hibiscus", collection: "vista" },
+    { name: "Ginger Lily", block: "Block C", color: "#B5571F", building: "Block C — Ginger Lily", collection: "vista" },
+    { name: "Begonia", block: "Townhouses", color: "#4B2E6B", building: "Townhouses — Begonia", collection: "townhouses" },
 ];
 
 // Development at a glance — headline stats then feature points.

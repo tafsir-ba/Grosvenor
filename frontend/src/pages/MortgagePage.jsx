@@ -4,8 +4,7 @@ import Hero from "@/components/shared/Hero";
 import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
 import MortgageCalculator from "@/components/shared/MortgageCalculator";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR, FAQ } from "@/lib/constants";
+import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR } from "@/lib/constants";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 const scrollToApply = () => document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" });
@@ -85,21 +84,6 @@ export default function MortgagePage() {
                             <LeadForm leadType={LEAD_TYPE.MORTGAGE_INFO_REQUEST} submitLabel="Start Your Application" messagePlaceholder="Tell us about your plans (residence of interest, budget, timeline)…" testIdPrefix="mortgage" />
                         </div>
                     </div>
-                </motion.div>
-            </section>
-
-            {/* 6. FAQ */}
-            <section className="container-wide pb-16 md:pb-24">
-                <motion.div {...fadeUp} className="mb-8 px-2 md:px-6"><Eyebrow>Questions</Eyebrow><h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Good to know</h2></motion.div>
-                <motion.div {...fadeUp} className="px-2 md:px-6">
-                    <Accordion type="single" collapsible className="border-t border-brand-beige" data-testid="mortgage-faq">
-                        {FAQ.map((f, i) => (
-                            <AccordionItem key={i} value={`faq-${i}`} className="border-b border-brand-beige">
-                                <AccordionTrigger className="py-6 text-left font-display text-lg text-brand-ink hover:text-brand-gold hover:no-underline">{f.q}</AccordionTrigger>
-                                <AccordionContent className="font-sans text-base text-brand-ink/65">{f.a}</AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
                 </motion.div>
             </section>
 
