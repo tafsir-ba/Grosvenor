@@ -4,7 +4,7 @@
 #   - frontend (React CRA, Static)    serves  /*
 #
 # HOW TO USE:
-#   1. Replace REPLACE_ME/grosvenor-vistas below with your GitHub "owner/repo".
+#   1. Replace tafsir-ba/Grosvenor below with your GitHub "owner/repo".
 #   2. Commit this file to your repo (e.g. at .do/app.yaml).
 #   3. Create the app in DO: Apps -> Create -> "Import from app spec" (or
 #      `doctl apps create --spec .do/app.yaml`).
@@ -32,7 +32,7 @@ ingress:
 services:
   - name: backend
     github:
-      repo: REPLACE_ME/grosvenor-vistas
+      repo: tafsir-ba/Grosvenor
       branch: main
       deploy_on_push: true
     source_dir: /backend
@@ -84,7 +84,7 @@ services:
 static_sites:
   - name: frontend
     github:
-      repo: REPLACE_ME/grosvenor-vistas
+      repo: tafsir-ba/Grosvenor
       branch: main
       deploy_on_push: true
     source_dir: /frontend
