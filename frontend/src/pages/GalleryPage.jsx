@@ -18,7 +18,7 @@ export default function GalleryPage() {
                 <div className="columns-1 gap-6 px-2 sm:columns-2 md:px-6 lg:columns-3 [&>figure]:mb-6">
                     {GALLERY.map((g, i) => (
                         <motion.figure
-                            key={i}
+                            key={g.src}
                             initial={{ opacity: 0, y: 24 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-40px" }}

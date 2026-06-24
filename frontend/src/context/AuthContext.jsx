@@ -17,7 +17,8 @@ export function AuthProvider({ children }) {
             try {
                 const { data } = await api.get("/auth/me");
                 setUser(data);
-            } catch {
+            } catch (err) {
+                console.error("Auth check failed:", err);
                 tokenStore.clear();
                 setUser(false);
             } finally {
@@ -37,8 +38,8 @@ export function AuthProvider({ children }) {
     const logout = async () => {
         try {
             await api.post("/auth/logout");
-        } catch {
-            /* ignore */
+        } catch (err) {
+            console.warn("Logout request failed (clearing session anyway):", err);
         }
         tokenStore.clear();
         setUser(false);

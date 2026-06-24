@@ -30,15 +30,15 @@ async def stats():
             total_value += u.price
     leads = await leads_service.list_leads()
     leads_by_type: dict = {}
-    for l in leads:
-        leads_by_type[l.lead_type.value] = leads_by_type.get(l.lead_type.value, 0) + 1
+    for lead in leads:
+        leads_by_type[lead.lead_type.value] = leads_by_type.get(lead.lead_type.value, 0) + 1
     return {
         "units_total": len(units),
         "units_by_status": by_status,
         "available_value_usd": total_value,
         "leads_total": len(leads),
         "leads_by_type": leads_by_type,
-        "recent_leads": [l.model_dump() for l in leads[:8]],
+        "recent_leads": [lead.model_dump() for lead in leads[:8]],
     }
 
 

@@ -19,8 +19,8 @@ if not BASE_URL:
                 break
 
 API = BASE_URL.rstrip("/") + "/api"
-ADMIN_EMAIL = "admin@grosvenorvistas.com"
-ADMIN_PASSWORD = "Grosvenor2026!"
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@grosvenorvistas.com")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Grosvenor2026!")
 
 
 # -------------------- fixtures --------------------

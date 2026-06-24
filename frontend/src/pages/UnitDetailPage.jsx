@@ -176,7 +176,7 @@ export default function UnitDetailPage() {
                         <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Specification & finishes</h2>
                         <ul className="mt-10 grid gap-x-12 gap-y-5 sm:grid-cols-2" data-testid="unit-amenities">
                             {unit.amenities.map((a, i) => (
-                                <li key={i} className="flex items-start gap-3.5 border-b border-brand-beige pb-5" data-testid={`amenity-${i}`}>
+                                <li key={`${a}-${i}`} className="flex items-start gap-3.5 border-b border-brand-beige pb-5" data-testid={`amenity-${i}`}>
                                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-gold" />
                                     <span className="font-sans text-base text-brand-ink/75">{a}</span>
                                 </li>

@@ -388,8 +388,8 @@ function GalleryPreview() {
                 </div>
             </div>
             <div ref={ref} onScroll={onScroll} className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-4 md:px-8" style={{ scrollbarWidth: "none" }} data-testid="gallery-scroller">
-                {GALLERY.map((g, i) => (
-                    <figure key={i} className={`relative h-[64vh] w-[88vw] flex-shrink-0 snap-start overflow-hidden sm:w-[640px] ${ROUND}`}>
+                {GALLERY.map((g) => (
+                    <figure key={g.src} className={`relative h-[64vh] w-[88vw] flex-shrink-0 snap-start overflow-hidden sm:w-[640px] ${ROUND}`}>
                         <img src={g.src} alt={g.caption} loading="lazy" className="h-full w-full object-cover" />
                         <figcaption className="absolute bottom-0 left-0 p-7"><span className="lux-eyebrow rounded-full bg-brand-warm/90 px-4 py-2 text-brand-ink backdrop-blur">{g.caption}</span></figcaption>
                     </figure>

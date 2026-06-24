@@ -8,11 +8,30 @@ const STATUS_FILL = { available: "#2f7d52", reserved: "#C6862B", sold: "#9a948c"
 const STATUS_LABEL = { available: "Available", reserved: "Reserved", sold: "Sold" };
 const VIEW_TITLE = { AB: "Block A & B — Heliconia / Hibiscus", C: "Block C — Ginger Lily", TH: "Townhouses — Begonia" };
 
+const GOLD = "#C6862B";
+
 function centroid(points) {
     const pts = points.trim().split(/\s+/).map((p) => p.split(",").map(Number));
     const x = pts.reduce((s, p) => s + p[0], 0) / pts.length;
     const y = pts.reduce((s, p) => s + p[1], 0) / pts.length;
     return { x, y };
+}
+
+// Resolve polygon visual style for the three cases: building region (aerial),
+// disabled (filtered out), and an interactive unit (status-tinted).
+function regionStyle({ isAerial, ok, status, isSel, isHov }) {
+    const base = { cursor: ok ? "pointer" : "not-allowed", strokeOpacity: ok ? 0.95 : 0.2, transition: "fill-opacity 0.18s ease, stroke-width 0.18s ease" };
+    if (isAerial) {
+        return { ...base, fill: GOLD, fillOpacity: isHov ? 0.24 : 0, stroke: GOLD, strokeWidth: isHov ? 3 : 0 };
+    }
+    if (!ok) {
+        return { ...base, fill: STATUS_FILL[status], fillOpacity: 0.04, stroke: STATUS_FILL[status], strokeWidth: 2 };
+    }
+    let fillOpacity = 0.38;
+    if (isSel) fillOpacity = 0.62;
+    else if (isHov) fillOpacity = 0.58;
+    const highlighted = isSel || isHov;
+    return { ...base, fill: STATUS_FILL[status], fillOpacity, stroke: highlighted ? GOLD : STATUS_FILL[status], strokeWidth: highlighted ? 4 : 2 };
 }
 
 export default function ExplorerMap({ units, selectedSlug, onSelect, pass, onViewChange, resetSignal }) {
@@ -110,15 +129,7 @@ export default function ExplorerMap({ units, selectedSlug, onSelect, pass, onVie
                                 onMouseEnter={() => ok && setHover(key)}
                                 onMouseLeave={() => setHover(null)}
                                 onClick={() => { if (!ok) return; isAerial ? enter(r.target) : onSelect(u); }}
-                                style={{
-                                    cursor: ok ? "pointer" : "not-allowed",
-                                    fill: isAerial ? "#C6862B" : STATUS_FILL[status],
-                                    fillOpacity: !ok ? 0.04 : isAerial ? (isHov ? 0.24 : 0) : isSel ? 0.62 : isHov ? 0.58 : 0.38,
-                                    stroke: isAerial ? "#C6862B" : (isSel || isHov) ? "#C6862B" : STATUS_FILL[status],
-                                    strokeWidth: isAerial ? (isHov ? 3 : 0) : isSel || isHov ? 4 : 2,
-                                    strokeOpacity: ok ? 0.95 : 0.2,
-                                    transition: "fill-opacity 0.18s ease, stroke-width 0.18s ease",
-                                }}
+                                style={regionStyle({ isAerial, ok, status, isSel, isHov })}
                             />
                         );
                     })}

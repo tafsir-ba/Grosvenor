@@ -52,8 +52,9 @@ export function buildLeadPayload(formData, leadType, ctx = {}) {
 export async function trackClick(leadType, ctx = {}) {
     try {
         await api.post("/track", buildLeadPayload({}, leadType, ctx));
-    } catch (e) {
-        /* tracking must never block the user */
+    } catch (err) {
+        // Tracking must never block the user; log for diagnostics only.
+        console.debug("trackClick failed (non-blocking):", err);
     }
 }
 

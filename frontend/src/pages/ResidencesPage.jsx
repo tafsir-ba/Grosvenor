@@ -203,7 +203,7 @@ export default function ResidencesPage() {
                 </div>
 
                 {loading ? (
-                    <div className="px-2 md:px-6">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="my-4 h-16" />)}</div>
+                    <div className="px-2 md:px-6">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={`residence-skeleton-${i}`} className="my-4 h-16" />)}</div>
                 ) : displayedUnits.length === 0 ? (
                     <p className="py-20 text-center text-brand-ink/60" data-testid="no-residences">No residences match your filters.</p>
                 ) : (
