@@ -16,9 +16,12 @@ region: nyc            # change to your closest region (e.g. ams, lon, sfo, blr)
 
 ingress:
   rules:
-    # More specific path first: API traffic -> backend
+    # More specific path first: API traffic -> backend.
+    # preserve_path_prefix keeps the leading /api so FastAPI (mounted under
+    # /api) matches; without it DO strips /api and every route 404s.
     - component:
         name: backend
+        preserve_path_prefix: true
       match:
         path:
           prefix: /api
