@@ -103,7 +103,14 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Tested: 32/32 backend pytest + full frontend flow pass (iteration_5.json). Public compliance confirmed (no bed/bath/floorplan/rooms on /residences or unit pages).
 - NOTE: consent text intentionally says "Evo Home" per client instruction (data processor) — not a bug.
 
-## Backlog / Next
+## Interactive SVG Residence Explorer (Internal) — 2026-06-24, fork
+- Rebuilt the visual building/floor selector inside `/admin/residence-explorer` using the client's actual vector overlays (`SVG appartments.zip`). New `lib/explorerSvg.js` (auto-generated from the SVGs) + `components/admin/ExplorerMap.jsx`.
+- Drill-down: **Aerial site view** (gold hover-glow on the 3 building footprints + shortcut chips) → **Block A&B** (5 floor renders, A01–A16 / B01–B16 polygons), **Block C** (4 floors, C01–C09), **Townhouses** (2 units). All 43 SVG polygons map exactly to inventory unit numbers via `floor=ceil(n/4), pos=((n-1)%4)+1` (A/B) + explicit C/TH maps.
+- Unit polygons are tinted by live status (green=available, gold=reserved, grey=sold) always-on, gold outline on hover; hover shows an inline info card (unit/surface/price/status); click selects → existing full protected detail panel (beds/baths/floor plans/rooms). Status & Type filters dim non-matching units.
+- Floor renders + aerial copied to `/public/explorer/`. SVG overlays use `preserveAspectRatio="none"` over `object-fill` images (viewBox aspect ≈ image aspect) for exact alignment. ADMIN-ONLY — public pages never import explorerSvg/explorerData, compliance intact.
+- Verified via screenshots: aerial, AB, C, TH views, hover card, click-to-detail, breadcrumb all working.
+
+
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
 - P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).
 - P2: Reserved-status units (none currently) styling already supported.

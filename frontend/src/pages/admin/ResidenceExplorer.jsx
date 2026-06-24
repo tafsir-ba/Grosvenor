@@ -1,25 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, RotateCcw, ArrowLeft, Download, BedDouble, Bath, Maximize2 } from "lucide-react";
+import { ChevronRight, RotateCcw, Download, BedDouble, Bath, Maximize2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import StatusBadge from "@/components/shared/StatusBadge";
 import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
+import ExplorerMap from "@/components/admin/ExplorerMap";
 import { useUnits } from "@/hooks/useData";
 import { formatPrice, formatSurface, unitFloor } from "@/lib/format";
 import { BUILDINGS, LEAD_TYPE } from "@/lib/constants";
 import { getUnitType, FULL_PLANS_URL } from "@/lib/explorerData";
-import { cn } from "@/lib/utils";
 
-const STATUS_DOT = { available: "#2f7d52", reserved: "#C6862B", sold: "#9a948c" };
 const TYPE_OPTS = ["2 Bedroom Residence", "3 Bedroom Residence — Type B", "3 Bedroom Residence — Type C", "3 Bedroom Penthouse — Type A", "3 Bedroom Penthouse — Type C", "3 Bedroom Penthouse — Type D", "4 Bedroom Townhouse"];
 
 function short(b) { return BUILDINGS.find((x) => x.value === b)?.short || b; }
 
 export default function ResidenceExplorer() {
     const { units, loading } = useUnits({ sort: "building" });
-    const [building, setBuilding] = useState(null);
-    const [floor, setFloor] = useState(null);
     const [slug, setSlug] = useState(null);
     const [statusF, setStatusF] = useState("all");
     const [typeF, setTypeF] = useState("all");
@@ -35,18 +32,9 @@ export default function ResidenceExplorer() {
 
     const enriched = useMemo(() => units.map((u) => ({ ...u, type: getUnitType(u) })), [units]);
     const pass = (u) => (statusF === "all" || u.status === statusF) && (typeF === "all" || u.type.typeName === typeF);
-
-    const buildingUnits = useMemo(() => enriched.filter((u) => u.building === building && pass(u)), [enriched, building, statusF, typeF]);
-    const floors = useMemo(() => {
-        const seen = new Map();
-        buildingUnits.forEach((u) => { if (!seen.has(u.floor)) seen.set(u.floor, unitFloor(u)); });
-        return [...seen.entries()].sort((a, b) => a[0] - b[0]);
-    }, [buildingUnits]);
-    const floorUnits = buildingUnits.filter((u) => u.floor === floor).sort((a, b) => a.unit_number.localeCompare(b.unit_number));
     const selected = enriched.find((u) => u.slug === slug) || null;
 
-    const reset = () => { setBuilding(null); setFloor(null); setSlug(null); setStatusF("all"); setTypeF("all"); };
-    const pickBuilding = (b) => { setBuilding(b); setFloor(null); setSlug(null); };
+    const reset = () => { setSlug(null); setStatusF("all"); setTypeF("all"); };
 
     const leadCtx = selected ? {
         unit: selected.unit_number, building: short(selected.building), collection: selected.type.typeName,
@@ -71,53 +59,15 @@ export default function ResidenceExplorer() {
                 </div>
                 {/* Breadcrumbs */}
                 <div className="mt-4 flex flex-wrap items-center gap-2 font-sans text-sm text-brand-ink/55" data-testid="explorer-breadcrumb">
-                    <button onClick={reset} className="hover:text-brand-gold">All Buildings</button>
-                    {building && (<><ChevronRight className="h-3.5 w-3.5" /><button onClick={() => { setFloor(null); setSlug(null); }} className="hover:text-brand-gold">{short(building)}</button></>)}
-                    {floor != null && (<><ChevronRight className="h-3.5 w-3.5" /><button onClick={() => setSlug(null)} className="hover:text-brand-gold">{floors.find((f) => f[0] === floor)?.[1] || `Floor ${floor}`}</button></>)}
-                    {selected && (<><ChevronRight className="h-3.5 w-3.5" /><span className="text-brand-ink">Residence {selected.unit_number}</span></>)}
+                    <button onClick={reset} className="hover:text-brand-gold">Site View</button>
+                    {selected && (<><ChevronRight className="h-3.5 w-3.5" /><span className="text-brand-ink">{short(selected.building)} · Residence {selected.unit_number}</span></>)}
                 </div>
             </div>
 
             <div className="grid gap-8 px-6 py-8 md:px-10 lg:grid-cols-[1.4fr_1fr]">
                 {/* Selector column */}
                 <div data-testid="explorer-selector">
-                    {!building && (
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            {BUILDINGS.map((b) => {
-                                const n = enriched.filter((u) => u.building === b.value && pass(u)).length;
-                                const avail = enriched.filter((u) => u.building === b.value && u.status === "available").length;
-                                return (
-                                    <button key={b.value} onClick={() => pickBuilding(b.value)} data-testid={`explorer-building-${b.short.toLowerCase().replace(/ /g, "-")}`} className="flex items-center justify-between rounded-2xl border border-brand-beige bg-brand-ivory p-7 text-left transition-all hover:shadow-[0_12px_30px_rgba(74,69,63,0.12)]">
-                                        <div><h3 className="lux-title text-2xl text-brand-blue">{b.short}</h3><p className="mt-1 font-sans text-xs uppercase tracking-[0.14em] text-brand-ink/45">{b.block}</p></div>
-                                        <div className="text-right"><p className="font-display text-4xl text-brand-gold">{n}</p><p className="font-sans text-xs text-brand-ink/55">{avail} available</p></div>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    )}
-
-                    {building && (
-                        <div>
-                            <button onClick={() => pickBuilding(null) || setBuilding(null)} data-testid="explorer-back" className="mb-5 inline-flex items-center gap-2 font-sans text-sm text-brand-ink/60 hover:text-brand-gold"><ArrowLeft className="h-4 w-4" /> Back</button>
-                            <div className="mb-6 flex flex-wrap gap-2.5" data-testid="explorer-floors">
-                                {floors.map(([f, label]) => (
-                                    <button key={f} onClick={() => { setFloor(f); setSlug(null); }} data-testid={`explorer-floor-${f}`} className={cn("rounded-full border px-4 py-2 font-sans text-sm transition-colors", floor === f ? "border-brand-gold bg-brand-gold/10 text-brand-ink" : "border-brand-ink/15 text-brand-ink/70 hover:border-brand-gold")}>{label}</button>
-                                ))}
-                            </div>
-                            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3" data-testid="explorer-units">
-                                {(floor != null ? floorUnits : buildingUnits).map((u) => (
-                                    <button key={u.slug} onClick={() => { setFloor(u.floor); setSlug(u.slug); }} data-testid={`explorer-unit-${u.slug}`} className={cn("rounded-xl border bg-brand-ivory p-4 text-left transition-all hover:shadow-md", slug === u.slug ? "border-brand-gold ring-1 ring-brand-gold" : "border-brand-beige")}>
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-display text-2xl text-brand-blue">{u.unit_number}</span>
-                                            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: STATUS_DOT[u.status] }} />
-                                        </div>
-                                        <p className="mt-1 font-sans text-xs text-brand-ink/55">{u.type.bedrooms} bed · {formatSurface(u.total_surface)}</p>
-                                        <p className="font-sans text-sm text-brand-ink/80">{u.status === "sold" ? "Sold" : formatPrice(u.price, u.currency)}</p>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    <ExplorerMap units={enriched} selectedSlug={slug} onSelect={(u) => setSlug(u.slug)} pass={pass} />
                 </div>
 
                 {/* Detail panel */}
