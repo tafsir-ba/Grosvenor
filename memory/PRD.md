@@ -95,6 +95,14 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Development masterplan is now interactive: hover/tap the four printed pins (hotspots positioned via analyzed coordinates) → soft gold glow + a premium ivory info card showing live numbers (total, available, size range, from-price) + View Residences. A compact colour-matched legend sits directly under the image and stays in sync; clicking a pin or legend item opens the filtered Residences page. Removed the redundant separate building-cards section.
 - Sagicor: CTAs now link to the exact URL (sagicor.com/en-jm/personal-solution/mortgage/home-purchase); official logo added; "Your Sagicor Advisor" contact block added (Woodrow Smallwood, phone, email).
 
+## Protected Residence Explorer (Internal Sales Tool) — 2026-06-24, fork
+- New protected page at `/admin/residence-explorer` (behind admin JWT, added to admin nav, noindex meta + robots.txt Disallow /admin). Public site stays legally clean.
+- Drill-down Building → Floor → Unit with status dots, breadcrumbs, back & reset, and Status/Type filters. Sticky detail panel shows FULL protected info: residence type, bedroom & bathroom counts, total/living/balcony surface, price, status, room breakdown, and floor-plan thumbnails with a zoom modal (penthouses = 2 levels, townhouses = 4 levels). "Download full plan set (PDF)" links to the Dropbox set.
+- Floor-plan / bed-bath / room data is a static client mapping in `lib/explorerData.js` (resolved by building+surface) so the public API never exposes it; live status/price come from inventory. Floor-plan images copied to /public/floorplans.
+- CRM-ready inquiry: new `sales_explorer` lead type; LeadCreate + crm.py + buildLeadPayload extended with residence_type, unit_living, unit_floor, unit_status (plus existing unit/building/surface/balcony/consent). Verified persisted end-to-end. CRM sync still DISABLED.
+- Tested: 32/32 backend pytest + full frontend flow pass (iteration_5.json). Public compliance confirmed (no bed/bath/floorplan/rooms on /residences or unit pages).
+- NOTE: consent text intentionally says "Evo Home" per client instruction (data processor) — not a bug.
+
 ## Backlog / Next
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
 - P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).
