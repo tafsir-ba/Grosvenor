@@ -91,6 +91,10 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - New shared data in constants: COLLECTIONS reuse, DEVELOPMENT_BUILDINGS, DEV_STATS, DEV_FEATURES, AMENITY_PREVIEW, MORTGAGE_STEPS, SAGICOR. New MortgageCalculator component. Masterplan image at /site/masterplan.png.
 - Verified via screenshots; calculator math confirmed (420k − 63k @ 9.5%/25y → ~US$3,119/mo).
 
+## Interactive Masterplan + Sagicor finalisation (2026-06-23, fork)
+- Development masterplan is now interactive: hover/tap the four printed pins (hotspots positioned via analyzed coordinates) → soft gold glow + a premium ivory info card showing live numbers (total, available, size range, from-price) + View Residences. A compact colour-matched legend sits directly under the image and stays in sync; clicking a pin or legend item opens the filtered Residences page. Removed the redundant separate building-cards section.
+- Sagicor: CTAs now link to the exact URL (sagicor.com/en-jm/personal-solution/mortgage/home-purchase); official logo added; "Your Sagicor Advisor" contact block added (Woodrow Smallwood, phone, email).
+
 ## Backlog / Next
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
 - P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).

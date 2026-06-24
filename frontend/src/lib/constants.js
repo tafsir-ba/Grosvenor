@@ -238,10 +238,10 @@ export const MASTERPLAN_IMAGE = "/site/masterplan.png";
 // Masterplan — the four buildings (colours match the brochure leaf markers).
 // Stats (counts, sizes, prices) are computed live from inventory.
 export const DEVELOPMENT_BUILDINGS = [
-    { name: "Heliconia", block: "Block A", color: "#C6862B", building: "Block A — Heliconia", collection: "vista" },
-    { name: "Hibiscus", block: "Block B", color: "#1F3A5F", building: "Block B — Hibiscus", collection: "vista" },
-    { name: "Ginger Lily", block: "Block C", color: "#B5571F", building: "Block C — Ginger Lily", collection: "vista" },
-    { name: "Begonia", block: "Townhouses", color: "#4B2E6B", building: "Townhouses — Begonia", collection: "townhouses" },
+    { name: "Heliconia", block: "Block A", color: "#C6862B", building: "Block A — Heliconia", collection: "vista", pin: { x: 76.5, y: 39 } },
+    { name: "Hibiscus", block: "Block B", color: "#1F3A5F", building: "Block B — Hibiscus", collection: "vista", pin: { x: 60.5, y: 39 } },
+    { name: "Ginger Lily", block: "Block C", color: "#B5571F", building: "Block C — Ginger Lily", collection: "vista", pin: { x: 35.5, y: 41 } },
+    { name: "Begonia", block: "Townhouses", color: "#4B2E6B", building: "Townhouses — Begonia", collection: "townhouses", pin: { x: 21.5, y: 43 } },
 ];
 
 // Development at a glance — headline stats then feature points.
@@ -282,7 +282,8 @@ export const MORTGAGE_STEPS = [
 export const SAGICOR = {
     name: "Sagicor",
     blurb: "Our preferred financing partner. Sagicor offers tailored mortgage solutions for local and overseas buyers, with competitive rates and clear, supportive guidance throughout.",
-    url: "https://www.sagicor.com/en-JM/banking/loans/mortgage",
+    url: "https://www.sagicor.com/en-jm/personal-solution/mortgage/home-purchase",
+    rep: { name: "Woodrow Smallwood", phone: "+1 (876) 838-3431", phoneHref: "tel:+18768383431", email: "woodrow_smallwood@sagicor.com" },
 };
 
 // Image-led amenity showcase — short titles only, drawn from the real amenity list.

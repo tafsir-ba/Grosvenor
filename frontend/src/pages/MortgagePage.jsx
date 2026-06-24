@@ -60,6 +60,14 @@ export default function MortgagePage() {
                             <CtaButton href={SAGICOR.url} target="_blank" rel="noreferrer" variant="white" data-testid="sagicor-visit">Visit {SAGICOR.name}</CtaButton>
                             <CtaButton href={SAGICOR.url} target="_blank" rel="noreferrer" variant="outline-light" data-testid="sagicor-learn">Learn More</CtaButton>
                         </div>
+                        <div className="mt-8 border-t border-white/15 pt-6" data-testid="sagicor-rep">
+                            <p className="font-sans text-xs uppercase tracking-[0.16em] text-white/45">Your Sagicor Advisor</p>
+                            <p className="mt-2 font-display text-xl text-white">{SAGICOR.rep.name}</p>
+                            <div className="mt-1 flex flex-wrap gap-x-6 gap-y-1 font-sans text-sm text-white/70">
+                                <a href={SAGICOR.rep.phoneHref} className="transition-colors hover:text-brand-gold">{SAGICOR.rep.phone}</a>
+                                <a href={`mailto:${SAGICOR.rep.email}`} className="transition-colors hover:text-brand-gold">{SAGICOR.rep.email}</a>
+                            </div>
+                        </div>
                     </div>
                 </motion.div>
             </section>
