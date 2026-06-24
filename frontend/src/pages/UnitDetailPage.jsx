@@ -209,28 +209,6 @@ export default function UnitDetailPage() {
                 </motion.div>
             </section>
 
-            {/* REPRESENTATIVE IMAGERY — supporting content, lower on the page */}
-            <section className="container-wide pb-20 md:pb-28">
-                <motion.div {...fadeUp} className="mb-10 px-2 md:px-6">
-                    <Eyebrow>Representative Interior Imagery</Eyebrow>
-                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">A feel for {collection.name}</h2>
-                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/60">Indicative imagery representative of this collection. Images illustrate the typical residence concept and are not photographs of this specific unit.</p>
-                </motion.div>
-
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-6">
-                    {collection.gallery.map((g, i) => {
-                        const span = i === 0 ? "md:col-span-4 md:h-[56vh]" : i === 1 ? "md:col-span-2 md:h-[56vh]" : "md:col-span-2 md:h-[40vh]";
-                        return (
-                            <motion.figure {...fadeUp} key={g.label} data-testid={`unit-rep-${i}`} className={`group relative overflow-hidden ${ROUND} h-[40vh] ${span}`}>
-                                <img src={g.image} alt={g.label} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-105" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/55 to-transparent opacity-80" />
-                                <figcaption className="absolute bottom-0 left-0 p-6 font-sans text-sm uppercase tracking-[0.18em] text-white">{g.label}</figcaption>
-                            </motion.figure>
-                        );
-                    })}
-                </div>
-            </section>
-
             {/* SIMILAR RESIDENCES */}
             {related.length > 0 && (
                 <section className="container-wide pb-24 md:pb-32">
