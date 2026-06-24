@@ -252,7 +252,7 @@ export const EXPLORER_SVG = {
   },
   "TH": {
     "viewBox": "0 0 2193 1234",
-    "image": "/explorer/aerial.jpg",
+    "image": "/explorer/th.jpg",
     "regions": [
       {
         "unit": "Townhouse 1",

@@ -91,9 +91,8 @@ export default function ExplorerMap({ units, selectedSlug, onSelect, pass, onVie
             )}
 
             {/* Interactive image */}
-            <div className="relative w-full overflow-hidden rounded-2xl border border-brand-beige bg-brand-ivory shadow-[0_12px_30px_rgba(74,69,63,0.10)]"
-                style={{ aspectRatio: `${vbW} / ${vbH}` }}>
-                <img src={image} alt={VIEW_TITLE[view] || "Site view"} className="absolute inset-0 h-full w-full object-fill" />
+            <div className="relative w-full overflow-hidden rounded-2xl border border-brand-beige bg-brand-ivory shadow-[0_12px_30px_rgba(74,69,63,0.10)]">
+                <img src={image} alt={VIEW_TITLE[view] || "Site view"} className="block h-auto w-full select-none" />
                 <svg viewBox={viewBox} preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
                     {regions.map((r) => {
                         const isAerial = view === "aerial";

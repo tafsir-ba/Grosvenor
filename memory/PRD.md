@@ -109,7 +109,7 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Unit polygons are tinted by live status (green=available, gold=reserved, grey=sold) always-on, gold outline on hover; hover shows an inline info card (unit/surface/price/status); click selects → existing full protected detail panel (beds/baths/floor plans/rooms). Status & Type filters dim non-matching units.
 - Floor renders + aerial copied to `/public/explorer/`. SVG overlays use `preserveAspectRatio="none"` over `object-fill` images (viewBox aspect ≈ image aspect) for exact alignment. ADMIN-ONLY — public pages never import explorerSvg/explorerData, compliance intact.
 - Verified via screenshots: aerial, AB, C, TH views, hover card, click-to-detail, breadcrumb all working.
-- Refinements (same fork): aerial "Select a building" step now spans full width (detail panel hidden until a building is entered) so the render isn't cramped; floor-plan modal got prev/next arrows + counter + floor chips so multi-level units (penthouses/townhouses) can be browsed without closing. "Site View"/Reset returns the map to the aerial.
+- Fix (same fork): the aerial "Select a building" step now uses the correct **global development render** (`Global view/image.jpg` → `/explorer/aerial.jpg`) showing all three clusters, not the townhouse zoom. Townhouses view uses its own image (`/explorer/th.jpg`). Map images now render at natural aspect (img defines height, SVG stretches over it via `preserveAspectRatio="none"`) so no view is distorted.
 
 
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
