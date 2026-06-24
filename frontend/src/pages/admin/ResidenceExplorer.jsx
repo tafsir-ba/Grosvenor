@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, RotateCcw, Download, BedDouble, Bath, Maximize2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, RotateCcw, Download, BedDouble, Bath, Maximize2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -10,6 +10,7 @@ import { useUnits } from "@/hooks/useData";
 import { formatPrice, formatSurface, unitFloor } from "@/lib/format";
 import { BUILDINGS, LEAD_TYPE } from "@/lib/constants";
 import { getUnitType, FULL_PLANS_URL } from "@/lib/explorerData";
+import { cn } from "@/lib/utils";
 
 const TYPE_OPTS = ["2 Bedroom Residence", "3 Bedroom Residence — Type B", "3 Bedroom Residence — Type C", "3 Bedroom Penthouse — Type A", "3 Bedroom Penthouse — Type C", "3 Bedroom Penthouse — Type D", "4 Bedroom Townhouse"];
 
@@ -20,7 +21,9 @@ export default function ResidenceExplorer() {
     const [slug, setSlug] = useState(null);
     const [statusF, setStatusF] = useState("all");
     const [typeF, setTypeF] = useState("all");
-    const [planOpen, setPlanOpen] = useState(null);
+    const [planIdx, setPlanIdx] = useState(null);
+    const [mapView, setMapView] = useState("aerial");
+    const [resetSignal, setResetSignal] = useState(0);
 
     useEffect(() => {
         document.title = "Residence Explorer — Grosvenor Vistas (Internal)";
@@ -34,7 +37,7 @@ export default function ResidenceExplorer() {
     const pass = (u) => (statusF === "all" || u.status === statusF) && (typeF === "all" || u.type.typeName === typeF);
     const selected = enriched.find((u) => u.slug === slug) || null;
 
-    const reset = () => { setSlug(null); setStatusF("all"); setTypeF("all"); };
+    const reset = () => { setSlug(null); setStatusF("all"); setTypeF("all"); setResetSignal((s) => s + 1); };
 
     const leadCtx = selected ? {
         unit: selected.unit_number, building: short(selected.building), collection: selected.type.typeName,
@@ -64,13 +67,14 @@ export default function ResidenceExplorer() {
                 </div>
             </div>
 
-            <div className="grid gap-8 px-6 py-8 md:px-10 lg:grid-cols-[1.4fr_1fr]">
+            <div className={cn("grid gap-8 px-6 py-8 md:px-10", mapView !== "aerial" && "lg:grid-cols-[1.4fr_1fr]")}>
                 {/* Selector column */}
                 <div data-testid="explorer-selector">
-                    <ExplorerMap units={enriched} selectedSlug={slug} onSelect={(u) => setSlug(u.slug)} pass={pass} />
+                    <ExplorerMap units={enriched} selectedSlug={slug} onSelect={(u) => setSlug(u.slug)} pass={pass} onViewChange={setMapView} resetSignal={resetSignal} />
                 </div>
 
                 {/* Detail panel */}
+                {mapView !== "aerial" && (
                 <div className="lg:sticky lg:top-6 lg:self-start" data-testid="explorer-detail">
                     {!selected ? (
                         <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-brand-beige text-center font-sans text-sm text-brand-ink/45">{loading ? "Loading inventory…" : "Select a residence to view full details."}</div>
@@ -100,8 +104,8 @@ export default function ResidenceExplorer() {
                             <div className="mt-6">
                                 <p className="lux-eyebrow text-brand-ink/45">Floor Plan{selected.type.floorPlans.length > 1 ? "s" : ""}</p>
                                 <div className="mt-3 grid grid-cols-2 gap-3" data-testid="explorer-floorplans">
-                                    {selected.type.floorPlans.map((fp) => (
-                                        <button key={fp.label} onClick={() => setPlanOpen(fp)} data-testid={`floorplan-${fp.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} className="group relative overflow-hidden rounded-xl border border-brand-beige bg-white">
+                                    {selected.type.floorPlans.map((fp, i) => (
+                                        <button key={fp.label} onClick={() => setPlanIdx(i)} data-testid={`floorplan-${fp.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} className="group relative overflow-hidden rounded-xl border border-brand-beige bg-white">
                                             <img src={fp.image} alt={fp.label} loading="lazy" className="h-28 w-full object-contain p-2" />
                                             <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-brand-ink/70 py-1 font-sans text-[0.65rem] uppercase tracking-[0.12em] text-white"><Maximize2 className="h-3 w-3" /> {fp.label}</span>
                                         </button>
@@ -129,11 +133,46 @@ export default function ResidenceExplorer() {
                         </div>
                     )}
                 </div>
+                )}
             </div>
 
-            <Dialog open={!!planOpen} onOpenChange={(v) => !v && setPlanOpen(null)}>
+            <Dialog open={planIdx !== null} onOpenChange={(v) => !v && setPlanIdx(null)}>
                 <DialogContent className="max-h-[92vh] max-w-5xl overflow-auto p-4" data-testid="floorplan-modal">
-                    {planOpen && (<><p className="mb-3 font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/55">{planOpen.label}</p><img src={planOpen.image} alt={planOpen.label} className="w-full object-contain" /></>)}
+                    {planIdx !== null && selected && (() => {
+                        const plans = selected.type.floorPlans;
+                        const fp = plans[planIdx];
+                        const multi = plans.length > 1;
+                        const go = (d) => setPlanIdx((i) => (i + d + plans.length) % plans.length);
+                        return (
+                            <>
+                                <div className="mb-3 flex items-center justify-between">
+                                    <p className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/55">{fp.label}{multi ? ` · ${planIdx + 1} / ${plans.length}` : ""}</p>
+                                    {multi && (
+                                        <div className="mr-8 flex items-center gap-2">
+                                            <button onClick={() => go(-1)} data-testid="floorplan-prev" aria-label="Previous floor" className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-ink/15 text-brand-ink/70 transition-colors hover:border-brand-gold hover:text-brand-gold"><ChevronLeft className="h-4 w-4" /></button>
+                                            <button onClick={() => go(1)} data-testid="floorplan-next" aria-label="Next floor" className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-ink/15 text-brand-ink/70 transition-colors hover:border-brand-gold hover:text-brand-gold"><ChevronRight className="h-4 w-4" /></button>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="relative">
+                                    <img src={fp.image} alt={fp.label} className="w-full object-contain" />
+                                    {multi && (
+                                        <>
+                                            <button onClick={() => go(-1)} aria-label="Previous floor" className="absolute left-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-brand-ink/55 text-white backdrop-blur transition-colors hover:bg-brand-gold"><ChevronLeft className="h-5 w-5" /></button>
+                                            <button onClick={() => go(1)} aria-label="Next floor" className="absolute right-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-brand-ink/55 text-white backdrop-blur transition-colors hover:bg-brand-gold"><ChevronRight className="h-5 w-5" /></button>
+                                        </>
+                                    )}
+                                </div>
+                                {multi && (
+                                    <div className="mt-3 flex flex-wrap justify-center gap-2" data-testid="floorplan-thumbs">
+                                        {plans.map((p, i) => (
+                                            <button key={p.label} onClick={() => setPlanIdx(i)} className={cn("rounded-full border px-3 py-1.5 font-sans text-xs transition-colors", i === planIdx ? "border-brand-gold bg-brand-gold/10 text-brand-ink" : "border-brand-ink/15 text-brand-ink/60 hover:border-brand-gold")}>{p.label}</button>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
+                        );
+                    })()}
                 </DialogContent>
             </Dialog>
         </div>

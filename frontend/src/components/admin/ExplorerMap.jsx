@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { EXPLORER_SVG } from "@/lib/explorerSvg";
 import { formatPrice, formatSurface, floorLabel } from "@/lib/format";
@@ -15,10 +15,13 @@ function centroid(points) {
     return { x, y };
 }
 
-export default function ExplorerMap({ units, selectedSlug, onSelect, pass }) {
+export default function ExplorerMap({ units, selectedSlug, onSelect, pass, onViewChange, resetSignal }) {
     const [view, setView] = useState("aerial");
     const [level, setLevel] = useState(1);
     const [hover, setHover] = useState(null);
+
+    useEffect(() => { onViewChange?.(view); }, [view, onViewChange]);
+    useEffect(() => { if (resetSignal) { setView("aerial"); setHover(null); } }, [resetSignal]);
 
     const byUnit = useMemo(() => {
         const m = new Map();
