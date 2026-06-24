@@ -7,11 +7,12 @@ export default function StatusBadge({ status, className = "" }) {
         <span
             data-testid={`status-badge-${status}`}
             className={cn(
-                "inline-flex items-center rounded-sm border px-2.5 py-1 text-[0.7rem] font-medium uppercase tracking-[0.14em]",
+                "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.68rem] font-medium uppercase tracking-[0.16em]",
                 meta.classes,
                 className
             )}
         >
+            <span className="h-1.5 w-1.5 rounded-full bg-current" />
             {meta.label}
         </span>
     );

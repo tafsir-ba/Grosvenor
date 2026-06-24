@@ -90,15 +90,6 @@ export default function UnitDetailPage() {
     const building = shortBuilding(unit.building);
     const priceText = sold ? "Now sold" : formatPrice(unit.price, unit.currency);
 
-    const spec = [
-        { l: "Collection", v: collection.name },
-        { l: "Building", v: building },
-        { l: "Interior Area", v: formatSurface(unit.total_surface) },
-        { l: "Balcony Area", v: formatSurface(unit.balcony_surface) },
-        { l: "Status", v: <StatusBadge status={unit.status} /> },
-        { l: "Price", v: priceText },
-    ];
-
     const leadCtx = {
         unit: unit.unit_number,
         building,
@@ -161,27 +152,16 @@ export default function UnitDetailPage() {
                 </div>
             </section>
 
-            {/* INFORMATION BLOCK — concise specification + short description */}
-            <section className="container-wide py-16 md:py-20">
-                <div className="grid gap-12 px-2 md:px-6 lg:grid-cols-[1fr_1.1fr]">
-                    <motion.div {...fadeUp}>
-                        <Eyebrow>Residence Overview</Eyebrow>
-                        <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">{collection.name}</h2>
-                        <p className="mt-6 max-w-md font-sans text-lg leading-relaxed text-brand-ink/65" data-testid="unit-description">{collection.blurb}</p>
-                        <Link to={`/residences?collection=${collection.key}`} data-testid="collection-link" className="lux-eyebrow mt-8 inline-flex items-center gap-2 text-brand-gold transition-colors hover:text-brand-ink">
-                            Explore {collection.name} <ArrowRight className="h-4 w-4" />
-                        </Link>
-                    </motion.div>
-
-                    <motion.dl {...fadeUp} className="divide-y divide-brand-beige border-y border-brand-beige" data-testid="unit-spec">
-                        {spec.map((f) => (
-                            <div key={f.l} className="flex items-center justify-between py-5" data-testid={`spec-${f.l.toLowerCase().replace(/ /g, "-")}`}>
-                                <dt className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">{f.l}</dt>
-                                <dd className="font-display text-xl text-brand-ink">{f.v}</dd>
-                            </div>
-                        ))}
-                    </motion.dl>
-                </div>
+            {/* INFORMATION BLOCK — short residence description */}
+            <section className="container-wide py-14 md:py-20">
+                <motion.div {...fadeUp} className="max-w-3xl px-2 md:px-6">
+                    <Eyebrow>Residence Overview</Eyebrow>
+                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">{collection.name}</h2>
+                    <p className="mt-6 font-sans text-lg leading-relaxed text-brand-ink/65" data-testid="unit-description">{collection.blurb}</p>
+                    <Link to={`/residences?collection=${collection.key}`} data-testid="collection-link" className="lux-eyebrow mt-8 inline-flex items-center gap-2 text-brand-gold transition-colors hover:text-brand-ink">
+                        Explore {collection.name} <ArrowRight className="h-4 w-4" />
+                    </Link>
+                </motion.div>
             </section>
 
             {/* ENQUIRY — Request Information */}

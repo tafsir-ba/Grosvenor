@@ -158,9 +158,9 @@ export function collectionForSurface(surface) {
 
 // Mirrors backend UnitStatus enum (values are authoritative on the backend).
 export const STATUS_META = {
-    available: { label: "Available", classes: "bg-brand-green/10 text-brand-green border-brand-green/30" },
-    reserved: { label: "Reserved", classes: "bg-brand-gold/10 text-brand-gold border-brand-gold/30" },
-    sold: { label: "Sold", classes: "bg-muted text-muted-foreground border-border" },
+    available: { label: "Available", classes: "bg-brand-green/10 text-brand-green" },
+    reserved: { label: "Reserved", classes: "bg-brand-gold/12 text-brand-gold" },
+    sold: { label: "Sold", classes: "bg-brand-ink/[0.06] text-brand-ink/55" },
 };
 
 // Mirrors backend LeadType enum.
