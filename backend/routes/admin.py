@@ -1,7 +1,10 @@
 """Admin routes — protected by require_admin. Reuses the same services."""
+import re
+from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
 
 from core.db import db
 from core.security import require_admin
@@ -16,6 +19,19 @@ from domain.models import (
 from services import downloads_service, leads_service, units_service
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
+
+FLOORPLANS_DIR = Path(__file__).resolve().parent.parent / "protected_floorplans"
+
+
+# ------------------------ Protected floor plans ------------------------
+@router.get("/floorplans/{unit_number}")
+async def get_floorplan(unit_number: str):
+    """Serve a unit's floor-plan PDF. Admin-only — never exposed publicly."""
+    safe = re.sub(r"[^A-Za-z0-9 ]", "", unit_number).strip()
+    path = FLOORPLANS_DIR / f"{safe}.pdf"
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Floor plan not available")
+    return FileResponse(path, media_type="application/pdf", filename=f"Residence-{safe}.pdf")
 
 
 # ------------------------------ Stats ------------------------------

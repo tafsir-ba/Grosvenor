@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, ChevronLeft, RotateCcw, Download, BedDouble, Bath, Maximize2 } from "lucide-react";
+import { ChevronRight, RotateCcw, BedDouble, Bath, FileText, ExternalLink, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -7,9 +7,10 @@ import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
 import ExplorerMap from "@/components/admin/ExplorerMap";
 import { useUnits } from "@/hooks/useData";
+import { api } from "@/lib/api";
 import { formatPrice, formatSurface, unitFloor } from "@/lib/format";
 import { BUILDINGS, LEAD_TYPE } from "@/lib/constants";
-import { getUnitType, FULL_PLANS_URL } from "@/lib/explorerData";
+import { getUnitType } from "@/lib/explorerData";
 import { cn } from "@/lib/utils";
 
 const TYPE_OPTS = ["2 Bedroom Residence", "3 Bedroom Residence — Type B", "3 Bedroom Residence — Type C", "3 Bedroom Penthouse — Type A", "3 Bedroom Penthouse — Type C", "3 Bedroom Penthouse — Type D", "4 Bedroom Townhouse"];
@@ -21,7 +22,7 @@ export default function ResidenceExplorer() {
     const [slug, setSlug] = useState(null);
     const [statusF, setStatusF] = useState("all");
     const [typeF, setTypeF] = useState("all");
-    const [planIdx, setPlanIdx] = useState(null);
+    const [plan, setPlan] = useState(null); // { unit, url, loading, error }
     const [mapView, setMapView] = useState("aerial");
     const [resetSignal, setResetSignal] = useState(0);
 
@@ -38,6 +39,21 @@ export default function ResidenceExplorer() {
     const selected = enriched.find((u) => u.slug === slug) || null;
 
     const reset = () => { setSlug(null); setStatusF("all"); setTypeF("all"); setResetSignal((s) => s + 1); };
+
+    const openPlan = async (unit) => {
+        setPlan({ unit, url: null, loading: true, error: null });
+        try {
+            const res = await api.get(`/admin/floorplans/${encodeURIComponent(unit.unit_number)}`, { responseType: "blob" });
+            const url = URL.createObjectURL(res.data);
+            setPlan({ unit, url, loading: false, error: null });
+        } catch (err) {
+            console.error("Floor plan fetch failed:", err);
+            setPlan({ unit, url: null, loading: false, error: "Floor plan not available for this residence." });
+        }
+    };
+    const closePlan = () => {
+        setPlan((p) => { if (p?.url) URL.revokeObjectURL(p.url); return null; });
+    };
 
     const leadCtx = selected ? {
         unit: selected.unit_number, building: short(selected.building), collection: selected.type.typeName,
@@ -100,18 +116,19 @@ export default function ResidenceExplorer() {
                                 ))}
                             </dl>
 
-                            {/* Floor plans */}
+                            {/* Floor plan (protected PDF) */}
                             <div className="mt-6">
-                                <p className="lux-eyebrow text-brand-ink/45">Floor Plan{selected.type.floorPlans.length > 1 ? "s" : ""}</p>
-                                <div className="mt-3 grid grid-cols-2 gap-3" data-testid="explorer-floorplans">
-                                    {selected.type.floorPlans.map((fp, i) => (
-                                        <button key={fp.label} onClick={() => setPlanIdx(i)} data-testid={`floorplan-${fp.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} className="group relative overflow-hidden rounded-xl border border-brand-beige bg-white">
-                                            <img src={fp.image} alt={fp.label} loading="lazy" className="h-28 w-full object-contain p-2" />
-                                            <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-brand-ink/70 py-1 font-sans text-[0.65rem] uppercase tracking-[0.12em] text-white"><Maximize2 className="h-3 w-3" /> {fp.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                                <a href={FULL_PLANS_URL} target="_blank" rel="noreferrer" data-testid="download-full-plans" className="mt-3 inline-flex items-center gap-2 font-sans text-sm text-brand-gold hover:text-brand-ink"><Download className="h-4 w-4" /> Download full plan set (PDF)</a>
+                                <p className="lux-eyebrow text-brand-ink/45">Floor Plan</p>
+                                <button onClick={() => openPlan(selected)} data-testid="view-floorplan" className="mt-3 flex w-full items-center justify-between rounded-xl border border-brand-beige bg-white px-5 py-4 text-left transition-all hover:border-brand-gold hover:shadow-md">
+                                    <span className="flex items-center gap-3">
+                                        <FileText className="h-5 w-5 text-brand-gold" />
+                                        <span>
+                                            <span className="block font-display text-base text-brand-ink">Residence {selected.unit_number} — Floor Plan</span>
+                                            <span className="block font-sans text-xs text-brand-ink/50">Confidential · sales use only</span>
+                                        </span>
+                                    </span>
+                                    <span className="font-sans text-sm text-brand-gold">View PDF</span>
+                                </button>
                             </div>
 
                             {/* Room breakdown */}
@@ -136,43 +153,31 @@ export default function ResidenceExplorer() {
                 )}
             </div>
 
-            <Dialog open={planIdx !== null} onOpenChange={(v) => !v && setPlanIdx(null)}>
-                <DialogContent className="max-h-[92vh] max-w-5xl overflow-auto p-4" data-testid="floorplan-modal">
-                    {planIdx !== null && selected && (() => {
-                        const plans = selected.type.floorPlans;
-                        const fp = plans[planIdx];
-                        const multi = plans.length > 1;
-                        const go = (d) => setPlanIdx((i) => (i + d + plans.length) % plans.length);
-                        return (
-                            <>
-                                <div className="mb-3 flex items-center justify-between">
-                                    <p className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/55">{fp.label}{multi ? ` · ${planIdx + 1} / ${plans.length}` : ""}</p>
-                                    {multi && (
-                                        <div className="mr-8 flex items-center gap-2">
-                                            <button onClick={() => go(-1)} data-testid="floorplan-prev" aria-label="Previous floor" className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-ink/15 text-brand-ink/70 transition-colors hover:border-brand-gold hover:text-brand-gold"><ChevronLeft className="h-4 w-4" /></button>
-                                            <button onClick={() => go(1)} data-testid="floorplan-next" aria-label="Next floor" className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-ink/15 text-brand-ink/70 transition-colors hover:border-brand-gold hover:text-brand-gold"><ChevronRight className="h-4 w-4" /></button>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="relative">
-                                    <img src={fp.image} alt={fp.label} className="w-full object-contain" />
-                                    {multi && (
-                                        <>
-                                            <button onClick={() => go(-1)} aria-label="Previous floor" className="absolute left-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-brand-ink/55 text-white backdrop-blur transition-colors hover:bg-brand-gold"><ChevronLeft className="h-5 w-5" /></button>
-                                            <button onClick={() => go(1)} aria-label="Next floor" className="absolute right-2 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-brand-ink/55 text-white backdrop-blur transition-colors hover:bg-brand-gold"><ChevronRight className="h-5 w-5" /></button>
-                                        </>
-                                    )}
-                                </div>
-                                {multi && (
-                                    <div className="mt-3 flex flex-wrap justify-center gap-2" data-testid="floorplan-thumbs">
-                                        {plans.map((p, i) => (
-                                            <button key={p.label} onClick={() => setPlanIdx(i)} className={cn("rounded-full border px-3 py-1.5 font-sans text-xs transition-colors", i === planIdx ? "border-brand-gold bg-brand-gold/10 text-brand-ink" : "border-brand-ink/15 text-brand-ink/60 hover:border-brand-gold")}>{p.label}</button>
-                                        ))}
-                                    </div>
+            <Dialog open={plan !== null} onOpenChange={(v) => !v && closePlan()}>
+                <DialogContent className="max-h-[94vh] max-w-5xl overflow-hidden p-4" data-testid="floorplan-modal">
+                    {plan && (
+                        <>
+                            <div className="mb-3 flex items-center justify-between pr-8">
+                                <p className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/55">Residence {plan.unit.unit_number} — Floor Plan</p>
+                                {plan.url && (
+                                    <a href={plan.url} target="_blank" rel="noreferrer" data-testid="floorplan-open-tab" className="inline-flex items-center gap-1.5 font-sans text-sm text-brand-gold hover:text-brand-ink">
+                                        <ExternalLink className="h-4 w-4" /> Open in new tab
+                                    </a>
                                 )}
-                            </>
-                        );
-                    })()}
+                            </div>
+                            {plan.loading && (
+                                <div className="flex h-[70vh] items-center justify-center text-brand-ink/50" data-testid="floorplan-loading">
+                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading floor plan…
+                                </div>
+                            )}
+                            {plan.error && (
+                                <div className="flex h-[40vh] items-center justify-center text-center font-sans text-sm text-brand-ink/60" data-testid="floorplan-error">{plan.error}</div>
+                            )}
+                            {plan.url && (
+                                <iframe src={plan.url} title={`Residence ${plan.unit.unit_number} floor plan`} data-testid="floorplan-iframe" className="h-[82vh] w-full rounded-lg border border-brand-beige" />
+                            )}
+                        </>
+                    )}
                 </DialogContent>
             </Dialog>
         </div>

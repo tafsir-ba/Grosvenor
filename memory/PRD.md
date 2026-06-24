@@ -111,9 +111,16 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Verified via screenshots: aerial, AB, C, TH views, hover card, click-to-detail, breadcrumb all working.
 - Fix (same fork): the aerial "Select a building" step now uses the correct **global development render** (`Global view/image.jpg` → `/explorer/aerial.jpg`) showing all three clusters, not the townhouse zoom. Townhouses view uses its own image (`/explorer/th.jpg`). Map images now render at natural aspect (img defines height, SVG stretches over it via `preserveAspectRatio="none"`) so no view is distorted.
 
+## Real Brochure, Price List & Per-Unit Floor Plans — 2026-06-24, fork
+- **Downloads:** Replaced placeholder brochure & price list with the client's real PDFs (`/public/downloads/grosvenor-vistas-brochure.pdf` gated, `…-pricelist.pdf` open). Seeded download docs already pointed there; both now serve 200.
+- **Per-unit floor plans (protected):** Every residence has its OWN floor-plan PDF (41 building units + 2 Begonia townhouses sharing one plan = all 43). Stored OUTSIDE the web root at `/app/backend/protected_floorplans/{unit_number}.pdf`.
+- **Protected delivery:** New admin-only `GET /api/admin/floorplans/{unit_number}` (require_admin, FileResponse). Verified 401 without token / 200 with / 404 unknown. Never exposed publicly.
+- **Explorer UI:** detail-panel floor-plan section → single "View PDF" button per unit; fetches the PDF as an authenticated blob and shows it in a modal `<iframe>` with "Open in new tab" fallback. Removed old per-type sample images + Dropbox link (FULL_PLANS_URL). Beds/baths/rooms still from explorerData.
+- Verified: backend curl matrix + UI (modal/iframe/blob/close) pass.
+
 
 - P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
-- P1: Replace placeholder brochure/pricelist PDFs with real files (admin Downloads page edits file_url).
+- ~~P1: Replace placeholder brochure/pricelist PDFs~~ — DONE 2026-06-24 (real PDFs in /public/downloads).
 - P2: Reserved-status units (none currently) styling already supported.
 - P2: Optional — interactive site map, multilingual, analytics provider (GA4) hook in tracking.js.
 - P2: Confirm USD/sq ft assumptions with client (assumed per approval).
