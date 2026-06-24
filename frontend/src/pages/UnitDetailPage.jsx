@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, MessageCircle, CalendarCheck, Mail } from "lucide-react";
+import { ArrowLeft, ArrowRight, MessageCircle, CalendarCheck, Mail, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import StatusBadge from "@/components/shared/StatusBadge";
 import LeadForm from "@/components/shared/LeadForm";
@@ -123,18 +123,18 @@ export default function UnitDetailPage() {
                         <div className="mt-8 space-y-4 border-y border-brand-beige py-7">
                             <div className="flex items-baseline justify-between">
                                 <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Living Area</span>
-                                <span className="font-display text-2xl text-brand-ink">{formatSurface(unit.living_area ?? unit.total_surface)}</span>
+                                <span className="font-display text-xl text-brand-ink/80">{formatSurface(unit.living_area ?? unit.total_surface)}</span>
                             </div>
                             <div className="flex items-baseline justify-between">
                                 <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Balcony</span>
-                                <span className="font-display text-2xl text-brand-ink">{formatSurface(unit.balcony_surface)}</span>
+                                <span className="font-display text-xl text-brand-ink/80">{formatSurface(unit.balcony_surface)}</span>
+                            </div>
+                            <div className="flex items-baseline justify-between border-t border-brand-beige pt-4">
+                                <span className="font-sans text-sm font-medium uppercase tracking-[0.16em] text-brand-ink/70">Total Surface</span>
+                                <span className="font-display text-3xl text-brand-blue">{formatSurface(unit.total_surface)}</span>
                             </div>
                             <div className="flex items-baseline justify-between">
-                                <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Total Surface</span>
-                                <span className="font-display text-2xl text-brand-ink">{formatSurface(unit.total_surface)}</span>
-                            </div>
-                            <div className="flex items-baseline justify-between pt-1">
-                                <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-ink/45">Price</span>
+                                <span className="font-sans text-sm font-medium uppercase tracking-[0.16em] text-brand-ink/70">Price</span>
                                 <span className="font-display text-3xl text-brand-gold">{priceText}</span>
                             </div>
                         </div>
@@ -167,6 +167,24 @@ export default function UnitDetailPage() {
                     </Link>
                 </motion.div>
             </section>
+
+            {/* RESIDENCE FEATURES */}
+            {unit.amenities?.length > 0 && (
+                <section className="container-wide pb-16 md:pb-20">
+                    <motion.div {...fadeUp} className="px-2 md:px-6">
+                        <Eyebrow>Residence Features</Eyebrow>
+                        <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Specification & finishes</h2>
+                        <ul className="mt-10 grid gap-x-12 gap-y-5 sm:grid-cols-2" data-testid="unit-amenities">
+                            {unit.amenities.map((a, i) => (
+                                <li key={i} className="flex items-start gap-3.5 border-b border-brand-beige pb-5" data-testid={`amenity-${i}`}>
+                                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-gold" />
+                                    <span className="font-sans text-base text-brand-ink/75">{a}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </motion.div>
+                </section>
+            )}
 
             {/* ENQUIRY — Request Information */}
             <section id="enquire" className="container-wide pb-16 md:pb-24">

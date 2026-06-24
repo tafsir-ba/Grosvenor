@@ -12,6 +12,20 @@ from services.units_service import make_slug
 
 CSV_PATH = Path(__file__).parent / "units.csv"
 
+# Default residence features (editable per unit in the admin panel).
+_DEFAULT_AMENITIES = [
+    "Master bedroom with ensuite bathroom",
+    "Open floor plans",
+    "Floor-to-ceiling windows",
+    "SPC Laminate flooring",
+    "Solid surface countertops",
+    "Recessed lighting",
+    "Contemporary kitchen and bathroom cabinetry and fixtures",
+    "Provisioning for telephone and cable",
+    "Air-conditioning systems installed in bedrooms",
+    "Washer/dryer utility closet",
+]
+
 # Friendly block name (CSV) -> canonical building value used across the app.
 _BLOCK_TO_BUILDING = {
     "Heliconia": "Block A — Heliconia",
@@ -43,6 +57,7 @@ def load_units_from_csv():
                 "price": float(price) if price else None,
                 "currency": "USD",
                 "status": row["status"].strip().lower(),
+                "amenities": list(_DEFAULT_AMENITIES),
                 "crm_id": None,
                 "slug": make_slug(row["unit_number"].strip()),
             })

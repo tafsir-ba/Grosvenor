@@ -159,7 +159,7 @@ export function collectionForSurface(surface) {
 // Mirrors backend UnitStatus enum (values are authoritative on the backend).
 export const STATUS_META = {
     available: { label: "Available", classes: "bg-brand-green/10 text-brand-green" },
-    reserved: { label: "Reserved", classes: "bg-brand-gold/12 text-brand-gold" },
+    reserved: { label: "Reserved", classes: "bg-brand-gold text-white" },
     sold: { label: "Sold", classes: "bg-brand-ink/[0.06] text-brand-ink/55" },
 };
 

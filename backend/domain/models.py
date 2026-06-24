@@ -26,6 +26,7 @@ class UnitBase(BaseModel):
     price: Optional[float] = None      # None => "Price on request"
     currency: str = "USD"
     status: UnitStatus = UnitStatus.AVAILABLE
+    amenities: List[str] = []
     # Optional external reference so a synced unit maps back to the CRM record.
     crm_id: Optional[str] = None
 
@@ -45,6 +46,7 @@ class UnitUpdate(BaseModel):
     price: Optional[float] = None
     currency: Optional[str] = None
     status: Optional[UnitStatus] = None
+    amenities: Optional[List[str]] = None
     crm_id: Optional[str] = None
 
 
