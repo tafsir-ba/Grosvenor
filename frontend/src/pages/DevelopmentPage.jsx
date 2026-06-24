@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
@@ -17,8 +16,6 @@ function buildingStats(units, b) {
     return {
         total: us.length,
         available: avail.length,
-        penthouses: us.filter((u) => u.total_surface >= 3000 && u.total_surface < 4500).length,
-        townhouses,
         isTown: townhouses > 0,
         min: sizes.length ? Math.min(...sizes) : 0,
         max: sizes.length ? Math.max(...sizes) : 0,
@@ -26,30 +23,8 @@ function buildingStats(units, b) {
     };
 }
 
-function StatRow({ l, v }) {
-    return (
-        <div className="flex items-baseline justify-between gap-6">
-            <dt className="font-sans text-xs uppercase tracking-[0.12em] text-brand-ink/45">{l}</dt>
-            <dd className="font-display text-base text-brand-ink">{v}</dd>
-        </div>
-    );
-}
-
 export default function DevelopmentPage() {
     const { units } = useUnits({ sort: "price_asc" });
-    const navigate = useNavigate();
-    const [active, setActive] = useState("Heliconia");
-
-    const cards = useMemo(() => DEVELOPMENT_BUILDINGS.map((b) => ({ ...b, s: buildingStats(units, b) })), [units]);
-    const activeCard = cards.find((c) => c.name === active) || cards[0];
-
-    const goTo = (b) => navigate(`/residences?building=${encodeURIComponent(b.building)}`);
-    const rowsFor = (s) => [
-        { l: "Total", v: `${s.total} ${s.isTown ? "townhouses" : "residences"}` },
-        { l: "Available", v: s.available },
-        { l: "Sizes", v: s.min ? `${s.min.toLocaleString()}–${s.max.toLocaleString()} sq ft` : "—" },
-        { l: "From", v: s.from ? `US$${s.from.toLocaleString()}` : "On request" },
-    ];
 
     return (
         <div data-testid="development-page">
@@ -74,81 +49,55 @@ export default function DevelopmentPage() {
                 </div>
             </section>
 
-            {/* 2. Interactive masterplan */}
+            {/* 2. Masterplan + building breakdown */}
             <section className="container-wide pb-16 md:pb-24">
                 <motion.div {...fadeUp} className="mb-8 px-2 md:px-6">
                     <Eyebrow>The Masterplan</Eyebrow>
                     <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Four buildings, one community</h2>
-                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/60">Hover a building to see its numbers — or tap to view its residences.</p>
+                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/60">Three apartment buildings — Heliconia, Hibiscus and Ginger Lily — and the two Begonia townhouses, set within gated, landscaped grounds.</p>
                 </motion.div>
 
-                <motion.div {...fadeUp} className={`relative overflow-hidden ${ROUND}`} data-testid="masterplan-image">
+                <motion.div {...fadeUp} className={`overflow-hidden ${ROUND}`} data-testid="masterplan-image">
                     <img src={MASTERPLAN_IMAGE} alt="Grosvenor Vistas aerial masterplan" loading="lazy" decoding="async" className="w-full object-cover" />
-
-                    {/* Interactive hotspots over the printed pins */}
-                    {cards.map((c) => (
-                        <button
-                            key={c.name}
-                            type="button"
-                            data-testid={`pin-${c.name.toLowerCase().replace(/ /g, "-")}`}
-                            onMouseEnter={() => setActive(c.name)}
-                            onFocus={() => setActive(c.name)}
-                            onClick={() => { setActive(c.name); goTo(c); }}
-                            aria-label={`${c.name} — ${c.s.total} residences`}
-                            className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-                            style={{ left: `${c.pin.x}%`, top: `${c.pin.y}%`, width: "12%", height: "26%" }}
-                        >
-                            <span
-                                className={`block h-full w-full rounded-full transition-all duration-300 ${active === c.name ? "scale-100 opacity-100" : "scale-75 opacity-0"}`}
-                                style={{ boxShadow: `0 0 0 3px ${c.color}55, 0 0 40px 8px ${c.color}40` }}
-                            />
-                        </button>
-                    ))}
-
-                    {/* Floating info card */}
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeCard.name}
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -8 }}
-                            transition={{ duration: 0.3 }}
-                            data-testid="masterplan-card"
-                            className="absolute bottom-4 left-4 right-4 mx-auto w-auto max-w-xs rounded-2xl border border-brand-beige bg-brand-warm/95 p-6 shadow-[0_20px_50px_rgba(74,69,63,0.22)] backdrop-blur-md sm:left-6 sm:bottom-6 sm:right-auto"
-                        >
-                            <div className="flex items-center gap-2.5">
-                                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: activeCard.color }} />
-                                <h3 className="lux-title text-2xl text-brand-blue">{activeCard.name}</h3>
-                                <span className="ml-auto font-sans text-[0.65rem] uppercase tracking-[0.14em] text-brand-ink/40">{activeCard.block}</span>
-                            </div>
-                            <dl className="mt-4 space-y-2 border-t border-brand-beige pt-4">
-                                {rowsFor(activeCard.s).map((r) => <StatRow key={r.l} {...r} />)}
-                            </dl>
-                            <button onClick={() => goTo(activeCard)} data-testid="masterplan-card-cta" className="lux-eyebrow mt-5 inline-flex items-center gap-2 text-brand-gold transition-colors hover:text-brand-ink">
-                                View Residences <ArrowRight className="h-4 w-4" />
-                            </button>
-                        </motion.div>
-                    </AnimatePresence>
                 </motion.div>
 
-                {/* Compact colour-matched legend, connected to the image */}
-                <div className="mt-5 grid grid-cols-2 gap-3 px-2 md:grid-cols-4 md:px-6" data-testid="masterplan-legend">
-                    {cards.map((c) => (
-                        <button
-                            key={c.name}
-                            type="button"
-                            data-testid={`legend-${c.name.toLowerCase().replace(/ /g, "-")}`}
-                            onMouseEnter={() => setActive(c.name)}
-                            onClick={() => goTo(c)}
-                            className={`rounded-xl border-l-4 bg-brand-ivory px-4 py-4 text-left transition-all duration-300 ${active === c.name ? "shadow-[0_10px_30px_rgba(74,69,63,0.12)]" : "opacity-80 hover:opacity-100"}`}
-                            style={{ borderColor: c.color }}
-                        >
-                            <p className="lux-title text-lg text-brand-blue">{c.name}</p>
-                            <p className="mt-1 font-display text-2xl" style={{ color: c.color }}>{c.s.total}<span className="ml-1.5 font-sans text-[0.65rem] uppercase tracking-[0.12em] text-brand-ink/45">{c.s.isTown ? "townhouses" : "residences"}</span></p>
-                            <p className="mt-1 font-sans text-xs text-brand-ink/55">{c.s.available} available · {c.s.min ? `${c.s.min.toLocaleString()}–${c.s.max.toLocaleString()} sq ft` : "—"}</p>
-                            <p className="font-sans text-xs text-brand-ink/55">{c.s.from ? `From US$${c.s.from.toLocaleString()}` : "On request"}</p>
-                        </button>
-                    ))}
+                {/* Building breakdown — always visible, colour-matched, mobile-friendly */}
+                <div className="mt-6 grid gap-5 px-2 sm:grid-cols-2 md:px-6 lg:grid-cols-4" data-testid="building-breakdown">
+                    {DEVELOPMENT_BUILDINGS.map((b) => {
+                        const s = buildingStats(units, b);
+                        const rows = [
+                            { l: "Available", v: s.available },
+                            { l: "Sizes", v: s.min ? `${s.min.toLocaleString()}–${s.max.toLocaleString()} sq ft` : "—" },
+                            { l: "From", v: s.from ? `US$${s.from.toLocaleString()}` : "On request" },
+                        ];
+                        return (
+                            <motion.div {...fadeUp} key={b.name} data-testid={`building-${b.name.toLowerCase().replace(/ /g, "-")}`} className={`flex flex-col overflow-hidden bg-brand-ivory ${ROUND}`}>
+                                <div className="h-1.5 w-full" style={{ backgroundColor: b.color }} />
+                                <div className="flex flex-1 flex-col p-6 md:p-7">
+                                    <div className="flex items-center gap-2.5">
+                                        <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: b.color }} />
+                                        <h3 className="lux-title text-2xl text-brand-blue">{b.name}</h3>
+                                        <span className="ml-auto font-sans text-[0.65rem] uppercase tracking-[0.14em] text-brand-ink/40">{b.block}</span>
+                                    </div>
+                                    <div className="mt-5 flex items-baseline gap-2">
+                                        <span className="font-display text-5xl" style={{ color: b.color }}>{s.total}</span>
+                                        <span className="font-sans text-sm uppercase tracking-[0.12em] text-brand-ink/55">{s.isTown ? "Townhouses" : "Residences"}</span>
+                                    </div>
+                                    <dl className="mt-5 space-y-2.5 border-t border-brand-beige pt-5">
+                                        {rows.map((r) => (
+                                            <div key={r.l} className="flex items-baseline justify-between gap-6">
+                                                <dt className="font-sans text-xs uppercase tracking-[0.12em] text-brand-ink/45">{r.l}</dt>
+                                                <dd className="font-display text-base text-brand-ink">{r.v}</dd>
+                                            </div>
+                                        ))}
+                                    </dl>
+                                    <Link to={`/residences?building=${encodeURIComponent(b.building)}`} data-testid={`building-cta-${b.name.toLowerCase().replace(/ /g, "-")}`} className="lux-eyebrow mt-6 inline-flex items-center gap-2 text-brand-gold transition-colors hover:text-brand-ink">
+                                        View Residences <ArrowRight className="h-4 w-4" />
+                                    </Link>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
                 </div>
             </section>
 
@@ -171,7 +120,7 @@ export default function DevelopmentPage() {
             </section>
 
             {/* 5. Amenities preview */}
-            <section className="container-wide pb-16 md:pb-24">
+            <section className="container-wide py-16 md:py-24">
                 <motion.div {...fadeUp} className="mb-10 px-2 md:px-6">
                     <Eyebrow>Amenities</Eyebrow>
                     <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Designed for everyday ease</h2>

@@ -1,0 +1,54 @@
+{
+  "summary": "Frontend-only verification of the reworked /the-development masterplan (pin glow + floating card removed; replaced with always-visible 4-card building-breakdown grid). All 7 review criteria passed on both desktop (1920) and mobile (390).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "verification_details": {
+    "masterplan_image_present": true,
+    "old_masterplan_card_removed": true,
+    "old_pin_hotspots_removed": "0 elements matching [data-testid^='pin-']",
+    "building_breakdown_grid_present": true,
+    "building_cards": {
+      "heliconia": {"total": 16, "label": "Residences", "available": 14, "sizes": "1,671–3,135 sq ft", "from": "US$393,000", "match": true},
+      "hibiscus": {"total": 16, "label": "Residences", "available": 10, "sizes": "1,671–3,644 sq ft", "from": "US$398,000", "match": true},
+      "ginger-lily": {"total": 9, "label": "Residences", "available": 5, "sizes": "1,671–3,135 sq ft", "from": "US$405,000", "match": true},
+      "begonia": {"total": 2, "label": "Townhouses", "available": 2, "sizes": "4,845–4,845 sq ft", "from": "US$1,145,000", "match": true}
+    },
+    "cta_navigation": {
+      "heliconia_cta_href": "/residences?building=Block%20A%20%E2%80%94%20Heliconia",
+      "navigated_to_residences": true,
+      "unit_cards_listed": 16,
+      "note": "16 units listed on /residences matches Heliconia total — filter applied correctly"
+    },
+    "mobile_390px": {
+      "cards_single_column": true,
+      "unique_x_positions": [24],
+      "horizontal_overflow": false,
+      "doc_width": 390,
+      "window_width": 390
+    },
+    "regression": {
+      "dev_stats": "43 / 3 / 2 (correct)",
+      "dev_features_present": true,
+      "amenity_preview_tile_count": 6,
+      "explore_amenities_cta": true,
+      "dev_cta_residences": true,
+      "dev_cta_visit": true
+    }
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "DEVELOPMENT_BUILDINGS in constants.js still exposes a `pin: {x, y}` property on each building, but it is no longer consumed by DevelopmentPage.jsx (pins were removed). Consider deleting the `pin` field to keep constants lean (low priority, cosmetic)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not_tested", "frontend": "100%"},
+  "test_credentials": "None required (public page).",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend was not retested per request (iteration_3 had 31/31 passing). DevelopmentPage masterplan section is now a static image followed by [data-testid=building-breakdown] containing 4 cards (building-heliconia/hibiscus/ginger-lily/begonia) each with a building-cta-<name> link. Numbers are computed live from /api/units via useUnits hook. Mobile 390px stacks cards single-column with no horizontal overflow. All review acceptance criteria met."
+}
