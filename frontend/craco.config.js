@@ -2,6 +2,12 @@
 const path = require("path");
 require("dotenv").config();
 
+// Prevent CI=true (set by CI/CD platforms like DigitalOcean) from turning
+// non-fatal lint/compiler warnings into build-breaking errors. This runs
+// before react-scripts reads process.env.CI, so it applies no matter how the
+// build is invoked (yarn build, craco build, with CI=true in the env, etc.).
+process.env.CI = "false";
+
 // Check if we're in development/preview mode (not production build)
 // Craco sets NODE_ENV=development for start, NODE_ENV=production for build
 const isDevServer = process.env.NODE_ENV !== "production";
