@@ -236,27 +236,12 @@ export const AERIAL_IMAGE = "/site/aerial-masterplan.jpg";
 export const MASTERPLAN_IMAGE = "/site/masterplan.png";
 
 // Masterplan — the four buildings (colours match the brochure leaf markers).
+// Stats (counts, sizes, prices) are computed live from inventory.
 export const DEVELOPMENT_BUILDINGS = [
-    {
-        name: "Begonia", block: "Townhouses", units: 2, color: "#4B2E6B",
-        building: "Townhouses — Begonia", collection: "townhouses",
-        items: ["Two private townhouses", "4,845 sq ft each"],
-    },
-    {
-        name: "Ginger Lily", block: "Block C", units: 9, color: "#B5571F",
-        building: "Block C — Ginger Lily", collection: "vista",
-        items: ["Four 1,671 sq ft residences", "Three 2,141–2,322 sq ft residences", "Two 3,135 sq ft penthouses"],
-    },
-    {
-        name: "Hibiscus", block: "Block B", units: 16, color: "#1F3A5F",
-        building: "Block B — Hibiscus", collection: "vista",
-        items: ["Eight 1,671 sq ft residences", "Six 1,779 sq ft residences", "Two 3,644 sq ft penthouses"],
-    },
-    {
-        name: "Heliconia", block: "Block A", units: 16, color: "#C6862B",
-        building: "Block A — Heliconia", collection: "vista",
-        items: ["Fourteen 1,671 sq ft residences", "Two 3,135 sq ft penthouses"],
-    },
+    { name: "Heliconia", block: "Block A", color: "#C6862B", building: "Block A — Heliconia", collection: "vista" },
+    { name: "Hibiscus", block: "Block B", color: "#1F3A5F", building: "Block B — Hibiscus", collection: "vista" },
+    { name: "Ginger Lily", block: "Block C", color: "#B5571F", building: "Block C — Ginger Lily", collection: "vista" },
+    { name: "Begonia", block: "Townhouses", color: "#4B2E6B", building: "Townhouses — Begonia", collection: "townhouses" },
 ];
 
 // Development at a glance — headline stats then feature points.

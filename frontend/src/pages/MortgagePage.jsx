@@ -50,7 +50,7 @@ export default function MortgagePage() {
             <section className="container-wide pb-16 md:pb-24">
                 <motion.div {...fadeUp} className={`grid items-center gap-10 bg-brand-blue p-10 md:p-16 lg:grid-cols-[1fr_1.2fr] ${ROUND}`} data-testid="sagicor-section">
                     <div className="flex items-center justify-center rounded-[1.5rem] bg-white px-8 py-14">
-                        <span className="font-display text-5xl tracking-tight text-brand-blue">{SAGICOR.name}</span>
+                        <img src="/brand/sagicor.svg" alt="Sagicor" className="h-16 w-auto md:h-20" data-testid="sagicor-logo" />
                     </div>
                     <div>
                         <Eyebrow light>Financing Partner</Eyebrow>

@@ -3,10 +3,29 @@ import { ArrowRight, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
+import { useUnits } from "@/hooks/useData";
 import { DEVELOPMENT_BUILDINGS, DEV_STATS, DEV_FEATURES, AMENITY_PREVIEW, MASTERPLAN_IMAGE } from "@/lib/constants";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
+function buildingStats(units, b) {
+    const us = units.filter((u) => u.building === b.building);
+    const avail = us.filter((u) => u.status === "available");
+    const sizes = us.map((u) => u.total_surface).filter(Boolean);
+    const prices = avail.map((u) => u.price).filter(Boolean);
+    return {
+        total: us.length,
+        available: avail.length,
+        penthouses: us.filter((u) => u.total_surface >= 3000 && u.total_surface < 4500).length,
+        townhouses: us.filter((u) => u.total_surface >= 4500).length,
+        min: sizes.length ? Math.min(...sizes) : 0,
+        max: sizes.length ? Math.max(...sizes) : 0,
+        from: prices.length ? Math.min(...prices) : null,
+    };
+}
+
 export default function DevelopmentPage() {
+    const { units } = useUnits({ sort: "price_asc" });
+
     return (
         <div data-testid="development-page">
             <Hero image="/gallery/buildings-01.png" height="min-h-[62vh]" overline="The Development" title="Grosvenor Vistas" subtitle="A thoughtfully planned residential community in the hills of Grosvenor Heights." />
@@ -34,25 +53,12 @@ export default function DevelopmentPage() {
             <section className="container-wide pb-16 md:pb-24">
                 <motion.div {...fadeUp} className="mb-8 px-2 md:px-6">
                     <Eyebrow>The Masterplan</Eyebrow>
-                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">How the community comes together</h2>
+                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Four buildings, one community</h2>
+                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/60">Three apartment buildings — Heliconia, Hibiscus and Ginger Lily — and the two Begonia townhouses, set within gated, landscaped grounds.</p>
                 </motion.div>
                 <motion.div {...fadeUp} className={`overflow-hidden ${ROUND}`} data-testid="masterplan-image">
                     <img src={MASTERPLAN_IMAGE} alt="Grosvenor Vistas aerial masterplan" loading="lazy" decoding="async" className="w-full object-cover" />
                 </motion.div>
-                <div className="mt-8 grid gap-5 px-2 sm:grid-cols-2 md:px-6 lg:grid-cols-4">
-                    {DEVELOPMENT_BUILDINGS.map((b) => (
-                        <motion.div {...fadeUp} key={b.name} data-testid={`masterplan-${b.name.toLowerCase().replace(/ /g, "-")}`} className="border-t-2 pt-5" style={{ borderColor: b.color }}>
-                            <div className="flex items-baseline justify-between">
-                                <h3 className="lux-title text-2xl text-brand-blue">{b.name}</h3>
-                                <span className="font-display text-3xl" style={{ color: b.color }}>{b.units}</span>
-                            </div>
-                            <p className="font-sans text-xs uppercase tracking-[0.16em] text-brand-ink/45">{b.block}</p>
-                            <ul className="mt-4 space-y-1.5">
-                                {b.items.map((it) => <li key={it} className="font-sans text-sm text-brand-ink/65">{it}</li>)}
-                            </ul>
-                        </motion.div>
-                    ))}
-                </div>
             </section>
 
             {/* 3. At a glance */}
@@ -62,7 +68,7 @@ export default function DevelopmentPage() {
                         <Eyebrow>At a Glance</Eyebrow>
                         <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Everything the community offers</h2>
                     </motion.div>
-                    <div className="grid gap-x-12 gap-y-6 sm:grid-cols-2 lg:grid-cols-2" data-testid="dev-features">
+                    <div className="grid gap-x-12 gap-y-6 sm:grid-cols-2" data-testid="dev-features">
                         {DEV_FEATURES.map((f) => (
                             <div key={f} className="flex items-center gap-4 border-b border-brand-beige pb-6">
                                 <Check className="h-5 w-5 shrink-0 text-brand-gold" />
@@ -73,30 +79,51 @@ export default function DevelopmentPage() {
                 </div>
             </section>
 
-            {/* 4. Building collections */}
+            {/* 4. Building collections — clear, number-driven */}
             <section className="container-wide py-16 md:py-24">
                 <motion.div {...fadeUp} className="mb-10 px-2 md:px-6">
                     <Eyebrow>The Buildings</Eyebrow>
                     <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Four distinct addresses</h2>
                 </motion.div>
-                <div className="grid gap-6 px-2 md:grid-cols-2 md:px-6">
-                    {DEVELOPMENT_BUILDINGS.map((b) => (
-                        <motion.div {...fadeUp} key={b.name} data-testid={`building-${b.name.toLowerCase().replace(/ /g, "-")}`} className={`flex flex-col justify-between bg-brand-ivory p-8 md:p-10 ${ROUND}`}>
-                            <div>
-                                <div className="flex items-baseline justify-between">
-                                    <h3 className="lux-title text-3xl text-brand-blue md:text-4xl">{b.name}</h3>
-                                    <span className="font-sans text-sm uppercase tracking-[0.14em]" style={{ color: b.color }}>{b.units} Residences</span>
+                <div className="grid gap-6 px-2 sm:grid-cols-2 md:px-6 lg:grid-cols-4">
+                    {DEVELOPMENT_BUILDINGS.map((b) => {
+                        const s = buildingStats(units, b);
+                        const isTown = b.townhousesOnly || s.townhouses > 0;
+                        const rows = [
+                            { l: "Available now", v: s.available },
+                            isTown
+                                ? { l: "Townhouses", v: s.townhouses || s.total }
+                                : { l: "Penthouses", v: s.penthouses },
+                            { l: "Sizes", v: s.min ? `${s.min.toLocaleString()}–${s.max.toLocaleString()} sq ft` : "—" },
+                            { l: "From", v: s.from ? `US$${s.from.toLocaleString()}` : "On request" },
+                        ];
+                        return (
+                            <motion.div {...fadeUp} key={b.name} data-testid={`building-${b.name.toLowerCase().replace(/ /g, "-")}`} className={`flex flex-col overflow-hidden bg-brand-ivory ${ROUND}`}>
+                                <div className="h-1.5 w-full" style={{ backgroundColor: b.color }} />
+                                <div className="flex flex-1 flex-col p-7">
+                                    <div className="flex items-baseline justify-between">
+                                        <h3 className="lux-title text-2xl text-brand-blue md:text-3xl">{b.name}</h3>
+                                        <span className="font-sans text-xs uppercase tracking-[0.14em] text-brand-ink/40">{b.block}</span>
+                                    </div>
+                                    <div className="mt-5 flex items-baseline gap-2">
+                                        <span className="font-display text-5xl" style={{ color: b.color }}>{s.total}</span>
+                                        <span className="font-sans text-sm uppercase tracking-[0.12em] text-brand-ink/55">{isTown ? "Townhouses" : "Residences"}</span>
+                                    </div>
+                                    <dl className="mt-6 space-y-2.5 border-t border-brand-beige pt-5">
+                                        {rows.map((r) => (
+                                            <div key={r.l} className="flex items-baseline justify-between">
+                                                <dt className="font-sans text-xs uppercase tracking-[0.12em] text-brand-ink/45">{r.l}</dt>
+                                                <dd className="font-display text-base text-brand-ink">{r.v}</dd>
+                                            </div>
+                                        ))}
+                                    </dl>
+                                    <Link to={`/residences?building=${encodeURIComponent(b.building)}`} data-testid={`building-cta-${b.name.toLowerCase().replace(/ /g, "-")}`} className="lux-eyebrow mt-7 inline-flex items-center gap-2 text-brand-gold transition-colors hover:text-brand-ink">
+                                        View Residences <ArrowRight className="h-4 w-4" />
+                                    </Link>
                                 </div>
-                                <p className="mt-1 font-sans text-xs uppercase tracking-[0.16em] text-brand-ink/45">{b.block}</p>
-                                <ul className="mt-6 space-y-2">
-                                    {b.items.map((it) => <li key={it} className="font-sans text-sm text-brand-ink/65">{it}</li>)}
-                                </ul>
-                            </div>
-                            <Link to={`/residences?building=${encodeURIComponent(b.building)}`} className="lux-eyebrow mt-8 inline-flex items-center gap-2 text-brand-gold transition-colors hover:text-brand-ink">
-                                View Residences <ArrowRight className="h-4 w-4" />
-                            </Link>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        );
+                    })}
                 </div>
             </section>
 
