@@ -1,0 +1,99 @@
+# DigitalOcean App Platform spec — Grosvenor Vistas
+# Two components on ONE app domain:
+#   - backend  (FastAPI, Docker)      serves  /api/*
+#   - frontend (React CRA, Static)    serves  /*
+#
+# HOW TO USE:
+#   1. Replace REPLACE_ME/grosvenor-vistas below with your GitHub "owner/repo".
+#   2. Commit this file to your repo (e.g. at .do/app.yaml).
+#   3. Create the app in DO: Apps -> Create -> "Import from app spec" (or
+#      `doctl apps create --spec .do/app.yaml`).
+#   4. Set the SECRET env values in the DO dashboard (they are intentionally
+#      left blank here so secrets are never committed to git).
+
+name: grosvenor-vistas
+region: nyc            # change to your closest region (e.g. ams, lon, sfo, blr)
+
+ingress:
+  rules:
+    # More specific path first: API traffic -> backend
+    - component:
+        name: backend
+      match:
+        path:
+          prefix: /api
+    # Everything else -> the React static site
+    - component:
+        name: frontend
+      match:
+        path:
+          prefix: /
+
+services:
+  - name: backend
+    github:
+      repo: REPLACE_ME/grosvenor-vistas
+      branch: main
+      deploy_on_push: true
+    source_dir: /backend
+    dockerfile_path: backend/Dockerfile
+    http_port: 8080
+    instance_size_slug: apps-s-1vcpu-1gb   # pandas/numpy need >512MB; 1GB is safe
+    instance_count: 1
+    health_check:
+      http_path: /api/units
+      initial_delay_seconds: 20
+      period_seconds: 15
+    envs:
+      # --- Secrets: leave value blank here, set them in the DO dashboard ---
+      - key: JWT_SECRET            # REQUIRED — app won't start without it
+        scope: RUN_TIME
+        type: SECRET
+      - key: MONGO_URL             # your managed MongoDB connection string (with TLS)
+        scope: RUN_TIME
+        type: SECRET
+      - key: ADMIN_PASSWORD        # strong admin password (do NOT use the default)
+        scope: RUN_TIME
+        type: SECRET
+      - key: CRM_API_KEY           # leave blank for now (CRM not wired yet)
+        scope: RUN_TIME
+        type: SECRET
+      # --- Non-secret config ---
+      - key: DB_NAME
+        scope: RUN_TIME
+        value: grosvenor          # change to your DB name
+      - key: ADMIN_EMAIL
+        scope: RUN_TIME
+        value: admin@grosvenorvistas.com
+      - key: ADMIN_NAME
+        scope: RUN_TIME
+        value: Admin
+      - key: CORS_ORIGINS          # same-app domain; locks CORS to your site
+        scope: RUN_TIME
+        value: ${APP_URL}
+      - key: CRM_SYNC_ENABLED
+        scope: RUN_TIME
+        value: "false"
+      - key: CRM_WEBHOOK_URL
+        scope: RUN_TIME
+        value: ""
+      - key: CRM_AUTH_HEADER
+        scope: RUN_TIME
+        value: Authorization
+
+static_sites:
+  - name: frontend
+    github:
+      repo: REPLACE_ME/grosvenor-vistas
+      branch: main
+      deploy_on_push: true
+    source_dir: /frontend
+    build_command: yarn install --frozen-lockfile && yarn build
+    output_dir: build
+    catchall_document: index.html   # SPA fallback so client-side routes work
+    envs:
+      # Build-time: the SPA calls `${REACT_APP_BACKEND_URL}/api/...`.
+      # ${APP_URL} = this app's own public URL, so /api routes to the backend.
+      - key: REACT_APP_BACKEND_URL
+        scope: BUILD_TIME
+        value: ${APP_URL}
