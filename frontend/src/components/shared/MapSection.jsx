@@ -23,13 +23,22 @@ export default function MapSection() {
                 </a>
             </div>
             <div className="min-h-[340px]">
-                <iframe
-                    title="Grosvenor Vistas location"
-                    src={PROJECT.contact.mapEmbed}
-                    className="h-full w-full border-0"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                />
+                <a
+                    href={PROJECT.contact.mapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid="map-image-link"
+                    className="group relative block h-full min-h-[340px] w-full overflow-hidden"
+                >
+                    <img
+                        src="/media/hero-aerial.png"
+                        alt="Aerial view of Grosvenor Vistas, Manor Park, Kingston 8"
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <span className="absolute bottom-5 left-5 inline-flex items-center gap-2 rounded-full bg-brand-blue/85 px-5 py-2.5 text-sm uppercase tracking-[0.12em] text-white backdrop-blur transition-colors group-hover:bg-brand-gold">
+                        <MapPin className="h-4 w-4" /> View on Map
+                    </span>
+                </a>
             </div>
         </div>
     );

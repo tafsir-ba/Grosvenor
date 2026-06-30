@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
+import { MapPin } from "lucide-react";
 import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
-import { Eyebrow, fadeUp, PlaceholderMap, ROUND } from "@/components/shared/luxe";
+import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 import { PROJECT } from "@/lib/constants";
 
 const HIGHLIGHTS = [
@@ -38,7 +39,22 @@ export default function LocationPage() {
             </section>
 
             <section className="container-wide pb-16 md:pb-24">
-                <PlaceholderMap className={`h-[60vh] lg:h-[72vh] ${ROUND}`} />
+                <a
+                    href={PROJECT.contact.mapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid="location-map"
+                    className={`group relative block h-[60vh] overflow-hidden lg:h-[72vh] ${ROUND}`}
+                >
+                    <img
+                        src="/media/hero-aerial.png"
+                        alt="Aerial view of Grosvenor Vistas, Grosvenor Heights, Manor Park, Kingston 8"
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+                    />
+                    <span className="absolute bottom-6 left-6 inline-flex items-center gap-2 rounded-full bg-brand-blue/85 px-6 py-3 text-sm uppercase tracking-[0.12em] text-white backdrop-blur transition-colors duration-300 group-hover:bg-brand-gold">
+                        <MapPin className="h-4 w-4" /> View on Google Maps
+                    </span>
+                </a>
             </section>
 
             <section className="container-wide pb-24 md:pb-32">

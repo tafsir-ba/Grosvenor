@@ -105,7 +105,8 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 
 ## Final content updates (pre-sign-off) — 2026-06-30
 - **Mobile hero:** desktop keeps the looping video; mobile (<768px) now shows a static aerial render (`/media/hero-aerial.png`, `object-cover object-center`). Swap via existing `useIsDesktop()` (matchMedia min-768). NOTE: the screenshot tool renders at 1920px so it always shows the desktop video — verify the mobile image on a real device / devtools mobile mode. Other animated sections (Lifestyle, Moment) await client images for the same treatment.
-- **Location map:** `PROJECT.contact.mapUrl` (Get Directions) updated to the new pin `https://maps.app.goo.gl/HKF8wRKzt6VaiSxW7`. Embed iframe unchanged (same Manor Park location).
+- **Location map** (`LocationPage.jsx`): replaced `PlaceholderMap` with a static, clickable **aerial image** (`/media/hero-aerial.png`) linking to the Google Maps pin — no iframe (per client). `mapUrl` = `maps.app.goo.gl/HKF8wRKzt6VaiSxW7`. (Unused `MapSection.jsx` also de-iframed but it's dead code.) Client can swap the image for a map screenshot via the `<img src>`.
+- **Amenities empty space:** category grids switched from fixed 3-col grid (left an orphan 6th cell with 5 items) to `flex flex-wrap` with `flex-1 basis` so each category renders a clean 3 + 2 (bottom row fills full width).
 - **Amenities page** (`AmenitiesPage.jsx`): redesigned from a vertical list into 3 premium grouped categories — Lifestyle / Convenience / Infrastructure & Reliability — as lucide-icon card grids (15 amenities total). Verified visually.
 - **Homepage amenities** (`HomePage.jsx` AmenitiesShowcase): replaced the image-crossfade list with a clean 6-item icon highlight grid (Rooftop Infinity Pool, Rooftop Gym, Smart Locks, Assigned Underground Parking, Backup Generator, Strata Approved Security) + "View all amenities" → /amenities. Removed now-unused local AMENITIES/GYM_IMG.
 
