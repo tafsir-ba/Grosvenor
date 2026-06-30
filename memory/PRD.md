@@ -103,6 +103,12 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Tested: 32/32 backend pytest + full frontend flow pass (iteration_5.json). Public compliance confirmed (no bed/bath/floorplan/rooms on /residences or unit pages).
 - NOTE: consent text intentionally says "Evo Home" per client instruction (data processor) — not a bug.
 
+## Final content updates (pre-sign-off) — 2026-06-30
+- **Mobile hero:** desktop keeps the looping video; mobile (<768px) now shows a static aerial render (`/media/hero-aerial.png`, `object-cover object-center`). Swap via existing `useIsDesktop()` (matchMedia min-768). NOTE: the screenshot tool renders at 1920px so it always shows the desktop video — verify the mobile image on a real device / devtools mobile mode. Other animated sections (Lifestyle, Moment) await client images for the same treatment.
+- **Location map:** `PROJECT.contact.mapUrl` (Get Directions) updated to the new pin `https://maps.app.goo.gl/HKF8wRKzt6VaiSxW7`. Embed iframe unchanged (same Manor Park location).
+- **Amenities page** (`AmenitiesPage.jsx`): redesigned from a vertical list into 3 premium grouped categories — Lifestyle / Convenience / Infrastructure & Reliability — as lucide-icon card grids (15 amenities total). Verified visually.
+- **Homepage amenities** (`HomePage.jsx` AmenitiesShowcase): replaced the image-crossfade list with a clean 6-item icon highlight grid (Rooftop Infinity Pool, Rooftop Gym, Smart Locks, Assigned Underground Parking, Backup Generator, Strata Approved Security) + "View all amenities" → /amenities. Removed now-unused local AMENITIES/GYM_IMG.
+
 ## Interactive SVG Residence Explorer (Internal) — 2026-06-24, fork
 - Rebuilt the visual building/floor selector inside `/admin/residence-explorer` using the client's actual vector overlays (`SVG appartments.zip`). New `lib/explorerSvg.js` (auto-generated from the SVGs) + `components/admin/ExplorerMap.jsx`.
 - Drill-down: **Aerial site view** (gold hover-glow on the 3 building footprints + shortcut chips) → **Block A&B** (5 floor renders, A01–A16 / B01–B16 polygons), **Block C** (4 floors, C01–C09), **Townhouses** (2 units). All 43 SVG polygons map exactly to inventory unit numbers via `floor=ceil(n/4), pos=((n-1)%4)+1` (A/B) + explicit C/TH maps.

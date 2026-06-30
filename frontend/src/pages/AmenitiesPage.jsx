@@ -1,14 +1,47 @@
 import { motion } from "framer-motion";
+import {
+    Waves, Dumbbell, PartyPopper, ToyBrick, Trees,
+    KeyRound, ArrowUpDown, Car, Fingerprint, Trash2,
+    Power, Droplets, Filter, Sprout, ShieldCheck,
+} from "lucide-react";
 import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
-import { Eyebrow, fadeUp, ParallaxImage, ROUND } from "@/components/shared/luxe";
+import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
-const AMENITIES = [
-    { title: "Infinity Pool", line: "A rooftop pool where the water meets the horizon — designed for slow mornings and golden evenings above Kingston.", image: "/gallery/rooftop-pool.png" },
-    { title: "Gym", line: "An indoor gym with mountain and poolside views, designed for movement, wellness, and daily convenience.", image: "/gallery/gym.jpg" },
-    { title: "Rooftop Spaces", line: "Open-air spaces made for gathering, hosting and unwinding, with uninterrupted outlooks across the hills.", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Landscaped Grounds", line: "Lush, professionally maintained gardens woven through the community for calm and privacy.", image: "/gallery/heliconia-grounds.png" },
-    { title: "Strata Approved Security", line: "A gated, electronically controlled and strata-secured community offering complete peace of mind.", image: "/gallery/gate-entrance.png" },
+const CATEGORIES = [
+    {
+        name: "Lifestyle",
+        blurb: "Spaces designed for leisure, wellness and connection above Kingston.",
+        items: [
+            { icon: Waves, title: "Infinity Pool" },
+            { icon: Dumbbell, title: "Rooftop Gym" },
+            { icon: PartyPopper, title: "Rooftop Entertainment Spaces" },
+            { icon: ToyBrick, title: "Children's Playground" },
+            { icon: Trees, title: "Landscaped Gardens" },
+        ],
+    },
+    {
+        name: "Convenience",
+        blurb: "Thoughtful, everyday details that make life here effortless and secure.",
+        items: [
+            { icon: KeyRound, title: "Smart Locks" },
+            { icon: ArrowUpDown, title: "Elevator Access" },
+            { icon: Car, title: "Assigned Underground Parking" },
+            { icon: Fingerprint, title: "Electronic Gate Access" },
+            { icon: Trash2, title: "Efficient Garbage Management" },
+        ],
+    },
+    {
+        name: "Infrastructure & Reliability",
+        blurb: "Engineered systems that keep the community running, day and night.",
+        items: [
+            { icon: Power, title: "Backup Generator" },
+            { icon: Droplets, title: "Water Storage Tanks" },
+            { icon: Filter, title: "Grey Water Filtration System" },
+            { icon: Sprout, title: "Automatic Landscape Irrigation System" },
+            { icon: ShieldCheck, title: "Strata Approved Security Services" },
+        ],
+    },
 ];
 
 export default function AmenitiesPage() {
@@ -20,18 +53,35 @@ export default function AmenitiesPage() {
                 <motion.div {...fadeUp} className="max-w-3xl px-2 md:px-6">
                     <Eyebrow>The Experience</Eyebrow>
                     <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">A community built around its residents</h2>
+                    <p className="mt-6 font-sans text-lg text-brand-ink/70">Every amenity at Grosvenor Vistas is considered across three pillars — the lifestyle you live, the conveniences you rely on, and the infrastructure that quietly keeps it all running.</p>
                 </motion.div>
             </section>
 
-            <section className="container-wide pb-8" data-testid="amenities-sections">
-                <div className="flex flex-col gap-20 md:gap-32">
-                    {AMENITIES.map((a, i) => (
-                        <motion.div key={a.title} {...fadeUp} data-testid={`amenity-section-${i}`} className={`grid items-center gap-10 md:grid-cols-2 md:gap-16 ${i % 2 ? "md:[direction:rtl]" : ""}`}>
-                            <ParallaxImage src={a.image} alt={a.title} className={`h-[54vh] md:h-[72vh] md:[direction:ltr] ${ROUND}`} />
-                            <div className="px-2 md:px-6 md:[direction:ltr]">
-                                <span className="lux-title text-6xl font-light text-brand-gold/30 md:text-7xl">{String(i + 1).padStart(2, "0")}</span>
-                                <h3 className="lux-title mt-2 text-4xl text-brand-blue md:text-5xl lg:text-6xl">{a.title}</h3>
-                                <p className="mt-5 max-w-md font-sans text-lg text-brand-ink/70">{a.line}</p>
+            <section className="container-wide pb-16 md:pb-24" data-testid="amenities-categories">
+                <div className="flex flex-col gap-16 md:gap-24">
+                    {CATEGORIES.map((cat, ci) => (
+                        <motion.div key={cat.name} {...fadeUp} data-testid={`amenity-category-${ci}`}>
+                            <div className="flex flex-col gap-3 px-2 md:flex-row md:items-end md:justify-between md:px-6">
+                                <div>
+                                    <span className="lux-title text-5xl font-light text-brand-gold/30 md:text-6xl">{String(ci + 1).padStart(2, "0")}</span>
+                                    <h3 className="lux-title mt-1 text-3xl text-brand-blue md:text-4xl lg:text-5xl">{cat.name}</h3>
+                                </div>
+                                <p className="max-w-sm font-sans text-base text-brand-ink/60 md:text-right">{cat.blurb}</p>
+                            </div>
+
+                            <div className="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-[1.5rem] border border-brand-beige bg-brand-beige sm:grid-cols-2 lg:grid-cols-3 md:mt-10 md:rounded-[2rem]">
+                                {cat.items.map((a, i) => (
+                                    <div
+                                        key={a.title}
+                                        data-testid={`amenity-card-${ci}-${i}`}
+                                        className="group flex items-center gap-5 bg-brand-ivory p-7 transition-colors duration-300 hover:bg-brand-warm md:p-9"
+                                    >
+                                        <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-brand-gold/30 text-brand-gold transition-colors duration-300 group-hover:bg-brand-gold group-hover:text-white">
+                                            <a.icon className="h-5 w-5" strokeWidth={1.4} />
+                                        </span>
+                                        <h4 className="font-display text-xl leading-tight text-brand-blue md:text-2xl">{a.title}</h4>
+                                    </div>
+                                ))}
                             </div>
                         </motion.div>
                     ))}

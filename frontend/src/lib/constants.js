@@ -14,7 +14,7 @@ export const PROJECT = {
         email: "info@grosvenorvistas.com",
         emailHref: "mailto:info@grosvenorvistas.com",
         address: "3A Grosvenor Heights, Manor Park, Kingston 8, Jamaica",
-        mapUrl: "https://maps.app.goo.gl/cQGWC7NgNjUsAPkFA",
+        mapUrl: "https://maps.app.goo.gl/HKF8wRKzt6VaiSxW7",
         mapEmbed:
             "https://maps.google.com/maps?q=Grosvenor%20Heights%2C%20Manor%20Park%2C%20Kingston%208%2C%20Jamaica&t=k&z=17&output=embed",
     },

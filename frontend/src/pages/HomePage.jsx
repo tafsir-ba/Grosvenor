@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
+import { ArrowLeft, ArrowRight, MapPin, Waves, Dumbbell, KeyRound, Car, Power, ShieldCheck } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
 import { PROJECT, GALLERY, STARTING_PRICE } from "@/lib/constants";
 
-// Hero media — looping video on desktop, image fallback on mobile (perf).
+// Hero media — looping video on desktop, static aerial on mobile (perf + focal clarity).
 const HERO_IMG = "/gallery/hero-fallback.png";
+const HERO_MOBILE_IMG = "/media/hero-aerial.png";
 const HERO_VIDEO = "/video/hero.mp4";
 
 // Lifestyle media — looping rooftop video on desktop, image fallback on mobile.
@@ -18,20 +19,11 @@ const VIEW_IMG = "/gallery/ext-rooftop-seaview.png";
 const MOMENT_VIDEO = "/video/poolside-shower.mp4";
 const MOMENT_IMG = "/gallery/ext-rooftop-mountain.png";
 const FINAL_IMG = "/gallery/ext-aerial.png";
-const GYM_IMG = "/gallery/gym.jpg";
 
 const LIFESTYLE = [
     { title: "Privacy", line: "Strata-approved security, controlled access, and a private residential setting." },
     { title: "Elevation", line: "A hillside location designed to capture cooling breezes and elevated views over Kingston." },
     { title: "Modern Living", line: "Contemporary residences with thoughtful layouts and spaces designed for everyday ease." },
-];
-
-const AMENITIES = [
-    { title: "Infinity Pool", line: "Rooftop water that meets the horizon.", image: "/gallery/rooftop-pool.png" },
-    { title: "Gym", line: "An indoor gym with mountain and poolside views, designed for movement, wellness, and daily convenience.", image: GYM_IMG },
-    { title: "Rooftop Spaces", line: "Evenings made for gathering, above it all.", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Landscaped Grounds", line: "Greenery woven through the community.", image: "/gallery/heliconia-grounds.png" },
-    { title: "Strata Approved Security", line: "A gated, watched community with peace of mind.", image: "/gallery/gate-entrance.png" },
 ];
 
 const RESIDENCE_TIERS = [
@@ -208,7 +200,7 @@ function HeroSection() {
                         <source src={HERO_VIDEO} type="video/mp4" />
                     </video>
                 ) : (
-                    <img src={HERO_IMG} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                    <img src={HERO_MOBILE_IMG} alt="Aerial view of Grosvenor Vistas" data-testid="hero-mobile-image" className="absolute inset-0 h-full w-full object-cover object-center" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/65 via-brand-ink/10 to-transparent" />
                 <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }} className="absolute inset-x-0 bottom-0 p-8 md:p-16 lg:p-20">
@@ -269,50 +261,44 @@ function LifestyleSection() {
 }
 
 function AmenitiesShowcase() {
-    const [active, setActive] = useState(0);
+    const highlights = [
+        { icon: Waves, title: "Rooftop Infinity Pool" },
+        { icon: Dumbbell, title: "Rooftop Gym" },
+        { icon: KeyRound, title: "Smart Locks" },
+        { icon: Car, title: "Assigned Underground Parking" },
+        { icon: Power, title: "Backup Generator" },
+        { icon: ShieldCheck, title: "Strata Approved Security" },
+    ];
 
     return (
         <section className="container-wide py-20 md:py-28" data-testid="home-amenities">
-            <motion.div {...fadeUp} className="mb-12 px-2 md:px-6">
-                <Eyebrow>The Experience</Eyebrow>
-                <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Amenities for the everyday</h2>
+            <motion.div {...fadeUp} className="mb-12 flex flex-col gap-6 px-2 md:mb-16 md:flex-row md:items-end md:justify-between md:px-6">
+                <div>
+                    <Eyebrow>The Experience</Eyebrow>
+                    <h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Amenities for the everyday</h2>
+                </div>
+                <Link to="/amenities" data-testid="amenities-view-all" className="inline-flex items-center gap-2 border-b border-brand-gold pb-1 font-sans text-sm uppercase tracking-[0.14em] text-brand-gold transition-opacity hover:opacity-70">
+                    View all amenities <ArrowRight className="h-4 w-4" />
+                </Link>
             </motion.div>
-            <div className="grid items-center gap-12 md:grid-cols-[0.85fr_1.15fr] md:gap-16">
-                {/* List — hover or tap to explore */}
-                <div className="order-2 md:order-1">
-                    {AMENITIES.map((a, i) => (
-                        <button
-                            key={a.title}
-                            type="button"
-                            onMouseEnter={() => setActive(i)}
-                            onClick={() => setActive(i)}
-                            data-testid={`amenity-item-${i}`}
-                            className="block w-full border-b border-brand-beige py-5 text-left"
-                        >
-                            <span className="flex items-baseline gap-4">
-                                <span className="lux-eyebrow text-brand-ink/40">{String(i + 1).padStart(2, "0")}</span>
-                                <span className={`lux-title text-3xl font-light transition-colors duration-300 md:text-4xl ${active === i ? "text-brand-gold" : "text-brand-ink/80"}`}>{a.title}</span>
-                            </span>
-                            <span className={`grid transition-all duration-500 ease-out ${active === i ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-                                <span className="overflow-hidden"><span className="block max-w-md pl-10 font-sans text-base text-brand-ink/65">{a.line}</span></span>
-                            </span>
-                        </button>
-                    ))}
-                </div>
-                {/* Big image — smooth crossfade */}
-                <div className={`relative order-1 h-[58vh] overflow-hidden md:order-2 md:h-[80vh] ${ROUND}`}>
-                    {AMENITIES.map((a, i) => (
-                        <motion.img
-                            key={a.title}
-                            src={a.image}
-                            alt={a.title}
-                            loading="lazy"
-                            animate={{ opacity: active === i ? 1 : 0, scale: active === i ? 1 : 1.05 }}
-                            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                            className="absolute inset-0 h-full w-full object-cover"
-                        />
-                    ))}
-                </div>
+
+            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[1.75rem] border border-brand-beige bg-brand-beige md:grid-cols-3 md:rounded-[2.5rem]" data-testid="amenity-highlights">
+                {highlights.map((a, i) => (
+                    <motion.div
+                        key={a.title}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-40px" }}
+                        transition={{ duration: 0.6, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                        data-testid={`amenity-highlight-${i}`}
+                        className="group flex flex-col items-start gap-5 bg-brand-ivory p-8 transition-colors duration-300 hover:bg-brand-warm md:p-11"
+                    >
+                        <span className="flex h-14 w-14 items-center justify-center rounded-full border border-brand-gold/30 text-brand-gold transition-colors duration-300 group-hover:bg-brand-gold group-hover:text-white">
+                            <a.icon className="h-6 w-6" strokeWidth={1.4} />
+                        </span>
+                        <h3 className="lux-title text-2xl font-light text-brand-blue md:text-3xl">{a.title}</h3>
+                    </motion.div>
+                ))}
             </div>
         </section>
     );
