@@ -69,12 +69,12 @@ export default function AmenitiesPage() {
                                 <p className="max-w-sm font-sans text-base text-brand-ink/60 md:text-right">{cat.blurb}</p>
                             </div>
 
-                            <div className="mt-8 flex flex-wrap gap-px overflow-hidden rounded-[1.5rem] border border-brand-beige bg-brand-beige md:mt-10 md:rounded-[2rem]">
+                            <div className="mt-8 flex flex-wrap overflow-hidden rounded-[1.5rem] border-l border-t border-brand-beige bg-brand-ivory md:mt-10 md:rounded-[2rem]">
                                 {cat.items.map((a, i) => (
                                     <div
                                         key={a.title}
                                         data-testid={`amenity-card-${ci}-${i}`}
-                                        className="group flex flex-1 basis-[300px] sm:basis-[45%] lg:basis-[30%] items-center gap-5 bg-brand-ivory p-7 transition-colors duration-300 hover:bg-brand-warm md:p-9"
+                                        className="group flex flex-1 basis-[300px] sm:basis-[50%] lg:basis-[33.333%] items-center gap-5 border-b border-r border-brand-beige bg-brand-ivory p-7 transition-colors duration-300 hover:bg-brand-warm md:p-9"
                                     >
                                         <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-brand-gold/30 text-brand-gold transition-colors duration-300 group-hover:bg-brand-gold group-hover:text-white">
                                             <a.icon className="h-5 w-5" strokeWidth={1.4} />
