@@ -5,15 +5,14 @@ import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
 import MortgageCalculator from "@/components/shared/MortgageCalculator";
 import FaqAccordion from "@/components/shared/FaqAccordion";
-import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR, FAQ } from "@/lib/constants";
+import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR } from "@/lib/constants";
 import { useFaq } from "@/hooks/useData";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 const scrollToApply = () => document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" });
 
 export default function MortgagePage() {
-    const { data: faq, loading: faqLoading } = useFaq();
-    const faqItems = faq.length ? faq : FAQ;
+    const { data: faq, loading: faqLoading, error: faqError } = useFaq();
 
     return (
         <div data-testid="mortgage-page">
@@ -102,10 +101,14 @@ export default function MortgagePage() {
                     </motion.div>
                     {faqLoading ? (
                         <p className="font-sans text-brand-ink/60">Loading FAQ…</p>
-                    ) : (
+                    ) : faqError ? (
+                        <p className="font-sans text-sm text-destructive">Could not load FAQ content. Please try again later.</p>
+                    ) : faq.length > 0 ? (
                         <motion.div {...fadeUp} className="max-w-3xl" data-testid="mortgage-faq">
-                            <FaqAccordion items={faqItems} />
+                            <FaqAccordion items={faq} />
                         </motion.div>
+                    ) : (
+                        <p className="font-sans text-brand-ink/60">FAQ content is not available right now.</p>
                     )}
                 </div>
             </section>

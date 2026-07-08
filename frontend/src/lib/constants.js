@@ -199,15 +199,6 @@ export const LEAD_TYPE_LABEL = {
     email_click: "Email Click",
 };
 
-export const AMENITIES = [
-    { title: "Rooftop Pool", body: "A serene rooftop pool with panoramic views across Manor Park.", image: "/gallery/rooftop-pool.png" },
-    { title: "Private Terraces", body: "Generous outdoor terraces designed for entertaining and quiet evenings.", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Landscaped Grounds", body: "Lush, professionally landscaped gardens woven throughout the community.", image: "/gallery/heliconia-grounds.png" },
-    { title: "Refined Interiors", body: "Considered finishes and natural light in every elegantly staged residence.", image: "/gallery/model-unit-living-and-dining-room.png" },
-    { title: "Gourmet Kitchens", body: "Contemporary kitchens crafted for both everyday living and hosting.", image: "/gallery/model-unit-kitchen.png" },
-    { title: "Secure Community", body: "A gated, well-managed community offering peace of mind and privacy.", image: "/gallery/buildings-01.png" },
-];
-
 export const BUYING_PROCESS = [
     { step: "01", title: "Enquire", body: "Reach out or book a visit to the on-site showroom." },
     { step: "02", title: "Visit the Showroom", body: "Experience the model residence and tour the grounds in person." },
@@ -215,14 +206,7 @@ export const BUYING_PROCESS = [
     { step: "04", title: "Finance & Close", body: "Finalise mortgage or financing arrangements and complete your purchase." },
 ];
 
-export const FAQ = [
-    { q: "Where is Grosvenor Vistas located?", a: "Grosvenor Vistas is in Grosvenor Heights, Manor Park, Kingston 8, Jamaica — an established, sought-after residential area." },
-    { q: "Can I visit in person?", a: "Yes. A showroom and model residence are available on the property. Book a showroom visit and we'll arrange a convenient time." },
-    { q: "How many residences are there?", a: "The development comprises 43 residences across three blocks — Heliconia, Hibiscus and Ginger Lily — plus the Begonia townhouses." },
-    { q: "How is pricing presented?", a: "Each residence is listed with its total surface, balcony surface and price in USD. Availability updates as residences are reserved or sold." },
-    { q: "Do you offer financing?", a: "Yes. See the Mortgage & Financing page and request information — our team can guide you through the available options." },
-    { q: "How do I reserve a residence?", a: "Contact us to discuss availability and place a reservation. We keep the process simple and clear." },
-];
+// FAQ content is served from GET /api/content/faq (backend/content/site_content.py).
 
 // Curated lifestyle imagery (neutral captions — no room-spec labelling).
 export const GALLERY = [
@@ -255,12 +239,6 @@ export const DEVELOPMENT_BUILDINGS = [
     { name: "Begonia", block: "Townhouses", color: "#4B2E6B", building: "Townhouses — Begonia", collection: "townhouses" },
 ];
 
-// Development at a glance — headline stats then feature points.
-export const DEV_STATS = [
-    { value: "43", label: "Residences" },
-    { value: "3", label: "Apartment Buildings" },
-    { value: "2", label: "Townhouses" },
-];
 export const DEV_FEATURES = [
     "Rooftop swimming pools",
     "Gyms for each block",

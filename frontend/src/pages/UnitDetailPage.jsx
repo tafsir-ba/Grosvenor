@@ -58,7 +58,7 @@ function Gallery({ images, unitNumber }) {
 
 export default function UnitDetailPage() {
     const { slug } = useParams();
-    const { unit, loading } = useUnit(slug);
+    const { unit, loading, error } = useUnit(slug);
     const { units: allUnits } = useUnits({ sort: "price_asc" });
 
     const collection = unit ? collectionForSurface(unit.total_surface) : null;
@@ -77,6 +77,15 @@ export default function UnitDetailPage() {
 
     if (loading) {
         return <div className="container-wide py-40 pt-44"><Skeleton className={`h-[60vh] w-full ${ROUND}`} /></div>;
+    }
+    if (error) {
+        return (
+            <div className="container-wide py-40 pt-44 text-center" data-testid="unit-load-error">
+                <h1 className="lux-title text-4xl text-brand-blue">Unable to load residence</h1>
+                <p className="mt-4 font-sans text-brand-ink/60">Please try again shortly.</p>
+                <CtaButton to="/residences" variant="primary" className="mt-8">Back to Residences</CtaButton>
+            </div>
+        );
     }
     if (!unit) {
         return (
@@ -194,7 +203,7 @@ export default function UnitDetailPage() {
                         <div className="flex flex-col justify-center p-10 md:p-14">
                             <Eyebrow>Enquire</Eyebrow>
                             <h2 className="lux-title mt-6 text-4xl text-brand-blue sm:text-5xl">Request information on Residence {unit.unit_number}</h2>
-                            <p className="mt-6 max-w-md font-sans text-lg text-brand-ink/65">Share your details and we'll send pricing, availability and the detailed floor plan for this residence — along with anything else you'd like to know.</p>
+                            <p className="mt-6 max-w-md font-sans text-lg text-brand-ink/65">Share your details and we'll send pricing, availability and further information for this residence — along with anything else you'd like to know.</p>
                         </div>
                         <div className="border-t border-brand-beige bg-brand-warm/60 p-10 md:p-14 lg:border-l lg:border-t-0" data-testid="unit-enquiry">
                             <p className="font-sans text-sm text-brand-ink/55">Inquiry about Residence {unit.unit_number}. We'll respond promptly.</p>
@@ -203,7 +212,7 @@ export default function UnitDetailPage() {
                                     leadType={LEAD_TYPE.CONTACT_ABOUT_UNIT}
                                     ctx={leadCtx}
                                     submitLabel="Request Information"
-                                    messagePlaceholder={`I'd like pricing and the floor plan for Residence ${unit.unit_number}…`}
+                                    messagePlaceholder={`I'd like pricing and availability for Residence ${unit.unit_number}…`}
                                     testIdPrefix="unit-enquiry"
                                 />
                             </div>

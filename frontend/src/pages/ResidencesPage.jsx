@@ -56,7 +56,7 @@ export default function ResidencesPage() {
         return q;
     }, [building, status, sort]);
 
-    const { units, loading } = useUnits(query);
+    const { units, loading, error } = useUnits(query);
     const { units: allUnits } = useUnits({ sort: "price_asc" });
 
     const tiers = useMemo(() => TIERS.map((t) => {
@@ -206,7 +206,11 @@ export default function ResidencesPage() {
                     <p className="font-sans text-sm text-brand-ink/60" data-testid="residence-count">{loading ? "Loading…" : `${displayedUnits.length} residence${displayedUnits.length === 1 ? "" : "s"}`}</p>
                 </div>
 
-                {loading ? (
+                {error ? (
+                    <p className="px-2 py-20 text-center text-sm text-destructive md:px-6" data-testid="residences-error">
+                        Could not load residences. Please try again shortly.
+                    </p>
+                ) : loading ? (
                     <div className="px-2 md:px-6">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={`residence-skeleton-${i}`} className="my-4 h-16" />)}</div>
                 ) : displayedUnits.length === 0 ? (
                     <p className="py-20 text-center text-brand-ink/60" data-testid="no-residences">No residences match your filters.</p>

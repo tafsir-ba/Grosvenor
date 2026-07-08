@@ -25,6 +25,9 @@ export default function AmenitiesPage() {
                 {error && !loading && (
                     <p className="mb-6 px-2 font-sans text-sm text-destructive md:px-6">Could not load amenities from the server.</p>
                 )}
+                {!loading && !error && categories.length === 0 && (
+                    <p className="px-2 font-sans text-brand-ink/60 md:px-6">Amenities content is not available right now.</p>
+                )}
                 <div className="flex flex-col gap-16 md:gap-24">
                     {categories.map((cat, ci) => (
                         <motion.div key={cat.name} {...fadeUp} data-testid={`amenity-category-${ci}`}>
