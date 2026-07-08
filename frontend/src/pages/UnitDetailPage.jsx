@@ -51,6 +51,7 @@ function Gallery({ images, unitNumber }) {
                     </button>
                 ))}
             </div>
+            <p className="mt-4 font-sans text-xs text-brand-ink/50">Images shown are indicative and may not represent the exact residence.</p>
         </div>
     );
 }

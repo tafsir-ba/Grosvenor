@@ -48,3 +48,6 @@ CLICK_LEAD_TYPES = {
     LeadType.PHONE_CLICK,
     LeadType.EMAIL_CLICK,
 }
+
+# Lead types that may be recorded without contact details (clicks + open downloads).
+ANONYMOUS_LEAD_TYPES = CLICK_LEAD_TYPES | {LeadType.DOWNLOAD_PRICE_LIST}

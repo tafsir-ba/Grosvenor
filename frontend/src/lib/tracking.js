@@ -62,3 +62,8 @@ export async function submitLead(formData, leadType, ctx = {}) {
     const { data } = await api.post("/leads", buildLeadPayload(formData, leadType, ctx));
     return data;
 }
+
+export async function submitAdminLeadPayload(payload) {
+    const { data } = await api.post("/admin/leads", payload);
+    return data;
+}

@@ -4,7 +4,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowLeft, ArrowRight, MapPin, Waves, Dumbbell, KeyRound, Car, Power, ShieldCheck } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
-import { PROJECT, GALLERY, STARTING_PRICE } from "@/lib/constants";
+import { PROJECT, GALLERY, COLLECTIONS } from "@/lib/constants";
+import { formatPrice, minStartingPrice } from "@/lib/format";
 
 // Hero media — looping video on desktop, static aerial on mobile (perf + focal clarity).
 const HERO_IMG = "/gallery/hero-fallback.png";
@@ -24,12 +25,6 @@ const LIFESTYLE = [
     { title: "Privacy", line: "Strata-approved security, controlled access, and a private residential setting." },
     { title: "Elevation", line: "A hillside location designed to capture cooling breezes and elevated views over Kingston." },
     { title: "Modern Living", line: "Contemporary residences with thoughtful layouts and spaces designed for everyday ease." },
-];
-
-const RESIDENCE_TIERS = [
-    { key: "vista", name: "The Vista Residences", image: "/gallery/home-staging-kitchen-2.png", test: (u) => u.total_surface < 2500 },
-    { key: "signature", name: "Signature Residences", image: "/gallery/homestaging-bathroom-4.png", test: (u) => u.total_surface >= 2500 && u.total_surface < 4000 },
-    { key: "townhouses", name: "Begonia Townhouses", image: "/gallery/ext-townhouse-begonia.png", test: (u) => u.total_surface >= 4000 },
 ];
 
 const ROUND = "rounded-[1.75rem] md:rounded-[2.5rem]";
@@ -78,18 +73,22 @@ export default function HomePage() {
     const desktop = useIsDesktop();
 
     const tiers = useMemo(() => {
-        return RESIDENCE_TIERS.map((b) => {
-            const us = units.filter(b.test);
+        return COLLECTIONS.map((c) => {
+            const us = units.filter((u) => u.total_surface >= c.min && u.total_surface < c.max);
             const surfaces = us.map((u) => u.total_surface).filter(Boolean);
             const prices = us.map((u) => u.price).filter(Boolean);
             return {
-                ...b,
+                key: c.key,
+                name: c.name,
+                image: c.cardImage,
                 count: us.length,
                 minSurface: surfaces.length ? Math.min(...surfaces) : null,
                 minPrice: prices.length ? Math.min(...prices) : null,
             };
         }).filter((t) => t.count > 0);
     }, [units]);
+
+    const startingPrice = formatPrice(minStartingPrice(units));
 
     return (
         <div data-testid="home-page" className="bg-brand-warm text-brand-ink">
@@ -132,7 +131,7 @@ export default function HomePage() {
             <section className="container-wide py-20 md:py-28" data-testid="home-residences">
                 <div className="mb-14 flex flex-wrap items-end justify-between gap-6 px-2 md:px-6">
                     <div><Eyebrow>The Residences</Eyebrow><h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Find your space</h2></div>
-                    <p className="max-w-sm font-sans text-brand-ink/60">Forty-three residences, defined by space and position — from {STARTING_PRICE}.</p>
+                    <p className="max-w-sm font-sans text-brand-ink/60">Forty-three residences, defined by space and position — from {startingPrice}.</p>
                 </div>
                 <div className="grid gap-6 md:grid-cols-3">
                     {tiers.map((t) => (

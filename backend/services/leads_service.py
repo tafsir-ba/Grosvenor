@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from core.db import db
 from domain.base import utc_now_iso
-from domain.enums import CLICK_LEAD_TYPES, LeadStatus, LeadType
+from domain.enums import ANONYMOUS_LEAD_TYPES, CLICK_LEAD_TYPES, LeadStatus, LeadType
 from domain.models import Lead, LeadCreate, LeadUpdate
 from services import crm, email_service
 
@@ -15,7 +15,7 @@ COLLECTION = "leads"
 
 async def create_lead(payload: LeadCreate) -> Lead:
     # Real form submissions require contact info + consent; click events do not.
-    if payload.lead_type not in CLICK_LEAD_TYPES:
+    if payload.lead_type not in ANONYMOUS_LEAD_TYPES:
         if not payload.first_name or not payload.last_name or not payload.email:
             raise HTTPException(status_code=422, detail="First name, last name and email are required.")
         if not payload.consent:
@@ -25,7 +25,7 @@ async def create_lead(payload: LeadCreate) -> Lead:
     doc = lead.to_mongo()
 
     # Anonymous clicks are not pushed to the CRM as contacts.
-    if payload.lead_type not in CLICK_LEAD_TYPES:
+    if payload.lead_type not in ANONYMOUS_LEAD_TYPES:
         reference = crm.push_lead(doc)
         if reference:
             doc["crm_synced"] = True
@@ -34,7 +34,7 @@ async def create_lead(payload: LeadCreate) -> Lead:
     res = await db[COLLECTION].insert_one(doc)
     lead_id = str(res.inserted_id)
 
-    if payload.lead_type not in CLICK_LEAD_TYPES:
+    if payload.lead_type not in ANONYMOUS_LEAD_TYPES:
         doc["_id"] = lead_id
         await email_service.send_lead_notifications(doc)
 

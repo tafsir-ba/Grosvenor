@@ -10,10 +10,11 @@ import { useUnits } from "@/hooks/useData";
 import { api } from "@/lib/api";
 import { formatPrice, formatSurface, unitFloor } from "@/lib/format";
 import { BUILDINGS, LEAD_TYPE } from "@/lib/constants";
-import { getUnitType } from "@/lib/explorerData";
+import { getUnitType, EXPLORER_TYPE_OPTIONS } from "@/lib/explorerData";
+import { submitAdminLeadPayload } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 
-const TYPE_OPTS = ["2 Bedroom Residence", "3 Bedroom Residence — Type B", "3 Bedroom Residence — Type C", "3 Bedroom Penthouse — Type A", "3 Bedroom Penthouse — Type C", "3 Bedroom Penthouse — Type D", "4 Bedroom Townhouse"];
+const TYPE_OPTS = EXPLORER_TYPE_OPTIONS;
 
 function short(b) { return BUILDINGS.find((x) => x.value === b)?.short || b; }
 
@@ -144,7 +145,15 @@ export default function ResidenceExplorer() {
                                 <p className="lux-eyebrow text-brand-ink/45">Register Interest</p>
                                 <p className="mt-1 font-sans text-sm text-brand-ink/55">Inquiry for Residence {selected.unit_number}.</p>
                                 <div className="mt-4">
-                                    <LeadForm leadType={LEAD_TYPE.SALES_EXPLORER} ctx={leadCtx} submitLabel="Submit Inquiry" fields={["first_name", "last_name", "phone", "email", "message"]} messagePlaceholder={`Notes about Residence ${selected.unit_number}…`} testIdPrefix="explorer-lead" />
+                                    <LeadForm
+                                        leadType={LEAD_TYPE.SALES_EXPLORER}
+                                        ctx={leadCtx}
+                                        submitLabel="Submit Inquiry"
+                                        fields={["first_name", "last_name", "phone", "email", "message"]}
+                                        messagePlaceholder={`Notes about Residence ${selected.unit_number}…`}
+                                        testIdPrefix="explorer-lead"
+                                        submitFn={(payload) => submitAdminLeadPayload(payload)}
+                                    />
                                 </div>
                             </div>
                         </div>

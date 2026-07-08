@@ -5,9 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CtaButton from "@/components/shared/CtaButton";
 import { api, formatApiError } from "@/lib/api";
-import { LEAD_TYPE_LABEL } from "@/lib/constants";
-
-const LEAD_STATUSES = ["new", "contacted", "qualified", "won", "lost"];
+import { LEAD_TYPE_LABEL, LEAD_STATUSES } from "@/lib/constants";
 
 export default function AdminLeads() {
     const [leads, setLeads] = useState([]);
@@ -47,7 +45,7 @@ export default function AdminLeads() {
                         <SelectTrigger className="w-40" data-testid="lead-filter-status"><SelectValue /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Statuses</SelectItem>
-                            {LEAD_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                            {LEAD_STATUSES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
                         </SelectContent>
                     </Select>
                     <CtaButton variant="outline" onClick={exportCsv} data-testid="export-leads-btn"><Download className="h-4 w-4" /> Export</CtaButton>
@@ -77,7 +75,7 @@ export default function AdminLeads() {
                                 <TableCell>
                                     <Select value={l.status} onValueChange={(v) => changeStatus(l._id, v)}>
                                         <SelectTrigger className="h-8 w-32" data-testid={`lead-status-${l._id}`}><SelectValue /></SelectTrigger>
-                                        <SelectContent>{LEAD_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                                        <SelectContent>{LEAD_STATUSES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
                                     </Select>
                                 </TableCell>
                             </TableRow>

@@ -13,17 +13,17 @@ from services.units_service import make_slug
 CSV_PATH = Path(__file__).parent / "units.csv"
 
 # Default residence features (editable per unit in the admin panel).
+# Public copy must not reference bedrooms, bathrooms, floor plans, or room types.
 _DEFAULT_AMENITIES = [
-    "Master bedroom with ensuite bathroom",
-    "Open floor plans",
+    "Open-plan living spaces",
     "Floor-to-ceiling windows",
     "SPC Laminate flooring",
     "Solid surface countertops",
     "Recessed lighting",
-    "Contemporary kitchen and bathroom cabinetry and fixtures",
+    "Contemporary kitchen cabinetry and fixtures",
     "Provisioning for telephone and cable",
-    "Air-conditioning systems installed in bedrooms",
-    "Washer/dryer utility closet",
+    "Air-conditioning throughout",
+    "Utility closet",
 ]
 
 # Friendly block name (CSV) -> canonical building value used across the app.

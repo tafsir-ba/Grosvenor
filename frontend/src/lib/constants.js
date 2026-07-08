@@ -28,13 +28,12 @@ export const LEGAL = {
         "By completing the form, you authorize Evo Home to store and process the personal data submitted above to provide you the requested content.",
     credit: "Designed and developed by Evohome",
     disclaimer:
-        "Grosvenor Vistas is a development of Niaviv Ltd., located at [ADDRESS], Company Registration No. [DV-XXXXXX]. The development comprises 43 apartments ranging in size from 1,671 sq ft to 3,644 sq ft, and 2 townhouses measuring 4,845 sq ft each. The buildings are constructed with reinforced concrete slab roofs and feature polished concrete and laminate flooring. Estimated completion is scheduled for 2026. No price escalation applies. The development was approved by the Kingston & St. Andrew Municipal Corporation on [APPROVAL DATE]. Approved plans may be viewed at 3A Grosvenor Heights, Kingston, Jamaica.",
+        "Grosvenor Vistas is a development of Niaviv Ltd., located at [ADDRESS], Company Registration No. [DV-XXXXXX]. The development comprises 43 apartments ranging in size from 1,671 sq ft to 3,644 sq ft, and 2 townhouses measuring 4,845 sq ft each. The buildings are constructed with reinforced concrete slab roofs and feature polished concrete and laminate flooring. No price escalation applies. The development was approved by the Kingston & St. Andrew Municipal Corporation on [APPROVAL DATE]. Approved plans may be viewed at 3A Grosvenor Heights, Kingston, Jamaica.",
     disclaimerSecondary:
         "All images, renderings, dimensions, specifications, finishes, and other information contained on this website and in associated marketing materials are provided for illustrative purposes only. The developer reserves the right to modify, amend, substitute, or vary any aspect of the development, including but not limited to layouts, floor plans, specifications, materials, finishes, and amenities, without prior notice or obligation.",
 };
 
-// Authoritative starting price for marketing display.
-export const STARTING_PRICE = "USD 393,000";
+// Starting price is derived from live inventory via format.minStartingPrice().
 
 // Full amenity list (icons rendered in the UI). Views pushed first.
 export const AMENITY_FEATURES = [
@@ -80,9 +79,9 @@ export const COLLECTIONS = [
         gallery: [
             { label: "Living Spaces", image: "/gallery/model-unit-living-room.png" },
             { label: "Gourmet Kitchen", image: "/gallery/home-staging-kitchen-2.png" },
-            { label: "Principal Suite", image: "/gallery/model-unit-bedroom.png" },
+            { label: "Interior Detail", image: "/gallery/model-unit-bedroom.png" },
             { label: "Terrace & Views", image: "/gallery/ext-heliconia-view.png" },
-            { label: "Bathroom", image: "/gallery/model-unit-bathroom.png" },
+            { label: "Spa Finishes", image: "/gallery/model-unit-bathroom.png" },
         ],
     },
     {
@@ -93,9 +92,9 @@ export const COLLECTIONS = [
         gallery: [
             { label: "Living Spaces", image: "/gallery/homestaging-living-room-2.png" },
             { label: "Gourmet Kitchen", image: "/gallery/homestaging-kitchen.png" },
-            { label: "Principal Suite", image: "/gallery/homestaging-ginger-lily-bedroom.png" },
+            { label: "Interior Detail", image: "/gallery/homestaging-ginger-lily-bedroom.png" },
             { label: "Terrace & Views", image: "/gallery/terrace-2.png" },
-            { label: "Bathroom", image: "/gallery/homestaging-bathroom-4.png" },
+            { label: "Spa Finishes", image: "/gallery/homestaging-bathroom-4.png" },
         ],
     },
     {
@@ -106,9 +105,9 @@ export const COLLECTIONS = [
         gallery: [
             { label: "Living & Dining", image: "/gallery/model-unit-living-and-dining-room.png" },
             { label: "Gourmet Kitchen", image: "/gallery/model-unit-dining-kitchen.png" },
-            { label: "Principal Suite", image: "/gallery/model-unit-bedroom-2.png" },
+            { label: "Interior Detail", image: "/gallery/model-unit-bedroom-2.png" },
             { label: "Terrace & Views", image: "/gallery/ext-rooftop-mountain.png" },
-            { label: "Bathroom", image: "/gallery/model-unit-bathroom-2.png" },
+            { label: "Spa Finishes", image: "/gallery/model-unit-bathroom-2.png" },
         ],
     },
     {
@@ -119,9 +118,9 @@ export const COLLECTIONS = [
         gallery: [
             { label: "Living Spaces", image: "/gallery/homestaging-living-dinning-room-kitchen-2.png" },
             { label: "Gourmet Kitchen", image: "/gallery/model-unit-kitchen.png" },
-            { label: "Principal Suite", image: "/gallery/model-unit-bedroom-3.png" },
+            { label: "Interior Detail", image: "/gallery/model-unit-bedroom-3.png" },
             { label: "Terrace & Views", image: "/gallery/ext-rooftop-seaview.png" },
-            { label: "Bathroom", image: "/gallery/model-unit-master-bathroom-3.png" },
+            { label: "Spa Finishes", image: "/gallery/model-unit-master-bathroom-3.png" },
         ],
     },
     {
@@ -132,9 +131,9 @@ export const COLLECTIONS = [
         gallery: [
             { label: "Living Spaces", image: "/gallery/home-staging-living-dinning-room-and-kitchen.png" },
             { label: "Gourmet Kitchen", image: "/gallery/homestaging-kitchen.png" },
-            { label: "Principal Suite", image: "/gallery/model-unit-mater-bedroom.png" },
+            { label: "Interior Detail", image: "/gallery/model-unit-mater-bedroom.png" },
             { label: "Terrace & Views", image: "/gallery/hero-rooftop-sunset.png" },
-            { label: "Bathroom", image: "/gallery/model-unit-master-bathroom-4.png" },
+            { label: "Spa Finishes", image: "/gallery/model-unit-master-bathroom-4.png" },
         ],
     },
     {
@@ -145,9 +144,9 @@ export const COLLECTIONS = [
         gallery: [
             { label: "Living Spaces", image: "/gallery/model-unit-living-room.png" },
             { label: "Gourmet Kitchen", image: "/gallery/model-unit-dining-kitchen.png" },
-            { label: "Principal Suite", image: "/gallery/model-unit-mater-bedroom.png" },
+            { label: "Interior Detail", image: "/gallery/model-unit-mater-bedroom.png" },
             { label: "Grounds & Views", image: "/gallery/heliconia-grounds.png" },
-            { label: "Bathroom", image: "/gallery/homestaging-master-bathroom-1.png" },
+            { label: "Spa Finishes", image: "/gallery/homestaging-master-bathroom-1.png" },
         ],
     },
 ];
@@ -162,6 +161,16 @@ export const STATUS_META = {
     reserved: { label: "Reserved", classes: "bg-brand-gold text-white" },
     sold: { label: "Sold", classes: "bg-brand-ink/[0.06] text-brand-ink/55" },
 };
+
+export const UNIT_STATUSES = Object.keys(STATUS_META);
+
+export const LEAD_STATUSES = [
+    { value: "new", label: "New" },
+    { value: "contacted", label: "Contacted" },
+    { value: "qualified", label: "Qualified" },
+    { value: "won", label: "Won" },
+    { value: "lost", label: "Lost" },
+];
 
 // Mirrors backend LeadType enum.
 export const LEAD_TYPE = {

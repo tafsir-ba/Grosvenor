@@ -46,6 +46,8 @@ async def access_download(download_id: str, lead: Optional[LeadCreate]) -> dict:
             raise HTTPException(status_code=422, detail="Please accept the data processing consent to continue.")
         lead.lead_type = DOWNLOAD_LEAD_TYPE[download.type]
         await leads_service.create_lead(lead)
+    elif download.type == DownloadType.PRICELIST:
+        await leads_service.create_lead(LeadCreate(lead_type=LeadType.DOWNLOAD_PRICE_LIST))
 
     return {"file_url": download.file_url, "title": download.title}
 

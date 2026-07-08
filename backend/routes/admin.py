@@ -12,6 +12,7 @@ from domain.enums import LeadStatus, LeadType, UnitStatus
 from domain.models import (
     DownloadCreate,
     DownloadUpdate,
+    LeadCreate,
     LeadUpdate,
     UnitCreate,
     UnitUpdate,
@@ -85,6 +86,12 @@ async def admin_delete_unit(unit_id: str):
 
 
 # ------------------------------ Leads ------------------------------
+@router.post("/leads")
+async def admin_create_lead(payload: LeadCreate):
+    lead = await leads_service.create_lead(payload)
+    return {"ok": True, "id": lead.id}
+
+
 @router.get("/leads")
 async def admin_list_leads(lead_type: Optional[LeadType] = None,
                            status: Optional[LeadStatus] = None):

@@ -28,3 +28,8 @@ export function floorLabel(floor) {
 export function unitFloor(unit) {
     return unit.floor_label || floorLabel(unit.floor);
 }
+
+export function minStartingPrice(units = []) {
+    const prices = units.map((u) => u.price).filter((p) => p != null);
+    return prices.length ? Math.min(...prices) : null;
+}

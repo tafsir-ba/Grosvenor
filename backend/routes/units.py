@@ -17,7 +17,8 @@ async def list_units(
     max_price: Optional[float] = None,
     sort: str = "building",
 ):
-    return await units_service.list_units(building, status, min_price, max_price, sort)
+    units = await units_service.list_units(building, status, min_price, max_price, sort)
+    return [units_service.to_public_unit(u) for u in units]
 
 
 @router.get("/{slug}")
@@ -25,4 +26,4 @@ async def get_unit(slug: str):
     unit = await units_service.get_unit_by_slug(slug)
     if not unit:
         raise HTTPException(status_code=404, detail="Unit not found")
-    return unit
+    return units_service.to_public_unit(unit)

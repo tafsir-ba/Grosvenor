@@ -11,9 +11,26 @@ from domain.models import Unit, UnitCreate, UnitUpdate
 
 COLLECTION = "units"
 
+_FORBIDDEN_AMENITY_RE = re.compile(
+    r"bedroom|bathroom|floor\s*plan|ensuite|principal\s*suite|guest\s*wc",
+    re.IGNORECASE,
+)
+
 
 def make_slug(unit_number: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", unit_number.lower()).strip("-")
+
+
+def sanitize_public_amenities(amenities: Optional[List[str]]) -> List[str]:
+    if not amenities:
+        return []
+    return [a for a in amenities if a and not _FORBIDDEN_AMENITY_RE.search(a)]
+
+
+def to_public_unit(unit: Unit) -> Unit:
+    data = unit.model_dump()
+    data["amenities"] = sanitize_public_amenities(data.get("amenities"))
+    return Unit(**data)
 
 
 async def list_units(

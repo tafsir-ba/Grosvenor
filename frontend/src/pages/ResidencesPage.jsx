@@ -8,14 +8,16 @@ import CtaButton from "@/components/shared/CtaButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnits } from "@/hooks/useData";
-import { BUILDINGS, COLLECTIONS, STARTING_PRICE } from "@/lib/constants";
+import { BUILDINGS, COLLECTIONS, UNIT_STATUSES } from "@/lib/constants";
+import { formatPrice, minStartingPrice } from "@/lib/format";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 const STATUSES = [
     { value: "all", label: "All Statuses" },
-    { value: "available", label: "Available" },
-    { value: "reserved", label: "Reserved" },
-    { value: "sold", label: "Sold" },
+    ...UNIT_STATUSES.map((value) => ({
+        value,
+        label: value.charAt(0).toUpperCase() + value.slice(1),
+    })),
 ];
 const SORTS = [
     { value: "building", label: "Building" },
@@ -90,9 +92,11 @@ export default function ResidencesPage() {
         setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
     };
 
+    const startingPrice = formatPrice(minStartingPrice(allUnits.filter((u) => u.status === "available")));
+
     return (
         <div data-testid="residences-page">
-            <Hero image="/gallery/buildings-01.png" overline="Residences" title="Find your space" subtitle={`Forty-three residences, defined by space and position — from ${STARTING_PRICE}.`} />
+            <Hero image="/gallery/buildings-01.png" overline="Residences" title="Find your space" subtitle={`Forty-three residences, defined by space and position — from ${startingPrice}.`} />
 
             {/* Intro */}
             <section className="container-wide py-16 md:py-24">

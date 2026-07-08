@@ -85,6 +85,11 @@ class TestUnits:
         sample = units[0]
         for forbidden in ("bedrooms", "bathrooms", "floor_plan", "images"):
             assert forbidden not in sample, f"forbidden field present: {forbidden}"
+        for amenity in sample.get("amenities", []):
+            lower = amenity.lower()
+            assert "bedroom" not in lower, f"prohibited amenity copy: {amenity}"
+            assert "bathroom" not in lower, f"prohibited amenity copy: {amenity}"
+            assert "floor plan" not in lower, f"prohibited amenity copy: {amenity}"
         assert "_id" in sample and "slug" in sample
 
     def test_filter_by_building(self, session):
@@ -271,7 +276,18 @@ class TestLeads:
             f"{r.status_code}: {r.text}"
         )
 
-    def test_create_sales_explorer_lead_with_protected_fields(self, session, admin_session):
+    def test_create_sales_explorer_lead_rejected_on_public_api(self, session):
+        payload = {
+            "first_name": "TEST",
+            "last_name": "Public",
+            "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "consent": True,
+            "lead_type": "sales_explorer",
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 403, r.text
+
+    def test_create_sales_explorer_lead_with_protected_fields(self, admin_session):
         """sales_explorer lead carries unit_living, unit_floor, unit_status, residence_type."""
         unique_email = f"test_explorer_{uuid.uuid4().hex[:8]}@example.com"
         payload = {
@@ -293,7 +309,7 @@ class TestLeads:
             "unit_floor": "4th Floor",
             "unit_status": "available",
         }
-        r = session.post(f"{API}/leads", json=payload)
+        r = admin_session.post(f"{API}/admin/leads", json=payload)
         assert r.status_code == 200, r.text
         assert r.json().get("ok") is True
 
@@ -357,6 +373,16 @@ class TestDownloads:
                          json={"lead": None})
         assert r.status_code == 200, r.text
         assert r.json().get("file_url")
+
+    def test_pricelist_access_records_download_lead(self, session, admin_session):
+        items = session.get(f"{API}/downloads").json()
+        price = next(d for d in items if d["type"] == "pricelist")
+        before = len(admin_session.get(f"{API}/admin/leads").json())
+        r = session.post(f"{API}/downloads/{price['_id']}/access", json={"lead": None})
+        assert r.status_code == 200, r.text
+        after = len(admin_session.get(f"{API}/admin/leads").json())
+        assert after == before + 1
+        assert admin_session.get(f"{API}/admin/leads").json()[0].get("lead_type") == "download_price_list"
 
     def test_brochure_gated_without_lead_422(self, session):
         items = session.get(f"{API}/downloads").json()
@@ -474,3 +500,16 @@ class TestAdmin:
         data = r.json()
         assert data["status"] == "contacted"
         assert data["notes"] == "TEST"
+
+    def test_floorplan_requires_auth(self, session):
+        r = session.get(f"{API}/admin/floorplans/A101")
+        assert r.status_code == 401
+
+    def test_floorplan_serves_pdf_for_admin(self, admin_session):
+        r = admin_session.get(f"{API}/admin/floorplans/A101")
+        assert r.status_code == 200, r.text
+        assert r.headers.get("content-type", "").startswith("application/pdf")
+
+    def test_floorplan_unknown_unit_404(self, admin_session):
+        r = admin_session.get(f"{API}/admin/floorplans/DOESNOTEXIST999")
+        assert r.status_code == 404

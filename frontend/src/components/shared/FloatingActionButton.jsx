@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { X, Download, CalendarCheck, MessageCircle } from "lucide-react";
+import { X, Download, CalendarCheck, MessageCircle, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -11,7 +11,7 @@ import { formatApiError } from "@/lib/api";
 import { PROJECT, LEAD_TYPE } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
 
-const CYCLE = [Download, CalendarCheck, MessageCircle];
+const CYCLE = [Download, CalendarCheck, MessageCircle, FileText];
 
 // Single champagne-gold conversion hub. Replaces the brochure rail + WhatsApp button.
 export default function FloatingActionButton() {
@@ -20,6 +20,7 @@ export default function FloatingActionButton() {
     const [iconIdx, setIconIdx] = useState(0);
     const downloads = useDownloads();
     const brochure = downloads.find((d) => d.type === "brochure");
+    const pricelist = downloads.find((d) => d.type === "pricelist");
 
     // Collapsed icon slowly rotates between actions to hint what's inside.
     useEffect(() => {
@@ -38,8 +39,19 @@ export default function FloatingActionButton() {
         }
     };
 
+    const openPricelist = async () => {
+        if (!pricelist) return;
+        try {
+            await accessDownload(pricelist._id, null);
+            setOpen(false);
+        } catch (err) {
+            toast.error(formatApiError(err.response?.data?.detail) || "Unable to open file.");
+        }
+    };
+
     const actions = [
         { key: "brochure", label: "Download Brochure", icon: Download, onClick: () => { setBrochureOpen(true); setOpen(false); } },
+        { key: "pricelist", label: "Price List", icon: FileText, onClick: openPricelist, disabled: !pricelist },
         { key: "visit", label: "Book a Visit", icon: CalendarCheck, to: "/contact" },
         { key: "whatsapp", label: "WhatsApp", icon: MessageCircle, href: PROJECT.contact.whatsapp, external: true, onClick: () => trackClick(LEAD_TYPE.WHATSAPP_CLICK) },
     ];
@@ -72,7 +84,7 @@ export default function FloatingActionButton() {
                                 };
                                 if (a.to) return <motion.div key={a.key} {...mp}><Link to={a.to} onClick={() => setOpen(false)} data-testid={`fab-${a.key}`} className={cls}>{inner}</Link></motion.div>;
                                 if (a.href) return <motion.div key={a.key} {...mp}><a href={a.href} target="_blank" rel="noreferrer" onClick={() => { a.onClick?.(); setOpen(false); }} data-testid={`fab-${a.key}`} className={cls}>{inner}</a></motion.div>;
-                                return <motion.div key={a.key} {...mp}><button onClick={a.onClick} data-testid={`fab-${a.key}`} className={cls}>{inner}</button></motion.div>;
+                                return <motion.div key={a.key} {...mp}><button type="button" onClick={a.onClick} disabled={a.disabled} data-testid={`fab-${a.key}`} className={`${cls}${a.disabled ? " opacity-50 pointer-events-none" : ""}`}>{inner}</button></motion.div>;
                             })}
                         </motion.div>
                     )}

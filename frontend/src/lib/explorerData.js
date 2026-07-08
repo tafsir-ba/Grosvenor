@@ -44,6 +44,8 @@ const TYPES = {
     },
 };
 
+export const EXPLORER_TYPE_OPTIONS = Object.values(TYPES).map((t) => t.typeName);
+
 // Full plan set (Dropbox) — downloadable from the protected area only.
 export const FULL_PLANS_URL = "https://www.dropbox.com/t/AFmAd6YGYSts96Eq";
 

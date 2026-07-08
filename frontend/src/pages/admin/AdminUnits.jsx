@@ -10,9 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import CtaButton from "@/components/shared/CtaButton";
 import { api, formatApiError } from "@/lib/api";
 import { formatPrice, formatSurface, unitFloor } from "@/lib/format";
-import { BUILDINGS } from "@/lib/constants";
+import { BUILDINGS, UNIT_STATUSES } from "@/lib/constants";
 
-const STATUSES = ["available", "reserved", "sold"];
+const STATUSES = UNIT_STATUSES;
 const EMPTY = { building: BUILDINGS[0].value, unit_number: "", floor: 1, floor_label: "", total_surface: "", balcony_surface: "", living_area: "", price: "", status: "available", amenities: "" };
 
 function toPayload(form) {

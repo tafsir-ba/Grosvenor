@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
@@ -14,13 +15,17 @@ import MortgagePage from "@/pages/MortgagePage";
 import FaqPage from "@/pages/FaqPage";
 import ContactPage from "@/pages/ContactPage";
 
-import AdminLogin from "@/pages/admin/AdminLogin";
-import AdminLayout from "@/pages/admin/AdminLayout";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
-import AdminUnits from "@/pages/admin/AdminUnits";
-import AdminLeads from "@/pages/admin/AdminLeads";
-import AdminDownloads from "@/pages/admin/AdminDownloads";
-import ResidenceExplorer from "@/pages/admin/ResidenceExplorer";
+const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
+const AdminLayout = lazy(() => import("@/pages/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const AdminUnits = lazy(() => import("@/pages/admin/AdminUnits"));
+const AdminLeads = lazy(() => import("@/pages/admin/AdminLeads"));
+const AdminDownloads = lazy(() => import("@/pages/admin/AdminDownloads"));
+const ResidenceExplorer = lazy(() => import("@/pages/admin/ResidenceExplorer"));
+
+function AdminFallback() {
+    return <div className="flex min-h-screen items-center justify-center bg-brand-warm font-sans text-brand-ink/60">Loading…</div>;
+}
 
 function App() {
     return (
@@ -41,13 +46,13 @@ function App() {
                         <Route path="/contact" element={<ContactPage />} />
                     </Route>
 
-                    <Route path="/admin/login" element={<AdminLogin />} />
-                    <Route path="/admin" element={<AdminLayout />}>
-                        <Route index element={<AdminDashboard />} />
-                        <Route path="units" element={<AdminUnits />} />
-                        <Route path="residence-explorer" element={<ResidenceExplorer />} />
-                        <Route path="leads" element={<AdminLeads />} />
-                        <Route path="downloads" element={<AdminDownloads />} />
+                    <Route path="/admin/login" element={<Suspense fallback={<AdminFallback />}><AdminLogin /></Suspense>} />
+                    <Route path="/admin" element={<Suspense fallback={<AdminFallback />}><AdminLayout /></Suspense>}>
+                        <Route index element={<Suspense fallback={<AdminFallback />}><AdminDashboard /></Suspense>} />
+                        <Route path="units" element={<Suspense fallback={<AdminFallback />}><AdminUnits /></Suspense>} />
+                        <Route path="residence-explorer" element={<Suspense fallback={<AdminFallback />}><ResidenceExplorer /></Suspense>} />
+                        <Route path="leads" element={<Suspense fallback={<AdminFallback />}><AdminLeads /></Suspense>} />
+                        <Route path="downloads" element={<Suspense fallback={<AdminFallback />}><AdminDownloads /></Suspense>} />
                     </Route>
                 </Routes>
             </BrowserRouter>
