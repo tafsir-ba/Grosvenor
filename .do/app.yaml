@@ -83,6 +83,18 @@ services:
       - key: CRM_AUTH_HEADER
         scope: RUN_TIME
         value: Authorization
+      - key: RESEND_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: EMAIL_FROM
+        scope: RUN_TIME
+        value: "Grosvenor Vistas <info@grosvenorvistas.com>"
+      - key: NOTIFY_EMAIL
+        scope: RUN_TIME
+        value: info@grosvenorvistas.com
+      - key: ENVIRONMENT
+        scope: RUN_TIME
+        value: production
 
 static_sites:
   - name: frontend

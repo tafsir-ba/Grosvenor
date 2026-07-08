@@ -8,7 +8,7 @@ from core.db import db
 from domain.base import utc_now_iso
 from domain.enums import CLICK_LEAD_TYPES, LeadStatus, LeadType
 from domain.models import Lead, LeadCreate, LeadUpdate
-from services import crm
+from services import crm, email_service
 
 COLLECTION = "leads"
 
@@ -32,7 +32,13 @@ async def create_lead(payload: LeadCreate) -> Lead:
             doc["crm_reference"] = reference
 
     res = await db[COLLECTION].insert_one(doc)
-    return await get_lead(str(res.inserted_id))
+    lead_id = str(res.inserted_id)
+
+    if payload.lead_type not in CLICK_LEAD_TYPES:
+        doc["_id"] = lead_id
+        await email_service.send_lead_notifications(doc)
+
+    return await get_lead(lead_id)
 
 
 async def get_lead(lead_id: str) -> Optional[Lead]:

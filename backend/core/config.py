@@ -62,5 +62,16 @@ class Settings:
 
     CORS_ORIGINS = _resolve_cors_origins()
 
+    # Email (Resend) — staff alerts + visitor confirmations on form leads
+    RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+    EMAIL_FROM = os.environ.get(
+        "EMAIL_FROM",
+        "Grosvenor Vistas <info@grosvenorvistas.com>",
+    )
+    NOTIFY_EMAIL = os.environ.get("NOTIFY_EMAIL", ADMIN_EMAIL)
+    EMAIL_ENABLED = os.environ.get("EMAIL_ENABLED", "").lower() not in ("false", "0", "no")
+    if EMAIL_ENABLED and not RESEND_API_KEY:
+        EMAIL_ENABLED = False
+
 
 settings = Settings()
