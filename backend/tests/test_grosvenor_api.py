@@ -513,3 +513,41 @@ class TestAdmin:
     def test_floorplan_unknown_unit_404(self, admin_session):
         r = admin_session.get(f"{API}/admin/floorplans/DOESNOTEXIST999")
         assert r.status_code == 404
+
+
+# -------------------- content --------------------
+class TestContent:
+    def test_faq(self, session):
+        r = session.get(f"{API}/content/faq")
+        assert r.status_code == 200
+        data = r.json()
+        assert isinstance(data, list) and len(data) >= 5
+        assert "q" in data[0] and "a" in data[0]
+
+    def test_amenities(self, session):
+        r = session.get(f"{API}/content/amenities")
+        assert r.status_code == 200
+        data = r.json()
+        assert len(data) == 3
+        assert data[0]["items"][0]["icon"]
+
+
+# -------------------- auth refresh / admin sync --------------------
+class TestAuthRefresh:
+    def test_refresh_requires_cookie(self, session):
+        r = session.post(f"{API}/auth/refresh")
+        assert r.status_code == 401
+
+
+class TestAdminSync:
+    def test_units_sync_stub(self, admin_session):
+        r = admin_session.post(f"{API}/admin/units/sync")
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert data["ok"] is True
+        assert "units_updated" in data
+
+    def test_crm_status(self, admin_session):
+        r = admin_session.get(f"{API}/admin/crm/status")
+        assert r.status_code == 200
+        assert "enabled" in r.json()

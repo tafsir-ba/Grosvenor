@@ -3,29 +3,37 @@ import { api, tokenStore } from "@/lib/api";
 
 const AuthContext = createContext(null);
 
+async function restoreSession(setUser, setLoading) {
+    if (!tokenStore.get()) {
+        setUser(false);
+        setLoading(false);
+        return;
+    }
+    try {
+        const { data } = await api.get("/auth/me");
+        setUser(data);
+    } catch (err) {
+        try {
+            const { data } = await api.post("/auth/refresh");
+            if (data.access_token) tokenStore.set(data.access_token);
+            const me = await api.get("/auth/me");
+            setUser(me.data);
+        } catch (refreshErr) {
+            console.error("Auth check failed:", err, refreshErr);
+            tokenStore.clear();
+            setUser(false);
+        }
+    } finally {
+        setLoading(false);
+    }
+}
+
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null); // null = checking | false = guest | {} = user
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const check = async () => {
-            if (!tokenStore.get()) {
-                setUser(false);
-                setLoading(false);
-                return;
-            }
-            try {
-                const { data } = await api.get("/auth/me");
-                setUser(data);
-            } catch (err) {
-                console.error("Auth check failed:", err);
-                tokenStore.clear();
-                setUser(false);
-            } finally {
-                setLoading(false);
-            }
-        };
-        check();
+        restoreSession(setUser, setLoading);
     }, []);
 
     const login = async (email, password) => {

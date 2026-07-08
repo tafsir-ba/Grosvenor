@@ -69,7 +69,7 @@ function useIsDesktop() {
 }
 
 export default function HomePage() {
-    const { units } = useUnits({ status: "available", sort: "price_asc" });
+    const { units, loading, error } = useUnits({ status: "available", sort: "price_asc" });
     const desktop = useIsDesktop();
 
     const tiers = useMemo(() => {
@@ -131,8 +131,15 @@ export default function HomePage() {
             <section className="container-wide py-20 md:py-28" data-testid="home-residences">
                 <div className="mb-14 flex flex-wrap items-end justify-between gap-6 px-2 md:px-6">
                     <div><Eyebrow>The Residences</Eyebrow><h2 className="lux-title mt-7 text-5xl text-brand-blue sm:text-6xl lg:text-7xl">Find your space</h2></div>
-                    <p className="max-w-sm font-sans text-brand-ink/60">Forty-three residences, defined by space and position — from {startingPrice}.</p>
+                    <p className="max-w-sm font-sans text-brand-ink/60">
+                        {loading ? "Loading residences…" : error ? "Residence pricing is temporarily unavailable." : `Forty-three residences, defined by space and position — from ${startingPrice}.`}
+                    </p>
                 </div>
+                {loading ? (
+                    <p className="px-2 font-sans text-brand-ink/55 md:px-6">Loading available residences…</p>
+                ) : error ? (
+                    <p className="px-2 font-sans text-sm text-destructive md:px-6">We could not load residence availability. Please try again shortly.</p>
+                ) : (
                 <div className="grid gap-6 md:grid-cols-3">
                     {tiers.map((t) => (
                         <Link key={t.key} to="/residences" data-testid={`residence-tier-${t.key}`} className={`group relative block h-[68vh] overflow-hidden ${ROUND}`}>
@@ -150,6 +157,7 @@ export default function HomePage() {
                         </Link>
                     ))}
                 </div>
+                )}
             </section>
 
             {/* 7. LOCATION PREVIEW */}

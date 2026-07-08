@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
-import { DEVELOPMENT_BUILDINGS, DEV_STATS, DEV_FEATURES, AMENITY_PREVIEW, MASTERPLAN_IMAGE } from "@/lib/constants";
+import { DEVELOPMENT_BUILDINGS, DEV_FEATURES, AMENITY_PREVIEW, MASTERPLAN_IMAGE } from "@/lib/constants";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 function buildingStats(units, b) {
@@ -23,8 +23,21 @@ function buildingStats(units, b) {
     };
 }
 
+function devStats(units) {
+    const townhouses = units.filter((u) => u.total_surface >= 4500).length;
+    const apartmentBuildings = new Set(
+        units.filter((u) => u.total_surface < 4500).map((u) => u.building),
+    ).size;
+    return [
+        { value: String(units.length || "—"), label: "Residences" },
+        { value: String(apartmentBuildings || "—"), label: "Apartment Buildings" },
+        { value: String(townhouses || "—"), label: "Townhouses" },
+    ];
+}
+
 export default function DevelopmentPage() {
-    const { units } = useUnits({ sort: "price_asc" });
+    const { units, loading, error } = useUnits({ sort: "price_asc" });
+    const stats = devStats(units);
 
     return (
         <div data-testid="development-page">
@@ -39,12 +52,17 @@ export default function DevelopmentPage() {
                         <p className="mt-6 max-w-md font-sans text-lg leading-relaxed text-brand-ink/65">Contemporary architecture across three apartment buildings and two townhouses — generous indoor and outdoor spaces, gated and landscaped, moments from Kingston 8.</p>
                     </motion.div>
                     <motion.div {...fadeUp} className="grid grid-cols-3 gap-4" data-testid="dev-stats">
-                        {DEV_STATS.map((s) => (
-                            <div key={s.label} className={`flex flex-col items-center justify-center bg-brand-ivory px-3 py-10 text-center ${ROUND}`}>
-                                <span className="font-display text-5xl text-brand-gold md:text-6xl">{s.value}</span>
-                                <span className="mt-2 font-sans text-xs uppercase tracking-[0.14em] text-brand-ink/55">{s.label}</span>
-                            </div>
-                        ))}
+                        {loading && stats.every((s) => s.value === "—") ? (
+                            <p className="col-span-3 font-sans text-sm text-brand-ink/55">Loading development stats…</p>
+                        ) : (
+                            stats.map((s) => (
+                                <div key={s.label} className={`flex flex-col items-center justify-center bg-brand-ivory px-3 py-10 text-center ${ROUND}`}>
+                                    <span className="font-display text-5xl text-brand-gold md:text-6xl">{s.value}</span>
+                                    <span className="mt-2 font-sans text-xs uppercase tracking-[0.14em] text-brand-ink/55">{s.label}</span>
+                                </div>
+                            ))
+                        )}
+                        {error && <p className="col-span-3 font-sans text-sm text-destructive">Inventory could not be loaded. Stats may be incomplete.</p>}
                     </motion.div>
                 </div>
             </section>

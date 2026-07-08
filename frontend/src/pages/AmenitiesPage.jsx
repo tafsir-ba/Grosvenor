@@ -1,50 +1,13 @@
 import { motion } from "framer-motion";
-import {
-    Waves, Dumbbell, PartyPopper, ToyBrick, Trees,
-    KeyRound, ArrowUpDown, Car, Fingerprint, Trash2,
-    Power, Droplets, Filter, Sprout, ShieldCheck,
-} from "lucide-react";
 import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
-
-const CATEGORIES = [
-    {
-        name: "Lifestyle",
-        blurb: "Spaces designed for leisure, wellness and connection above Kingston.",
-        items: [
-            { icon: Waves, title: "Infinity Pool" },
-            { icon: Dumbbell, title: "Rooftop Gym" },
-            { icon: PartyPopper, title: "Rooftop Entertainment Spaces" },
-            { icon: ToyBrick, title: "Children's Playground" },
-            { icon: Trees, title: "Landscaped Gardens" },
-        ],
-    },
-    {
-        name: "Convenience",
-        blurb: "Thoughtful, everyday details that make life here effortless and secure.",
-        items: [
-            { icon: KeyRound, title: "Smart Locks" },
-            { icon: ArrowUpDown, title: "Elevator Access" },
-            { icon: Car, title: "Assigned Underground Parking" },
-            { icon: Fingerprint, title: "Electronic Gate Access" },
-            { icon: Trash2, title: "Efficient Garbage Management" },
-        ],
-    },
-    {
-        name: "Infrastructure & Reliability",
-        blurb: "Engineered systems that keep the community running, day and night.",
-        items: [
-            { icon: Power, title: "Backup Generator" },
-            { icon: Droplets, title: "Water Storage Tanks" },
-            { icon: Filter, title: "Grey Water Filtration System" },
-            { icon: Sprout, title: "Automatic Landscape Irrigation System" },
-            { icon: ShieldCheck, title: "Strata Approved Security Services" },
-        ],
-    },
-];
+import { useAmenities } from "@/hooks/useData";
+import { resolveAmenityIcon } from "@/lib/amenityIcons";
 
 export default function AmenitiesPage() {
+    const { data: categories, loading, error } = useAmenities();
+
     return (
         <div data-testid="amenities-page">
             <Hero image="/gallery/rooftop-pool.png" overline="Amenities & Lifestyle" title="Live well, every day" subtitle="Spaces and surroundings designed for comfort, connection and calm." />
@@ -58,8 +21,12 @@ export default function AmenitiesPage() {
             </section>
 
             <section className="container-wide pb-16 md:pb-24" data-testid="amenities-categories">
+                {loading && <p className="px-2 font-sans text-brand-ink/60 md:px-6">Loading amenities…</p>}
+                {error && !loading && (
+                    <p className="mb-6 px-2 font-sans text-sm text-destructive md:px-6">Could not load amenities from the server.</p>
+                )}
                 <div className="flex flex-col gap-16 md:gap-24">
-                    {CATEGORIES.map((cat, ci) => (
+                    {categories.map((cat, ci) => (
                         <motion.div key={cat.name} {...fadeUp} data-testid={`amenity-category-${ci}`}>
                             <div className="flex flex-col gap-3 px-2 md:flex-row md:items-end md:justify-between md:px-6">
                                 <div>
@@ -70,18 +37,21 @@ export default function AmenitiesPage() {
                             </div>
 
                             <div className="mt-8 flex flex-wrap overflow-hidden rounded-[1.5rem] border-l border-t border-brand-beige bg-brand-ivory md:mt-10 md:rounded-[2rem]">
-                                {cat.items.map((a, i) => (
-                                    <div
-                                        key={a.title}
-                                        data-testid={`amenity-card-${ci}-${i}`}
-                                        className="group flex flex-1 basis-[300px] sm:basis-[50%] lg:basis-[33.333%] items-center gap-5 border-b border-r border-brand-beige bg-brand-ivory p-7 transition-colors duration-300 hover:bg-brand-warm md:p-9"
-                                    >
-                                        <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-brand-gold/30 text-brand-gold transition-colors duration-300 group-hover:bg-brand-gold group-hover:text-white">
-                                            <a.icon className="h-5 w-5" strokeWidth={1.4} />
-                                        </span>
-                                        <h4 className="font-display text-xl leading-tight text-brand-blue md:text-2xl">{a.title}</h4>
-                                    </div>
-                                ))}
+                                {cat.items.map((a, i) => {
+                                    const Icon = resolveAmenityIcon(a.icon);
+                                    return (
+                                        <div
+                                            key={a.title}
+                                            data-testid={`amenity-card-${ci}-${i}`}
+                                            className="group flex flex-1 basis-[300px] sm:basis-[50%] lg:basis-[33.333%] items-center gap-5 border-b border-r border-brand-beige bg-brand-ivory p-7 transition-colors duration-300 hover:bg-brand-warm md:p-9"
+                                        >
+                                            <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-brand-gold/30 text-brand-gold transition-colors duration-300 group-hover:bg-brand-gold group-hover:text-white">
+                                                <Icon className="h-5 w-5" strokeWidth={1.4} />
+                                            </span>
+                                            <h4 className="font-display text-xl leading-tight text-brand-blue md:text-2xl">{a.title}</h4>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </motion.div>
                     ))}

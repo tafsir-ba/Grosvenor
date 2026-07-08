@@ -8,6 +8,7 @@ from core.security import (
     create_access_token,
     create_refresh_token,
     get_current_user,
+    refresh_tokens,
     set_auth_cookies,
     verify_password,
 )
@@ -41,6 +42,11 @@ async def login(payload: LoginRequest, response: Response):
 async def logout(response: Response, _: dict = Depends(get_current_user)):
     clear_auth_cookies(response)
     return {"ok": True}
+
+
+@router.post("/refresh")
+async def refresh(request: Request, response: Response):
+    return await refresh_tokens(request, response)
 
 
 @router.get("/me")

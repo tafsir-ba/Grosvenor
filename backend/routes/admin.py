@@ -5,6 +5,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
+from pydantic import BaseModel, EmailStr
 
 from core.db import db
 from core.security import require_admin
@@ -18,10 +19,22 @@ from domain.models import (
     UnitUpdate,
 )
 from services import downloads_service, leads_service, units_service
+from services.crm import get_crm_status, sync_units_from_crm
+from services.email_service import send_residence_to_buyer
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
 FLOORPLANS_DIR = Path(__file__).resolve().parent.parent / "protected_floorplans"
+
+
+class SendToBuyerPayload(BaseModel):
+    email: EmailStr
+    unit_slug: str
+    message: Optional[str] = None
+    cc_sales: bool = True
+    residence_type: Optional[str] = None
+    bedrooms: Optional[int] = None
+    bathrooms: Optional[float] = None
 
 
 # ------------------------ Protected floor plans ------------------------
@@ -83,6 +96,36 @@ async def admin_delete_unit(unit_id: str):
     if not await units_service.delete_unit(unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")
     return {"ok": True}
+
+
+@router.post("/units/sync")
+async def admin_sync_units(_: dict = Depends(require_admin)):
+    return sync_units_from_crm()
+
+
+@router.get("/crm/status")
+async def admin_crm_status(_: dict = Depends(require_admin)):
+    return get_crm_status()
+
+
+@router.post("/residences/send-to-buyer")
+async def send_to_buyer(payload: SendToBuyerPayload, _: dict = Depends(require_admin)):
+    unit = await units_service.get_unit_by_slug(payload.unit_slug)
+    if not unit:
+        raise HTTPException(status_code=404, detail="Unit not found")
+    sent = send_residence_to_buyer(
+        to=payload.email.lower(),
+        unit=unit.model_dump(),
+        note=payload.message,
+        cc_sales=payload.cc_sales,
+        residence_type=payload.residence_type,
+        bedrooms=payload.bedrooms,
+        bathrooms=payload.bathrooms,
+        floorplans_dir=FLOORPLANS_DIR,
+    )
+    if not sent:
+        raise HTTPException(status_code=503, detail="Email could not be sent. Check email configuration.")
+    return {"ok": True, "sent": True}
 
 
 # ------------------------------ Leads ------------------------------

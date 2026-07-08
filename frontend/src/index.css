@@ -6,7 +6,7 @@
     :root {
         /* Brand palette — matches grosvenorvistas.com. No black; warm brown ink. */
         --gold: 34 65% 47%;        /* #C6862B */
-        --blue: 210 43% 30%;       /* #2C4D6D (new brand blue) */
+        --blue: 200 90% 24%;       /* #064F73 */
         --green: 147 74% 20%;      /* #0D572D */
         --ink: 28 24% 16%;         /* warm dark brown (text) */
         --cream: 40 33% 98%;       /* bright off-white */
@@ -19,7 +19,7 @@
         --popover-foreground: 28 24% 16%;
         --primary: 34 65% 47%;
         --primary-foreground: 0 0% 100%;
-        --secondary: 210 43% 30%;
+        --secondary: 200 90% 24%;
         --secondary-foreground: 0 0% 100%;
         --muted: 40 20% 96%;
         --muted-foreground: 215 14% 42%;

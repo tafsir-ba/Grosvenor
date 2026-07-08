@@ -18,7 +18,7 @@ export default function FloatingActionButton() {
     const [open, setOpen] = useState(false);
     const [brochureOpen, setBrochureOpen] = useState(false);
     const [iconIdx, setIconIdx] = useState(0);
-    const downloads = useDownloads();
+    const { downloads } = useDownloads();
     const brochure = downloads.find((d) => d.type === "brochure");
     const pricelist = downloads.find((d) => d.type === "pricelist");
 

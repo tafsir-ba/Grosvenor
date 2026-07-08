@@ -18,7 +18,7 @@ from core.config import settings  # noqa: E402
 from core.db import create_indexes, db  # noqa: E402
 from core.security import hash_password, verify_password  # noqa: E402
 from domain.base import utc_now  # noqa: E402
-from routes import admin, auth, downloads, leads, units  # noqa: E402
+from routes import admin, auth, content, downloads, leads, units  # noqa: E402
 from seed_data import seed_inventory  # noqa: E402
 
 logging.basicConfig(level=logging.INFO,
@@ -35,7 +35,7 @@ async def root():
     return {"service": "Grosvenor Vistas", "status": "ok"}
 
 
-for r in (auth.router, units.router, leads.router, downloads.router, admin.router):
+for r in (auth.router, content.router, units.router, leads.router, downloads.router, admin.router):
     api_router.include_router(r)
 
 app.include_router(api_router)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { api, formatApiError } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
 import { LEAD_TYPE_LABEL, STATUS_META } from "@/lib/constants";
 
@@ -14,12 +14,33 @@ function StatCard({ label, value, accent }) {
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        api.get("/admin/stats").then(({ data }) => setStats(data)).catch(() => {});
+        let active = true;
+        setLoading(true);
+        setError(null);
+        api.get("/admin/stats")
+            .then(({ data }) => active && setStats(data))
+            .catch((err) => active && setError(err))
+            .finally(() => active && setLoading(false));
+        return () => {
+            active = false;
+        };
     }, []);
 
-    if (!stats) return <p className="text-muted-foreground">Loading…</p>;
+    if (loading) return <p className="text-muted-foreground">Loading…</p>;
+    if (error || !stats) {
+        return (
+            <div data-testid="admin-dashboard">
+                <h1 className="font-display text-3xl text-brand-ink">Dashboard</h1>
+                <p className="mt-4 text-sm text-destructive">
+                    {formatApiError(error?.response?.data?.detail) || "Could not load dashboard stats."}
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div data-testid="admin-dashboard">

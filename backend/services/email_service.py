@@ -3,8 +3,11 @@
 Isolated here so lead capture never depends on email succeeding.
 """
 import asyncio
+import base64
 import html
 import logging
+import re
+from pathlib import Path
 from typing import Optional
 
 import requests
@@ -35,6 +38,8 @@ def _send_email(
     subject: str,
     html_body: str,
     reply_to: Optional[str] = None,
+    cc: Optional[list[str]] = None,
+    attachments: Optional[list[dict]] = None,
 ) -> bool:
     if not settings.EMAIL_ENABLED:
         logger.debug("Email disabled — skipped: %s", subject)
@@ -51,6 +56,10 @@ def _send_email(
     }
     if reply_to:
         payload["reply_to"] = reply_to
+    if cc:
+        payload["cc"] = [addr for addr in cc if addr]
+    if attachments:
+        payload["attachments"] = attachments
 
     try:
         resp = requests.post(
@@ -147,3 +156,95 @@ async def send_lead_notifications(lead: dict) -> None:
     for result in results:
         if isinstance(result, Exception):
             logger.warning("Lead email task failed: %s", result)
+
+
+def _floorplan_path(unit_number: str, floorplans_dir: Path) -> Optional[Path]:
+    safe = re.sub(r"[^A-Za-z0-9 ]", "", unit_number).strip()
+    path = floorplans_dir / f"{safe}.pdf"
+    return path if path.is_file() else None
+
+
+def send_residence_to_buyer(
+    *,
+    to: str,
+    unit: dict,
+    note: Optional[str] = None,
+    cc_sales: bool = True,
+    residence_type: Optional[str] = None,
+    bedrooms: Optional[int] = None,
+    bathrooms: Optional[float] = None,
+    floorplans_dir: Path,
+) -> bool:
+    """Email a buyer the residence summary with an attached floor-plan PDF when available."""
+    unit_number = unit.get("unit_number") or "—"
+    building = unit.get("building") or "—"
+    price = unit.get("price")
+    currency = unit.get("currency") or "USD"
+    status = (unit.get("status") or "available").replace("_", " ").title()
+    price_line = (
+        f"{currency} {price:,.0f}"
+        if price is not None
+        else "On request"
+    )
+
+    detail_rows = [
+        ("Residence", unit_number),
+        ("Building", building),
+        ("Status", status),
+        ("Total surface", f"{unit.get('total_surface', '—')} sq ft"),
+        ("Balcony", f"{unit.get('balcony_surface', '—')} sq ft"),
+        ("Price", price_line),
+    ]
+    if residence_type:
+        detail_rows.append(("Type", residence_type))
+    if bedrooms is not None:
+        detail_rows.append(("Bedrooms", str(bedrooms)))
+    if bathrooms is not None:
+        detail_rows.append(("Bathrooms", str(bathrooms)))
+
+    rows_html = "".join(
+        f"<tr><td style='padding:6px 12px 6px 0;color:#666;vertical-align:top'>{_esc(label)}</td>"
+        f"<td style='padding:6px 0'>{_esc(value)}</td></tr>"
+        for label, value in detail_rows
+    )
+    note_html = (
+        f"<p style='margin-top:20px;font-size:15px;line-height:1.6'><strong>Note from your advisor:</strong><br>{_esc(note)}</p>"
+        if note
+        else ""
+    )
+
+    subject = f"Residence {unit_number} — Grosvenor Vistas"
+    body = f"""
+    <div style="font-family:Arial,sans-serif;color:#2c241c;max-width:560px">
+      <h2 style="color:#064F73;font-weight:normal;margin:0 0 16px">Your residence at Grosvenor Vistas</h2>
+      <p style="font-size:16px;line-height:1.6">
+        Please find the details for the residence discussed with our team below.
+        The floor plan is attached when available.
+      </p>
+      <table style="border-collapse:collapse;font-size:15px;line-height:1.5;margin-top:12px">
+        {rows_html}
+      </table>
+      {note_html}
+      <p style="margin-top:24px;font-size:13px;color:#888">
+        Grosvenor Vistas · Grosvenor Heights, Manor Park, Kingston 8, Jamaica
+      </p>
+    </div>
+    """
+
+    attachments = []
+    plan_path = _floorplan_path(unit_number, floorplans_dir)
+    if plan_path:
+        attachments.append({
+            "filename": f"Residence-{unit_number.replace(' ', '-')}-Floor-Plan.pdf",
+            "content": base64.b64encode(plan_path.read_bytes()).decode("ascii"),
+        })
+
+    cc = [settings.NOTIFY_EMAIL] if cc_sales and settings.NOTIFY_EMAIL else None
+    return _send_email(
+        to,
+        subject,
+        body,
+        reply_to=settings.NOTIFY_EMAIL or None,
+        cc=cc,
+        attachments=attachments or None,
+    )

@@ -83,3 +83,28 @@ def push_lead(lead: dict) -> Optional[str]:
     except Exception as exc:  # network/CRM errors must never break lead capture
         logger.warning("CRM lead push failed: %s", exc)
         return None
+
+
+def get_crm_status() -> dict:
+    return {
+        "enabled": settings.CRM_SYNC_ENABLED,
+        "configured": bool(settings.CRM_WEBHOOK_URL),
+        "webhook_url_set": bool(settings.CRM_WEBHOOK_URL),
+    }
+
+
+def sync_units_from_crm() -> dict:
+    """Placeholder for future inbound CRM unit sync."""
+    if not settings.CRM_SYNC_ENABLED or not settings.CRM_WEBHOOK_URL:
+        return {
+            "ok": True,
+            "synced": False,
+            "message": "CRM sync is not configured. Set CRM_SYNC_ENABLED and CRM_WEBHOOK_URL to enable unit synchronization.",
+            "units_updated": 0,
+        }
+    return {
+        "ok": True,
+        "synced": False,
+        "message": "CRM inbound sync is not yet implemented for this provider.",
+        "units_updated": 0,
+    }

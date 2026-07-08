@@ -57,6 +57,31 @@ def clear_auth_cookies(response):
     response.delete_cookie("refresh_token", path="/")
 
 
+async def refresh_tokens(request: Request, response) -> dict:
+    """Issue a new access token from a valid refresh cookie."""
+    refresh = request.cookies.get("refresh_token")
+    if not refresh:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = _decode(refresh)
+        if payload.get("type") != "refresh":
+            raise HTTPException(status_code=401, detail="Invalid token type")
+        user = await db.users.find_one({"_id": ObjectId(payload["sub"])})
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        user_id = str(user["_id"])
+        email = user["email"]
+        role = user.get("role", "admin")
+        access = create_access_token(user_id, email, role)
+        new_refresh = create_refresh_token(user_id)
+        set_auth_cookies(response, access, new_refresh)
+        return {"ok": True, "access_token": access, "authenticated": True}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Session expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
 # --------------------------- Dependencies ---------------------------
 def _extract_token(request: Request) -> str:
     token = request.cookies.get("access_token")

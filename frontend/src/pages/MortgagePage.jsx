@@ -4,12 +4,17 @@ import Hero from "@/components/shared/Hero";
 import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
 import MortgageCalculator from "@/components/shared/MortgageCalculator";
-import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR } from "@/lib/constants";
+import FaqAccordion from "@/components/shared/FaqAccordion";
+import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR, FAQ } from "@/lib/constants";
+import { useFaq } from "@/hooks/useData";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 const scrollToApply = () => document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" });
 
 export default function MortgagePage() {
+    const { data: faq, loading: faqLoading } = useFaq();
+    const faqItems = faq.length ? faq : FAQ;
+
     return (
         <div data-testid="mortgage-page">
             <Hero image="/gallery/model-unit-living-and-dining-room.png" height="min-h-[58vh]" overline="Mortgage & Financing" title="Financing made simple" subtitle="Clear, supportive guidance to help you move forward with confidence." />
@@ -85,6 +90,24 @@ export default function MortgagePage() {
                         </div>
                     </div>
                 </motion.div>
+            </section>
+
+            {/* 6. FAQ */}
+            <section className="bg-brand-ivory py-16 md:py-24">
+                <div className="container-wide px-2 md:px-6">
+                    <motion.div {...fadeUp} className="mb-10 max-w-2xl">
+                        <Eyebrow>Questions</Eyebrow>
+                        <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Financing FAQ</h2>
+                        <p className="mt-4 font-sans text-base text-brand-ink/60">Quick answers about buying and financing at Grosvenor Vistas.</p>
+                    </motion.div>
+                    {faqLoading ? (
+                        <p className="font-sans text-brand-ink/60">Loading FAQ…</p>
+                    ) : (
+                        <motion.div {...fadeUp} className="max-w-3xl" data-testid="mortgage-faq">
+                            <FaqAccordion items={faqItems} />
+                        </motion.div>
+                    )}
+                </div>
             </section>
 
             {/* 7. Final CTA */}

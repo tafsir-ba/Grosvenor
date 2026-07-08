@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, RotateCcw, BedDouble, Bath, FileText, ExternalLink, Loader2 } from "lucide-react";
+import { ChevronRight, RotateCcw, BedDouble, Bath, FileText, ExternalLink, Loader2, Mail } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -7,12 +7,13 @@ import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
 import ExplorerMap from "@/components/admin/ExplorerMap";
 import { useUnits } from "@/hooks/useData";
-import { api } from "@/lib/api";
+import { api, formatApiError } from "@/lib/api";
 import { formatPrice, formatSurface, unitFloor } from "@/lib/format";
 import { BUILDINGS, LEAD_TYPE } from "@/lib/constants";
 import { getUnitType, EXPLORER_TYPE_OPTIONS } from "@/lib/explorerData";
 import { submitAdminLeadPayload } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const TYPE_OPTS = EXPLORER_TYPE_OPTIONS;
 
@@ -24,6 +25,9 @@ export default function ResidenceExplorer() {
     const [statusF, setStatusF] = useState("all");
     const [typeF, setTypeF] = useState("all");
     const [plan, setPlan] = useState(null); // { unit, url, loading, error }
+    const [buyerEmail, setBuyerEmail] = useState("");
+    const [buyerNote, setBuyerNote] = useState("");
+    const [sendingBuyer, setSendingBuyer] = useState(false);
     const [mapView, setMapView] = useState("aerial");
     const [resetSignal, setResetSignal] = useState(0);
 
@@ -54,6 +58,29 @@ export default function ResidenceExplorer() {
     };
     const closePlan = () => {
         setPlan((p) => { if (p?.url) URL.revokeObjectURL(p.url); return null; });
+    };
+
+    const sendToBuyer = async () => {
+        if (!selected || !buyerEmail.trim()) return;
+        setSendingBuyer(true);
+        try {
+            await api.post("/admin/residences/send-to-buyer", {
+                email: buyerEmail.trim(),
+                unit_slug: selected.slug,
+                message: buyerNote.trim() || undefined,
+                cc_sales: true,
+                residence_type: selected.type.typeName,
+                bedrooms: selected.type.bedrooms,
+                bathrooms: selected.type.bathrooms,
+            });
+            toast.success(`Residence details sent to ${buyerEmail.trim()}`);
+            setBuyerEmail("");
+            setBuyerNote("");
+        } catch (err) {
+            toast.error(formatApiError(err.response?.data?.detail) || "Could not send email.");
+        } finally {
+            setSendingBuyer(false);
+        }
     };
 
     const leadCtx = selected ? {
@@ -130,6 +157,40 @@ export default function ResidenceExplorer() {
                                     </span>
                                     <span className="font-sans text-sm text-brand-gold">View PDF</span>
                                 </button>
+                            </div>
+
+                            {/* Send to buyer */}
+                            <div className="mt-6 border-t border-brand-beige pt-6" data-testid="explorer-send-buyer">
+                                <p className="lux-eyebrow text-brand-ink/45">Send to Buyer</p>
+                                <p className="mt-1 font-sans text-sm text-brand-ink/55">Email pricing, details and the floor plan PDF to a prospective buyer.</p>
+                                <div className="mt-4 space-y-3">
+                                    <input
+                                        type="email"
+                                        value={buyerEmail}
+                                        onChange={(e) => setBuyerEmail(e.target.value)}
+                                        placeholder="buyer@example.com"
+                                        data-testid="buyer-email"
+                                        className="w-full rounded-xl border border-brand-beige bg-white px-4 py-3 font-sans text-sm text-brand-ink outline-none focus:border-brand-gold"
+                                    />
+                                    <textarea
+                                        value={buyerNote}
+                                        onChange={(e) => setBuyerNote(e.target.value)}
+                                        placeholder="Optional note for the buyer…"
+                                        rows={3}
+                                        data-testid="buyer-note"
+                                        className="w-full rounded-xl border border-brand-beige bg-white px-4 py-3 font-sans text-sm text-brand-ink outline-none focus:border-brand-gold"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={sendToBuyer}
+                                        disabled={!buyerEmail.trim() || sendingBuyer}
+                                        data-testid="send-to-buyer"
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-gold px-5 py-3 font-sans text-sm text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                                    >
+                                        {sendingBuyer ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+                                        {sendingBuyer ? "Sending…" : "Send to Buyer"}
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Room breakdown */}
