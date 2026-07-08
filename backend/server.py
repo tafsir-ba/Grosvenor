@@ -72,6 +72,16 @@ async def on_startup():
     await create_indexes()
     await seed_admin()
     await seed_inventory()
+    if settings.EMAIL_ENABLED:
+        logger.info(
+            "Email notifications enabled (from=%s, notify=%s)",
+            settings.EMAIL_FROM,
+            settings.NOTIFY_EMAIL,
+        )
+    else:
+        logger.warning(
+            "Email notifications disabled — set RESEND_API_KEY to send lead emails"
+        )
     logger.info("Startup complete.")
 
 
