@@ -46,9 +46,9 @@ def _decode(token: str) -> dict:
 
 
 def set_auth_cookies(response, access_token: str, refresh_token: str):
-    response.set_cookie("access_token", access_token, httponly=True, secure=False,
+    response.set_cookie("access_token", access_token, httponly=True, secure=settings.COOKIE_SECURE,
                         samesite="lax", max_age=settings.ACCESS_TOKEN_MINUTES * 60, path="/")
-    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False,
+    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=settings.COOKIE_SECURE,
                         samesite="lax", max_age=settings.REFRESH_TOKEN_DAYS * 86400, path="/")
 
 

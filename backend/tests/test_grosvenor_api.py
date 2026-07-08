@@ -2,23 +2,45 @@
 
 Covers: units (list/filter/sort, slug), leads (form + click), downloads
 (open vs gated), auth (login/me), and admin (stats + CRUD).
+
+Requires a running API. Set REACT_APP_BACKEND_URL, or add it to frontend/.env.
 """
 import os
 import uuid
+from pathlib import Path
 
 import pytest
 import requests
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL")
-if not BASE_URL:
-    # Fallback to reading from /app/frontend/.env at test-time
-    with open("/app/frontend/.env") as f:
-        for line in f:
-            if line.startswith("REACT_APP_BACKEND_URL="):
-                BASE_URL = line.split("=", 1)[1].strip()
-                break
 
-API = BASE_URL.rstrip("/") + "/api"
+def _resolve_backend_url():
+    url = os.environ.get("REACT_APP_BACKEND_URL")
+    if url:
+        return url.rstrip("/")
+
+    repo_root = Path(__file__).resolve().parents[2]
+    env_candidates = (
+        repo_root / "frontend" / ".env",
+        Path("/app/frontend/.env"),
+    )
+    for env_path in env_candidates:
+        if not env_path.is_file():
+            continue
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("REACT_APP_BACKEND_URL="):
+                return line.split("=", 1)[1].strip().rstrip("/")
+    return None
+
+
+BASE_URL = _resolve_backend_url()
+if not BASE_URL:
+    pytest.skip(
+        "Backend regression tests require REACT_APP_BACKEND_URL "
+        "(env var or frontend/.env). Start the API and set the URL before running pytest.",
+        allow_module_level=True,
+    )
+
+API = BASE_URL + "/api"
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@grosvenorvistas.com")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Grosvenor2026!")
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,11 +13,12 @@ export default function AdminLeads() {
     const [leads, setLeads] = useState([]);
     const [filter, setFilter] = useState("all");
 
-    const load = () => {
+    const load = useCallback(() => {
         const params = filter === "all" ? {} : { status: filter };
         api.get("/admin/leads", { params }).then(({ data }) => setLeads(data)).catch(() => {});
-    };
-    useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter]);
+    }, [filter]);
+
+    useEffect(() => { load(); }, [load]);
 
     const changeStatus = async (id, status) => {
         try { await api.patch(`/admin/leads/${id}`, { status }); toast.success("Lead updated."); load(); }
