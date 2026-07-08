@@ -63,7 +63,15 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test"
+    "test": "craco test",
+    "playwright:install": "playwright install chromium webkit",
+    "smoke:production": "playwright test --config=playwright.config.js --project=chromium-desktop e2e/production-public.spec.js",
+    "smoke:production:quick": "playwright test --config=playwright.config.js --project=chromium-desktop e2e/production-public.spec.js",
+    "smoke:production:headed": "playwright test --config=playwright.config.js --project=chromium-desktop e2e/production-public.spec.js --headed",
+    "smoke:production:api": "playwright test --config=playwright.config.js --project=chromium-desktop e2e/production-api.spec.js",
+    "smoke:production:admin": "playwright test --config=playwright.config.js --project=chromium-desktop e2e/production-admin.spec.js",
+    "smoke:production:write": "playwright test --config=playwright.config.js --project=chromium-desktop e2e/production-write.spec.js",
+    "smoke:production:full": "playwright test --config=playwright.config.js"
   },
   "browserslist": {
     "production": [
@@ -90,6 +98,7 @@
     "eslint-plugin-react": "7.37.4",
     "eslint-plugin-react-hooks": "5.2.0",
     "globals": "15.15.0",
+    "@playwright/test": "1.51.1",
     "postcss": "8.5.10",
     "tailwindcss": "3.4.17"
   },
