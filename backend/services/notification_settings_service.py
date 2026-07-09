@@ -138,7 +138,10 @@ async def get_settings() -> dict:
 
 async def _validate_scenario_keys(keys: List[str]) -> None:
     if not keys:
-        return
+        raise HTTPException(
+            status_code=422,
+            detail="At least one notification scenario is required",
+        )
     known = {s.key for s in await list_scenarios()}
     unknown = [k for k in keys if k not in known]
     if unknown:

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,10 +17,6 @@ const EMPTY_RECIPIENT = {
     active: true,
     scenarios: [],
 };
-
-function scenarioLabel(key) {
-    return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 function RecipientForm({ form, setForm, scenarios }) {
     const toggleScenario = (key) => {
@@ -98,18 +94,28 @@ function RecipientForm({ form, setForm, scenarios }) {
 
 export default function AdminNotifications() {
     const [settings, setSettings] = useState({ recipients: [], scenarios: [], fallback_admin_email: "" });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editId, setEditId] = useState(null);
     const [form, setForm] = useState(EMPTY_RECIPIENT);
     const [scenarioEdits, setScenarioEdits] = useState({});
 
+    const scenarioLabels = useMemo(
+        () => Object.fromEntries((settings.scenarios || []).map((s) => [s.key, s.label])),
+        [settings.scenarios],
+    );
+
     const load = useCallback(() => {
+        setLoading(true);
+        setError(null);
         api.get("/admin/notifications/settings")
             .then(({ data }) => {
                 setSettings(data);
                 setScenarioEdits({});
             })
-            .catch(() => {});
+            .catch((err) => setError(err))
+            .finally(() => setLoading(false));
     }, []);
 
     useEffect(() => { load(); }, [load]);
@@ -211,6 +217,21 @@ export default function AdminNotifications() {
         return scenario[field];
     };
 
+    if (loading) {
+        return <p className="text-muted-foreground" data-testid="notifications-loading">Loading notification settings…</p>;
+    }
+
+    if (error) {
+        return (
+            <div className="rounded-sm border border-destructive/30 bg-destructive/5 p-6" data-testid="notifications-error">
+                <p className="text-sm text-destructive">
+                    {formatApiError(error.response?.data?.detail) || "Could not load notification settings."}
+                </p>
+                <CtaButton variant="outline" onClick={load} className="mt-4">Retry</CtaButton>
+            </div>
+        );
+    }
+
     return (
         <div data-testid="admin-notifications">
             <div className="flex flex-wrap items-start justify-between gap-4">
@@ -265,7 +286,7 @@ export default function AdminNotifications() {
                                         />
                                     </TableCell>
                                     <TableCell className="max-w-xs text-xs text-muted-foreground">
-                                        {(r.scenarios || []).map(scenarioLabel).join(", ") || "—"}
+                                        {(r.scenarios || []).map((key) => scenarioLabels[key] || key).join(", ") || "—"}
                                     </TableCell>
                                     <TableCell className="space-x-2 whitespace-nowrap">
                                         <button

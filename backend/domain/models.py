@@ -8,7 +8,7 @@ CONTENT RULES baked into the schema (per project brief):
 """
 from typing import List, Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from domain.base import BaseDocument, utc_now_iso
 from domain.enums import DownloadType, LeadStatus, LeadType, UnitStatus
@@ -133,6 +133,21 @@ class NotificationRecipientCreate(BaseModel):
     active: bool = True
     scenarios: List[str] = Field(default_factory=list)
 
+    @field_validator("name")
+    @classmethod
+    def name_not_blank(cls, value: str) -> str:
+        trimmed = value.strip()
+        if not trimmed:
+            raise ValueError("Name is required")
+        return trimmed
+
+    @field_validator("scenarios")
+    @classmethod
+    def scenarios_required(cls, value: List[str]) -> List[str]:
+        if not value:
+            raise ValueError("At least one notification scenario is required")
+        return value
+
 
 class NotificationRecipientUpdate(BaseModel):
     name: Optional[str] = None
@@ -140,6 +155,23 @@ class NotificationRecipientUpdate(BaseModel):
     label: Optional[str] = None
     active: Optional[bool] = None
     scenarios: Optional[List[str]] = None
+
+    @field_validator("name")
+    @classmethod
+    def name_not_blank(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return value
+        trimmed = value.strip()
+        if not trimmed:
+            raise ValueError("Name is required")
+        return trimmed
+
+    @field_validator("scenarios")
+    @classmethod
+    def scenarios_not_empty_if_set(cls, value: Optional[List[str]]) -> Optional[List[str]]:
+        if value is not None and not value:
+            raise ValueError("At least one notification scenario is required")
+        return value
 
 
 class NotificationRecipient(BaseDocument, NotificationRecipientCreate):
