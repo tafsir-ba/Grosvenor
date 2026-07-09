@@ -42,6 +42,7 @@ def test_notify_staff_calls_resend(mock_post):
     html = call_kwargs["json"]["html"]
     assert "#064F73" in html
     assert "brand-header.png" in html
+    assert "New General Contact Lead" in html
     assert "View in admin" in html
     assert call_kwargs["json"].get("text")
     assert call_kwargs["headers"]["Authorization"] == "Bearer re_test_key"
@@ -115,3 +116,11 @@ def test_send_residence_to_buyer(mock_post, tmp_path):
     assert "Looking forward" in payload["html"]
     assert "brand-hero-external.png" in payload["html"]
     assert payload.get("text")
+
+
+def test_click_lead_types_have_human_labels():
+    for lead_type in ("whatsapp_click", "phone_click", "email_click"):
+        assert email_service.LEAD_TYPE_LABELS[lead_type]
+        rows = email_service._lead_table_rows({"lead_type": lead_type})
+        lead_type_row = next(r for r in rows if r[0] == "Lead type")
+        assert lead_type_row[1] == email_service.LEAD_TYPE_LABELS[lead_type]

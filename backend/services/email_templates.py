@@ -87,7 +87,7 @@ def render_body_paragraphs(*paragraphs: str) -> str:
     """Body copy — Signika 1.2rem / line-height 1.65 like the site."""
     return "".join(
         f"<p style='margin:0 0 18px;font-family:{FONT_BODY};font-size:{TYPE['body']};"
-        f"line-height:{TYPE['body_lh']};color:{BRAND['ink']};font-weight:400;'>{p}</p>"
+        f"line-height:{TYPE['body_lh']};color:{BRAND['ink']};font-weight:400;'>{_esc(p)}</p>"
         for p in paragraphs
     )
 

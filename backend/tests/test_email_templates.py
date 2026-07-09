@@ -2,6 +2,12 @@
 from services import email_templates
 
 
+def test_render_body_paragraphs_escapes_html():
+    html = email_templates.render_body_paragraphs("<script>alert(1)</script>")
+    assert "&lt;script&gt;" in html
+    assert "<script>" not in html
+
+
 def test_external_email_includes_brand_assets_and_cta():
     html = email_templates.render_email(
         variant="external",

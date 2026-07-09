@@ -26,6 +26,9 @@ LEAD_TYPE_LABELS = {
     "contact_about_unit": "Unit Enquiry",
     "mortgage_info_request": "Mortgage Enquiry",
     "sales_explorer": "Sales Explorer Inquiry",
+    "whatsapp_click": "WhatsApp Click",
+    "phone_click": "Phone Click",
+    "email_click": "Email Click",
 }
 
 
@@ -125,7 +128,7 @@ def send_scenario_lead_notification(*, lead: dict, scenario_label: str, to_email
         variant="internal",
         preheader=f"New {scenario_label} lead from {name}",
         eyebrow="New lead",
-        title=f"{scenario_label}",
+        title=f"New {scenario_label} Lead",
         body_html=email_templates.render_body_paragraphs(
             "A new lead has been captured on the website. "
             "The details are summarised below.",
