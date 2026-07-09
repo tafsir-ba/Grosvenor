@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api, formatApiError } from "@/lib/api";
 import { formatPrice } from "@/lib/format";
-import { LEAD_TYPE_LABEL, STATUS_META } from "@/lib/constants";
+import { LEAD_TYPE_LABEL } from "@/lib/constants";
+import CtaButton from "@/components/shared/CtaButton";
 
 function StatCard({ label, value, accent }) {
     return (
@@ -17,7 +18,7 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
+    const loadStats = useCallback(() => {
         let active = true;
         setLoading(true);
         setError(null);
@@ -30,6 +31,11 @@ export default function AdminDashboard() {
         };
     }, []);
 
+    useEffect(() => {
+        const cleanup = loadStats();
+        return cleanup;
+    }, [loadStats]);
+
     if (loading) return <p className="text-muted-foreground">Loading…</p>;
     if (error || !stats) {
         return (
@@ -38,6 +44,9 @@ export default function AdminDashboard() {
                 <p className="mt-4 text-sm text-destructive">
                     {formatApiError(error?.response?.data?.detail) || "Could not load dashboard stats."}
                 </p>
+                <CtaButton variant="outline" className="mt-4" onClick={loadStats} data-testid="dashboard-retry">
+                    Retry
+                </CtaButton>
             </div>
         );
     }

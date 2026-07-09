@@ -45,6 +45,18 @@ ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@grosvenorvistas.com")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Grosvenor2026!")
 
 
+def _leads_items(payload):
+    if isinstance(payload, list):
+        return payload
+    return payload.get("items", [])
+
+
+def _leads_total(payload):
+    if isinstance(payload, list):
+        return len(payload)
+    return payload.get("total", len(_leads_items(payload)))
+
+
 # -------------------- fixtures --------------------
 @pytest.fixture(scope="session")
 def session():
@@ -255,7 +267,7 @@ class TestLeads:
         # Verify persistence with all new fields
         r = admin_session.get(f"{API}/admin/leads")
         assert r.status_code == 200
-        match = next((l for l in r.json() if l.get("email") == unique_email), None)
+        match = next((l for l in _leads_items(r.json()) if l.get("email") == unique_email), None)
         assert match is not None, "unit-detail lead not found in admin list"
         assert match.get("lead_type") == "contact_about_unit"
         assert match.get("source_unit") == "A102"
@@ -315,7 +327,7 @@ class TestLeads:
 
         r = admin_session.get(f"{API}/admin/leads")
         assert r.status_code == 200
-        match = next((l for l in r.json() if l.get("email") == unique_email), None)
+        match = next((l for l in _leads_items(r.json()) if l.get("email") == unique_email), None)
         assert match is not None, "sales_explorer lead not found in admin list"
         assert match.get("lead_type") == "sales_explorer"
         assert match.get("source_unit") == "A402"
@@ -346,7 +358,7 @@ class TestLeads:
 
         r = admin_session.get(f"{API}/admin/leads")
         assert r.status_code == 200
-        leads = r.json()
+        leads = _leads_items(r.json())
         match = next((l for l in leads if l.get("email") == unique_email), None)
         assert match is not None, "lead not found in admin list"
         assert match.get("first_name") == "TESTPersist"
@@ -377,12 +389,12 @@ class TestDownloads:
     def test_pricelist_access_records_download_lead(self, session, admin_session):
         items = session.get(f"{API}/downloads").json()
         price = next(d for d in items if d["type"] == "pricelist")
-        before = len(admin_session.get(f"{API}/admin/leads").json())
+        before = _leads_total(admin_session.get(f"{API}/admin/leads").json())
         r = session.post(f"{API}/downloads/{price['_id']}/access", json={"lead": None})
         assert r.status_code == 200, r.text
-        after = len(admin_session.get(f"{API}/admin/leads").json())
+        after = _leads_total(admin_session.get(f"{API}/admin/leads").json())
         assert after == before + 1
-        assert admin_session.get(f"{API}/admin/leads").json()[0].get("lead_type") == "download_price_list"
+        assert _leads_items(admin_session.get(f"{API}/admin/leads").json())[0].get("lead_type") == "download_price_list"
 
     def test_brochure_gated_without_lead_422(self, session):
         items = session.get(f"{API}/downloads").json()
@@ -440,10 +452,17 @@ class TestAdmin:
         assert data["units_total"] == 43
 
     def test_admin_list_units_leads_downloads(self, admin_session):
-        for path in ("units", "leads", "downloads"):
+        for path in ("units", "downloads"):
             r = admin_session.get(f"{API}/admin/{path}")
             assert r.status_code == 200, f"{path}: {r.text}"
             assert isinstance(r.json(), list)
+
+        r = admin_session.get(f"{API}/admin/leads")
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert isinstance(data, dict)
+        assert "items" in data and "total" in data
+        assert isinstance(data["items"], list)
 
     def test_unit_crud_lifecycle(self, admin_session):
         payload = {
@@ -500,6 +519,83 @@ class TestAdmin:
         data = r.json()
         assert data["status"] == "contacted"
         assert data["notes"] == "TEST"
+
+    def test_leads_pagination(self, admin_session):
+        r = admin_session.get(f"{API}/admin/leads", params={"limit": 2, "offset": 0})
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert "items" in data and "total" in data
+        assert data["limit"] == 2
+        assert data["offset"] == 0
+        assert len(data["items"]) <= 2
+
+    def test_leads_search_by_email(self, admin_session, session):
+        unique_email = f"test_search_{uuid.uuid4().hex[:8]}@example.com"
+        payload = {
+            "first_name": "TESTSearch",
+            "last_name": "User",
+            "email": unique_email,
+            "consent": True,
+            "lead_type": "general_contact",
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 200, r.text
+
+        r = admin_session.get(f"{API}/admin/leads", params={"search": unique_email})
+        assert r.status_code == 200, r.text
+        items = _leads_items(r.json())
+        assert any(l.get("email") == unique_email for l in items)
+
+    def test_leads_filter_by_status(self, admin_session, session):
+        unique_email = f"test_status_{uuid.uuid4().hex[:8]}@example.com"
+        payload = {
+            "first_name": "TEST",
+            "last_name": "StatusFilter",
+            "email": unique_email,
+            "consent": True,
+            "lead_type": "general_contact",
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 200, r.text
+        lead_id = r.json()["id"]
+
+        r = admin_session.patch(f"{API}/admin/leads/{lead_id}", json={"status": "contacted"})
+        assert r.status_code == 200, r.text
+
+        r = admin_session.get(f"{API}/admin/leads", params={"status": "contacted", "search": unique_email})
+        assert r.status_code == 200, r.text
+        items = _leads_items(r.json())
+        assert len(items) >= 1
+        assert all(l.get("status") == "contacted" for l in items)
+
+    def test_lead_notes_only_patch(self, admin_session, session):
+        unique_email = f"test_notes_{uuid.uuid4().hex[:8]}@example.com"
+        payload = {
+            "first_name": "TEST",
+            "last_name": "NotesOnly",
+            "email": unique_email,
+            "consent": True,
+            "lead_type": "general_contact",
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 200, r.text
+        lead_id = r.json()["id"]
+
+        r = admin_session.patch(f"{API}/admin/leads/{lead_id}", json={"notes": "Follow up tomorrow"})
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert data["notes"] == "Follow up tomorrow"
+        assert data["status"] == "new"
+
+    def test_lead_patch_invalid_id_404(self, admin_session):
+        r = admin_session.patch(f"{API}/admin/leads/not-a-valid-id", json={"status": "contacted"})
+        assert r.status_code == 404, r.text
+
+    def test_leads_export_csv(self, admin_session):
+        r = admin_session.get(f"{API}/admin/leads/export")
+        assert r.status_code == 200, r.text
+        assert "text/csv" in r.headers.get("content-type", "")
+        assert "message" in r.text.splitlines()[0]
 
     def test_floorplan_requires_auth(self, session):
         r = session.get(f"{API}/admin/floorplans/A101")

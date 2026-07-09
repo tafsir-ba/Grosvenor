@@ -23,6 +23,7 @@ export default function LeadForm({
     messagePlaceholder = "How can we help?",
     onSuccess,
     submitFn, // optional override (e.g. gated download access)
+    successMessage = "Thank you — we'll be in touch shortly.",
     testIdPrefix = "lead",
 }) {
     const [form, setForm] = useState(EMPTY);
@@ -55,7 +56,7 @@ export default function LeadForm({
             } else {
                 await submitLead(data, leadType, ctx);
             }
-            toast.success("Thank you — we'll be in touch shortly.");
+            toast.success(successMessage);
             setForm(EMPTY);
             onSuccess && onSuccess();
         } catch (err) {

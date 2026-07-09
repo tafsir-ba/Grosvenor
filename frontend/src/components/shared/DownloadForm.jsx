@@ -24,7 +24,6 @@ export default function DownloadForm({ download, dark = false, compact = false }
 
     const gatedSubmit = async (leadPayload) => {
         await accessDownload(download._id, leadPayload);
-        setOpen(false);
     };
 
     const brochureDialog = (
@@ -40,6 +39,8 @@ export default function DownloadForm({ download, dark = false, compact = false }
                     messagePlaceholder="Anything we should know? (optional)"
                     testIdPrefix="brochure"
                     submitFn={gatedSubmit}
+                    successMessage="Your brochure is opening in a new tab."
+                    onSuccess={() => setOpen(false)}
                 />
             </DialogContent>
         </Dialog>

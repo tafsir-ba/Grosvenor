@@ -49,5 +49,7 @@ test.describe("Production admin smoke (opt-in)", () => {
 
         await page.getByRole("link", { name: /^Leads$/i }).click();
         await expect(page).toHaveURL(/\/admin\/leads/);
+        await expect(page.getByTestId("admin-leads")).toBeVisible();
+        await expect(page.getByTestId("leads-error")).not.toBeVisible();
     });
 });

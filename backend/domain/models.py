@@ -102,6 +102,13 @@ class Lead(BaseDocument, LeadCreate):
     updated_at: str = Field(default_factory=utc_now_iso)
 
 
+class LeadListResponse(BaseModel):
+    items: List[Lead]
+    total: int
+    limit: int
+    offset: int
+
+
 # --------------------------- Downloads ---------------------------
 class DownloadBase(BaseModel):
     title: str

@@ -31,12 +31,8 @@ export default function FloatingActionButton() {
 
     const gatedSubmit = async (payload) => {
         if (!brochure) return;
-        try {
-            await accessDownload(brochure._id, payload);
-            setBrochureOpen(false);
-        } catch (err) {
-            toast.error(formatApiError(err.response?.data?.detail) || "Unable to open file.");
-        }
+        await accessDownload(brochure._id, payload);
+        setBrochureOpen(false);
     };
 
     const openPricelist = async () => {
@@ -122,6 +118,7 @@ export default function FloatingActionButton() {
                         messagePlaceholder="Anything we should know? (optional)"
                         testIdPrefix="fab-brochure"
                         submitFn={gatedSubmit}
+                        successMessage="Your brochure is opening in a new tab."
                     />
                 </DialogContent>
             </Dialog>
