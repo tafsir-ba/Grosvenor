@@ -1,10 +1,9 @@
-"""Outbound email via Resend — staff notifications + visitor confirmations.
+"""Outbound email via Resend — branded staff notifications + visitor confirmations.
 
 Isolated here so lead capture never depends on email succeeding.
 """
 import asyncio
 import base64
-import html
 import logging
 import re
 from pathlib import Path
@@ -13,6 +12,7 @@ from typing import Optional
 import requests
 
 from core.config import settings
+from services import email_templates
 
 logger = logging.getLogger(__name__)
 
@@ -29,14 +29,11 @@ LEAD_TYPE_LABELS = {
 }
 
 
-def _esc(value) -> str:
-    return html.escape("" if value is None else str(value))
-
-
 def _send_email(
     to: str,
     subject: str,
     html_body: str,
+    text_body: Optional[str] = None,
     reply_to: Optional[str] = None,
     cc: Optional[list[str]] = None,
     attachments: Optional[list[dict]] = None,
@@ -54,6 +51,8 @@ def _send_email(
         "subject": subject,
         "html": html_body,
     }
+    if text_body:
+        payload["text"] = text_body
     if reply_to:
         payload["reply_to"] = reply_to
     if cc:
@@ -78,14 +77,18 @@ def _send_email(
         return False
 
 
-def _lead_summary_rows(lead: dict) -> str:
+def _lead_table_rows(lead: dict) -> list[tuple[str, str]]:
+    scenario = (
+        lead.get("_scenario_label")
+        or LEAD_TYPE_LABELS.get(lead.get("lead_type"), lead.get("lead_type"))
+    )
     rows = [
         ("Name", f"{lead.get('first_name', '')} {lead.get('last_name', '')}".strip() or "—"),
         ("Email", lead.get("email") or "—"),
         ("Phone", lead.get("phone") or "—"),
-        ("Scenario", lead.get("_scenario_label") or LEAD_TYPE_LABELS.get(lead.get("lead_type"), lead.get("lead_type"))),
+        ("Scenario", scenario),
         ("Lead type", LEAD_TYPE_LABELS.get(lead.get("lead_type"), lead.get("lead_type"))),
-        ("Project", lead.get("project")),
+        ("Project", lead.get("project") or "—"),
         ("Source page", lead.get("source_page") or "—"),
         ("Source URL", lead.get("source_url") or "—"),
         ("Unit", lead.get("source_unit") or "—"),
@@ -107,37 +110,45 @@ def _lead_summary_rows(lead: dict) -> str:
     ]
     if any(utm_parts):
         rows.append(("UTM", " / ".join(p for p in utm_parts if p)))
-
-    return "".join(
-        f"<tr><td style='padding:6px 12px 6px 0;color:#666;vertical-align:top'>{_esc(label)}</td>"
-        f"<td style='padding:6px 0'>{_esc(value)}</td></tr>"
-        for label, value in rows
-    )
+    return rows
 
 
 def send_scenario_lead_notification(*, lead: dict, scenario_label: str, to_email: str) -> bool:
     """Send a scenario-specific staff notification to one recipient."""
-    name = f"{lead.get('first_name', '')} {lead.get('last_name', '')}".strip()
     lead_copy = {**lead, "_scenario_label": scenario_label}
+    name = f"{lead.get('first_name', '')} {lead.get('last_name', '')}".strip() or "Anonymous"
+    table_rows = _lead_table_rows(lead_copy)
     subject = f"[Grosvenor] New Lead: {scenario_label}"
-    body = f"""
-    <div style="font-family:Arial,sans-serif;color:#2c241c;max-width:560px">
-      <h2 style="color:#064F73;font-weight:normal;margin:0 0 16px">New { _esc(scenario_label) } Lead</h2>
-      <table style="border-collapse:collapse;font-size:15px;line-height:1.5">
-        {_lead_summary_rows(lead_copy)}
-      </table>
-      <p style="margin-top:24px;font-size:13px;color:#888">
-        View all leads in the admin dashboard.
-      </p>
-    </div>
-    """
+    admin_url = f"{settings.EMAIL_SITE_URL}/admin/leads"
+
+    html_body = email_templates.render_email(
+        variant="internal",
+        preheader=f"New {scenario_label} lead from {name}",
+        eyebrow="New lead",
+        title=f"{scenario_label}",
+        body_html=(
+            "<p>A new lead has been captured on the website. "
+            "The details are summarised below.</p>"
+        ),
+        table_rows=table_rows,
+        cta_label="View in admin",
+        cta_href=admin_url,
+        cta_gold=False,
+    )
+    text_body = email_templates.render_plain_text(
+        title=f"New {scenario_label} lead",
+        paragraphs=["A new lead has been captured on the website."],
+        table_rows=table_rows,
+        cta_label="View in admin",
+        cta_href=admin_url,
+        footer_note="Internal notification — Grosvenor Vistas admin",
+    )
     reply_to = lead.get("email") if lead.get("email") else None
-    return _send_email(to_email, subject, body, reply_to=reply_to)
+    return _send_email(to_email, subject, html_body, text_body=text_body, reply_to=reply_to)
 
 
 def notify_staff_new_lead(lead: dict) -> bool:
     """Legacy single-recipient alert — prefer notification_service.notify_lead_recipients."""
-    name = f"{lead.get('first_name', '')} {lead.get('last_name', '')}".strip()
     lead_type = LEAD_TYPE_LABELS.get(lead.get("lead_type"), lead.get("lead_type"))
     return send_scenario_lead_notification(
         lead=lead,
@@ -150,18 +161,33 @@ def send_lead_confirmation(lead: dict) -> bool:
     """Auto-reply so the visitor knows their enquiry was received."""
     first = lead.get("first_name") or "there"
     subject = "We received your enquiry — Grosvenor Vistas"
-    body = f"""
-    <div style="font-family:Arial,sans-serif;color:#2c241c;max-width:560px">
-      <h2 style="color:#064F73;font-weight:normal;margin:0 0 16px">Thank you, {_esc(first)}</h2>
-      <p style="font-size:16px;line-height:1.6">
-        We have received your enquiry and a member of our team will be in touch shortly.
-      </p>
-      <p style="font-size:15px;line-height:1.6;color:#555">
-        Grosvenor Vistas · Grosvenor Heights, Manor Park, Kingston 8, Jamaica
-      </p>
-    </div>
-    """
-    return _send_email(lead.get("email"), subject, body)
+    site_url = settings.EMAIL_SITE_URL
+
+    html_body = email_templates.render_email(
+        variant="external",
+        preheader="Thank you for your interest in Grosvenor Vistas.",
+        eyebrow="Thank you",
+        title=f"Thank you, {first}",
+        body_html=(
+            "<p>We have received your enquiry and a member of our team "
+            "will be in touch shortly.</p>"
+            "<p>In the meantime, you are welcome to explore the residences, "
+            "amenities, and location at Grosvenor Vistas.</p>"
+        ),
+        cta_label="Explore residences",
+        cta_href=f"{site_url}/residences",
+        cta_gold=True,
+    )
+    text_body = email_templates.render_plain_text(
+        title=f"Thank you, {first}",
+        paragraphs=[
+            "We have received your enquiry and a member of our team will be in touch shortly.",
+            "Explore the residences at Grosvenor Vistas:",
+        ],
+        cta_label="Explore residences",
+        cta_href=f"{site_url}/residences",
+    )
+    return _send_email(lead.get("email"), subject, html_body, text_body=text_body)
 
 
 async def send_lead_notifications(lead: dict) -> None:
@@ -218,34 +244,36 @@ def send_residence_to_buyer(
     if bathrooms is not None:
         detail_rows.append(("Bathrooms", str(bathrooms)))
 
-    rows_html = "".join(
-        f"<tr><td style='padding:6px 12px 6px 0;color:#666;vertical-align:top'>{_esc(label)}</td>"
-        f"<td style='padding:6px 0'>{_esc(value)}</td></tr>"
-        for label, value in detail_rows
-    )
-    note_html = (
-        f"<p style='margin-top:20px;font-size:15px;line-height:1.6'><strong>Note from your advisor:</strong><br>{_esc(note)}</p>"
-        if note
-        else ""
-    )
+    note_html = email_templates.render_note_box(note) if note else ""
 
     subject = f"Residence {unit_number} — Grosvenor Vistas"
-    body = f"""
-    <div style="font-family:Arial,sans-serif;color:#2c241c;max-width:560px">
-      <h2 style="color:#064F73;font-weight:normal;margin:0 0 16px">Your residence at Grosvenor Vistas</h2>
-      <p style="font-size:16px;line-height:1.6">
-        Please find the details for the residence discussed with our team below.
-        The floor plan is attached when available.
-      </p>
-      <table style="border-collapse:collapse;font-size:15px;line-height:1.5;margin-top:12px">
-        {rows_html}
-      </table>
-      {note_html}
-      <p style="margin-top:24px;font-size:13px;color:#888">
-        Grosvenor Vistas · Grosvenor Heights, Manor Park, Kingston 8, Jamaica
-      </p>
-    </div>
-    """
+    site_url = settings.EMAIL_SITE_URL
+    html_body = email_templates.render_email(
+        variant="external",
+        preheader=f"Your residence details for {unit_number} at Grosvenor Vistas.",
+        eyebrow="Your residence",
+        title=f"Residence {unit_number}",
+        body_html=(
+            "<p>Please find the details for the residence discussed with our team below. "
+            "The floor plan is attached when available.</p>"
+        ),
+        table_rows=detail_rows,
+        note_html=note_html,
+        cta_label="View on website",
+        cta_href=f"{site_url}/residences",
+        cta_gold=True,
+    )
+    text_body = email_templates.render_plain_text(
+        title=f"Residence {unit_number}",
+        paragraphs=[
+            "Please find the details for the residence discussed with our team below.",
+            f"Advisor note: {note}" if note else "",
+        ],
+        table_rows=detail_rows,
+        cta_label="View on website",
+        cta_href=f"{site_url}/residences",
+    )
+    text_body = "\n".join(line for line in text_body.splitlines() if line.strip())
 
     attachments = []
     plan_path = _floorplan_path(unit_number, floorplans_dir)
@@ -259,7 +287,8 @@ def send_residence_to_buyer(
     return _send_email(
         to,
         subject,
-        body,
+        html_body,
+        text_body=text_body,
         reply_to=settings.NOTIFY_EMAIL or None,
         cc=cc,
         attachments=attachments or None,

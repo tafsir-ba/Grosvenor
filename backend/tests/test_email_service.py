@@ -39,6 +39,11 @@ def test_notify_staff_calls_resend(mock_post):
     assert call_kwargs["json"]["to"] == ["staff@grosvenorvistas.com"]
     assert call_kwargs["json"]["reply_to"] == "jane@example.com"
     assert call_kwargs["json"]["subject"] == "[Grosvenor] New Lead: General Contact"
+    html = call_kwargs["json"]["html"]
+    assert "#064F73" in html
+    assert "brand-header.png" in html
+    assert "View in admin" in html
+    assert call_kwargs["json"].get("text")
     assert call_kwargs["headers"]["Authorization"] == "Bearer re_test_key"
 
 
@@ -51,7 +56,11 @@ def test_confirmation_sent_to_visitor(mock_post):
 
     mock_post.assert_called_once()
     assert mock_post.call_args.kwargs["json"]["to"] == ["jane@example.com"]
-    assert "Thank you" in mock_post.call_args.kwargs["json"]["html"]
+    html = mock_post.call_args.kwargs["json"]["html"]
+    assert "Thank you" in html
+    assert "brand-hero-external.png" in html
+    assert "Explore residences" in html
+    assert mock_post.call_args.kwargs["json"].get("text")
 
 
 @patch("services.email_service.requests.post")
@@ -104,3 +113,5 @@ def test_send_residence_to_buyer(mock_post, tmp_path):
     assert payload["cc"] == ["staff@grosvenorvistas.com"]
     assert payload["attachments"][0]["filename"].endswith(".pdf")
     assert "Looking forward" in payload["html"]
+    assert "brand-hero-external.png" in payload["html"]
+    assert payload.get("text")

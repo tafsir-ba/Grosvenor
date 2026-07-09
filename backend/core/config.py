@@ -70,6 +70,14 @@ class Settings:
     )
     NOTIFY_EMAIL = os.environ.get("NOTIFY_EMAIL", ADMIN_EMAIL)
     EMAIL_ENABLED = os.environ.get("EMAIL_ENABLED", "").lower() not in ("false", "0", "no")
+    EMAIL_SITE_URL = os.environ.get(
+        "EMAIL_SITE_URL",
+        os.environ.get("PUBLIC_SITE_URL", "https://grosvenorvistas.com"),
+    ).rstrip("/")
+    EMAIL_ASSET_BASE_URL = os.environ.get(
+        "EMAIL_ASSET_BASE_URL",
+        EMAIL_SITE_URL,
+    ).rstrip("/")
     if EMAIL_ENABLED and not RESEND_API_KEY:
         EMAIL_ENABLED = False
 
