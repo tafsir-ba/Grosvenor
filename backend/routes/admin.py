@@ -4,16 +4,16 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, EmailStr
 
-from core.db import db
 from core.security import require_admin
 from domain.enums import LeadStatus, LeadType, UnitStatus
 from domain.models import (
     DownloadCreate,
     DownloadUpdate,
     LeadCreate,
+    LeadListResponse,
     LeadUpdate,
     UnitCreate,
     UnitUpdate,
@@ -58,17 +58,16 @@ async def stats():
         by_status[u.status.value] = by_status.get(u.status.value, 0) + 1
         if u.status == UnitStatus.AVAILABLE and u.price:
             total_value += u.price
-    leads = await leads_service.list_leads()
-    leads_by_type: dict = {}
-    for lead in leads:
-        leads_by_type[lead.lead_type.value] = leads_by_type.get(lead.lead_type.value, 0) + 1
+    leads_total = await leads_service.get_leads_total()
+    leads_by_type = await leads_service.get_leads_by_type()
+    recent_leads = await leads_service.get_recent_leads(8)
     return {
         "units_total": len(units),
         "units_by_status": by_status,
         "available_value_usd": total_value,
-        "leads_total": len(leads),
+        "leads_total": leads_total,
         "leads_by_type": leads_by_type,
-        "recent_leads": [lead.model_dump() for lead in leads[:8]],
+        "recent_leads": [lead.model_dump() for lead in recent_leads],
     }
 
 
@@ -135,10 +134,46 @@ async def admin_create_lead(payload: LeadCreate):
     return {"ok": True, "id": lead.id}
 
 
-@router.get("/leads")
-async def admin_list_leads(lead_type: Optional[LeadType] = None,
-                           status: Optional[LeadStatus] = None):
-    return await leads_service.list_leads(lead_type, status)
+@router.get("/leads", response_model=LeadListResponse)
+async def admin_list_leads(
+    lead_type: Optional[LeadType] = None,
+    status: Optional[LeadStatus] = None,
+    search: Optional[str] = None,
+    created_from: Optional[str] = None,
+    created_to: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+):
+    return await leads_service.list_leads(
+        lead_type=lead_type,
+        status=status,
+        search=search,
+        created_from=created_from,
+        created_to=created_to,
+        limit=limit,
+        offset=offset,
+    )
+
+
+@router.get("/leads/export")
+async def admin_export_leads(
+    lead_type: Optional[LeadType] = None,
+    status: Optional[LeadStatus] = None,
+    search: Optional[str] = None,
+    created_from: Optional[str] = None,
+    created_to: Optional[str] = None,
+):
+    return StreamingResponse(
+        leads_service.iter_leads_for_export(
+            lead_type=lead_type,
+            status=status,
+            search=search,
+            created_from=created_from,
+            created_to=created_to,
+        ),
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="grosvenor-leads.csv"'},
+    )
 
 
 @router.patch("/leads/{lead_id}")
