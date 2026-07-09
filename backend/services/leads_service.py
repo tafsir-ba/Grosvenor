@@ -1,6 +1,8 @@
 """Leads business logic — the single place a lead is created and synced to CRM."""
+import asyncio
 import csv
 import io
+import logging
 import re
 from typing import AsyncIterator, List, Optional
 
@@ -14,6 +16,7 @@ from domain.enums import ANONYMOUS_LEAD_TYPES, LeadStatus, LeadType
 from domain.models import Lead, LeadCreate, LeadListResponse, LeadUpdate
 from services import crm, email_service, notification_service
 
+logger = logging.getLogger(__name__)
 COLLECTION = "leads"
 MAX_PAGE_SIZE = 200
 DEFAULT_PAGE_SIZE = 50
@@ -65,6 +68,24 @@ def _build_leads_query(
     return query
 
 
+def schedule_post_lead_notifications(doc: dict, *, send_confirmation: bool) -> None:
+    """Run staff + visitor emails in the background so lead APIs respond immediately."""
+
+    async def _run() -> None:
+        try:
+            await notification_service.notify_lead_recipients(doc)
+            if send_confirmation:
+                await email_service.send_lead_notifications(doc)
+        except Exception as exc:
+            logger.warning(
+                "Post-lead notifications failed for lead %s: %s",
+                doc.get("_id"),
+                exc,
+            )
+
+    asyncio.create_task(_run())
+
+
 async def create_lead(payload: LeadCreate) -> Lead:
     # Real form submissions require contact info + consent; click events do not.
     if payload.lead_type not in ANONYMOUS_LEAD_TYPES:
@@ -87,10 +108,10 @@ async def create_lead(payload: LeadCreate) -> Lead:
     lead_id = str(res.inserted_id)
     doc["_id"] = lead_id
 
-    await notification_service.notify_lead_recipients(doc)
-
-    if payload.lead_type not in ANONYMOUS_LEAD_TYPES:
-        await email_service.send_lead_notifications(doc)
+    schedule_post_lead_notifications(
+        doc,
+        send_confirmation=payload.lead_type not in ANONYMOUS_LEAD_TYPES,
+    )
 
     return await get_lead(lead_id)
 
