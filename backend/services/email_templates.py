@@ -151,16 +151,23 @@ def render_data_table(rows: list[tuple[str, str]]) -> str:
 
 
 def _render_cta(label: str, href: str, *, gold: bool = True) -> str:
-    """Matches CtaButton — rounded-full pill, primary gold or secondary blue."""
+    """Bulletproof CTA button — bgcolor on td for Gmail/Outlook compatibility."""
     bg = BRAND["gold"] if gold else BRAND["blue"]
     return (
-        f"<table role='presentation' cellpadding='0' cellspacing='0' style='margin:32px 0 8px'>"
+        f"<table role='presentation' cellpadding='0' cellspacing='0' border='0' "
+        f"style='margin:32px 0 8px;border-collapse:separate;'>"
         f"<tr><td align='left'>"
+        f"<table role='presentation' cellpadding='0' cellspacing='0' border='0' "
+        f"style='border-collapse:separate;'>"
+        f"<tr>"
+        f"<td align='center' bgcolor='{bg}' "
+        f"style='background:{bg};border-radius:9999px;mso-padding-alt:14px 36px;'>"
         f"<a href='{_esc(href)}' target='_blank' "
         f"style='display:inline-block;padding:14px 36px;font-family:{FONT_BODY};"
-        f"font-size:{TYPE['small']};font-weight:500;letter-spacing:0.04em;"
-        f"color:{BRAND['white']};text-decoration:none;background:{bg};"
-        f"border-radius:9999px;mso-padding-alt:14px 36px;'>{_esc(label)}</a>"
+        f"font-size:{TYPE['small']};font-weight:600;letter-spacing:0.04em;"
+        f"color:{BRAND['white']};text-decoration:none;border-radius:9999px;"
+        f"line-height:1.2;'>{_esc(label)}</a>"
+        f"</td></tr></table>"
         f"</td></tr></table>"
     )
 
@@ -208,7 +215,7 @@ def render_email(
     *,
     variant: EmailVariant,
     preheader: str,
-    eyebrow: str,
+    eyebrow: Optional[str] = None,
     title: str,
     body_html: str,
     table_rows: Optional[list[tuple[str, str]]] = None,
@@ -220,11 +227,12 @@ def render_email(
     """Render a complete branded HTML email."""
     internal = variant == "internal"
     header_image = _asset_url("brand-header.png") if internal else _asset_url("brand-hero-external.png")
-    header_height = "120" if internal else "140"
+    header_width = 600
 
     table_block = render_data_table(table_rows) if table_rows else ""
     cta_block = _render_cta(cta_label, cta_href, gold=cta_gold) if cta_label and cta_href else ""
     note_block = note_html or ""
+    eyebrow_block = _render_eyebrow(eyebrow) if eyebrow else ""
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -246,13 +254,13 @@ def render_email(
                       border:1px solid {BRAND['beige']};border-radius:{BRAND['radius']};overflow:hidden;">
           <tr>
             <td style="padding:0;line-height:0;background:{BRAND['blue']};">
-              <img src="{_esc(header_image)}" width="600" height="{header_height}" alt="{_esc(SITE_NAME)}"
-                   style="display:block;width:100%;max-width:600px;height:auto;border:0;" />
+              <img src="{_esc(header_image)}" width="{header_width}" alt="{_esc(SITE_NAME)}"
+                   style="display:block;width:100%;max-width:{header_width}px;height:auto;border:0;" />
             </td>
           </tr>
           <tr>
             <td style="padding:36px 36px 12px;background:{BRAND['white']};">
-              {_render_eyebrow(eyebrow)}
+              {eyebrow_block}
               {_render_title(title, variant=variant)}
               <div>{body_html}</div>
               {table_block}

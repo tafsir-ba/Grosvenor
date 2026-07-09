@@ -25,6 +25,7 @@ def test_external_email_includes_brand_assets_and_cta():
     assert "Signika" in html
     assert "letter-spacing:0.28em" in html
     assert "border-radius:9999px" in html
+    assert "bgcolor=" in html
     assert "Explore residences" in html
     assert "Thank you, Jane" in html
 
@@ -47,6 +48,23 @@ def test_internal_email_uses_compact_header_and_admin_cta():
     assert "/admin/leads" in html
     assert "Internal notification" in html
     assert "jane@example.com" in html
+
+
+def test_confirmation_email_skips_duplicate_eyebrow():
+    from core.config import settings
+
+    html = email_templates.render_email(
+        variant="external",
+        preheader="Thank you for your interest in Grosvenor Vistas.",
+        eyebrow=None,
+        title="Thank you, Vanessa",
+        body_html=email_templates.render_body_paragraphs("We have received your enquiry."),
+        cta_label="Explore residences",
+        cta_href=f"{settings.EMAIL_SITE_URL}/residences",
+    )
+    assert ">Thank you</td>" not in html
+    assert "Thank you, Vanessa" in html
+    assert 'height="' not in html
 
 
 def test_plain_text_includes_title_and_table():

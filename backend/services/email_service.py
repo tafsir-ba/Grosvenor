@@ -169,7 +169,7 @@ def send_lead_confirmation(lead: dict) -> bool:
     html_body = email_templates.render_email(
         variant="external",
         preheader="Thank you for your interest in Grosvenor Vistas.",
-        eyebrow="Thank you",
+        eyebrow=None,
         title=f"Thank you, {first}",
         body_html=email_templates.render_body_paragraphs(
             "We have received your enquiry and a member of our team "
