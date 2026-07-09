@@ -64,6 +64,7 @@ export default function AdminLeads() {
 
     useEffect(() => {
         setOffset(0);
+        setSelectedLead(null);
     }, [statusFilter, typeFilter, debouncedSearch, createdFrom, createdTo]);
 
     const load = useCallback(() => {

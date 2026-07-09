@@ -591,6 +591,21 @@ class TestAdmin:
         r = admin_session.patch(f"{API}/admin/leads/not-a-valid-id", json={"status": "contacted"})
         assert r.status_code == 404, r.text
 
+    def test_lead_patch_empty_body_422(self, admin_session, session):
+        lead_payload = {
+            "first_name": "TEST",
+            "last_name": "EmptyPatch",
+            "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "consent": True,
+            "lead_type": "general_contact",
+        }
+        r = session.post(f"{API}/leads", json=lead_payload)
+        assert r.status_code == 200, r.text
+        lead_id = r.json()["id"]
+
+        r = admin_session.patch(f"{API}/admin/leads/{lead_id}", json={})
+        assert r.status_code == 422, r.text
+
     def test_leads_export_csv(self, admin_session):
         r = admin_session.get(f"{API}/admin/leads/export")
         assert r.status_code == 200, r.text

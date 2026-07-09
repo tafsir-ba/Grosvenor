@@ -34,7 +34,10 @@ export async function accessDownload(id, lead = null) {
             popup?.close();
             throw new Error("No file URL returned.");
         }
-        openFileUrl(data.file_url, { popup });
+        const opened = openFileUrl(data.file_url, { popup });
+        if (!opened) {
+            throw new Error("Could not open file. Allow pop-ups and try again.");
+        }
         return data;
     } catch (err) {
         popup?.close();

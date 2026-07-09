@@ -188,6 +188,10 @@ async def update_lead(lead_id: str, payload: LeadUpdate) -> Optional[Lead]:
     if not oid:
         return None
     changes = payload.model_dump(exclude_none=True)
+    if not changes:
+        raise HTTPException(status_code=422, detail="No fields to update.")
     changes["updated_at"] = utc_now_iso()
-    await db[COLLECTION].update_one({"_id": oid}, {"$set": changes})
+    result = await db[COLLECTION].update_one({"_id": oid}, {"$set": changes})
+    if result.matched_count == 0:
+        return None
     return await get_lead(lead_id)
