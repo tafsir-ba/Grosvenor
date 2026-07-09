@@ -21,6 +21,7 @@ const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const AdminUnits = lazy(() => import("@/pages/admin/AdminUnits"));
 const AdminLeads = lazy(() => import("@/pages/admin/AdminLeads"));
 const AdminDownloads = lazy(() => import("@/pages/admin/AdminDownloads"));
+const AdminNotifications = lazy(() => import("@/pages/admin/AdminNotifications"));
 const ResidenceExplorer = lazy(() => import("@/pages/admin/ResidenceExplorer"));
 
 function AdminFallback() {
@@ -53,6 +54,7 @@ function App() {
                         <Route path="residence-explorer" element={<Suspense fallback={<AdminFallback />}><ResidenceExplorer /></Suspense>} />
                         <Route path="leads" element={<Suspense fallback={<AdminFallback />}><AdminLeads /></Suspense>} />
                         <Route path="downloads" element={<Suspense fallback={<AdminFallback />}><AdminDownloads /></Suspense>} />
+                        <Route path="notifications" element={<Suspense fallback={<AdminFallback />}><AdminNotifications /></Suspense>} />
                     </Route>
                 </Routes>
             </BrowserRouter>

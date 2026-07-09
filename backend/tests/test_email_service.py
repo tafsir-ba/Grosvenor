@@ -38,7 +38,7 @@ def test_notify_staff_calls_resend(mock_post):
     call_kwargs = mock_post.call_args.kwargs
     assert call_kwargs["json"]["to"] == ["staff@grosvenorvistas.com"]
     assert call_kwargs["json"]["reply_to"] == "jane@example.com"
-    assert "Jane Buyer" in call_kwargs["json"]["subject"]
+    assert call_kwargs["json"]["subject"] == "[Grosvenor] New Lead: General Contact"
     assert call_kwargs["headers"]["Authorization"] == "Bearer re_test_key"
 
 

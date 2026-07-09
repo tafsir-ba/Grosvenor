@@ -123,3 +123,51 @@ class DownloadUpdate(BaseModel):
 
 class Download(BaseDocument, DownloadBase):
     created_at: str = Field(default_factory=utc_now_iso)
+
+
+# ---------------------- Notification settings ----------------------
+class NotificationRecipientCreate(BaseModel):
+    name: str
+    email: EmailStr
+    label: Optional[str] = None
+    active: bool = True
+    scenarios: List[str] = Field(default_factory=list)
+
+
+class NotificationRecipientUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    label: Optional[str] = None
+    active: Optional[bool] = None
+    scenarios: Optional[List[str]] = None
+
+
+class NotificationRecipient(BaseDocument, NotificationRecipientCreate):
+    created_at: str = Field(default_factory=utc_now_iso)
+    updated_at: str = Field(default_factory=utc_now_iso)
+
+
+class NotificationScenarioUpdate(BaseModel):
+    enabled: Optional[bool] = None
+    fallback_email: Optional[EmailStr] = None
+    label: Optional[str] = None
+    description: Optional[str] = None
+
+
+class NotificationScenario(BaseDocument):
+    key: str
+    label: str
+    description: Optional[str] = None
+    enabled: bool = True
+    fallback_email: Optional[str] = None
+    created_at: str = Field(default_factory=utc_now_iso)
+    updated_at: str = Field(default_factory=utc_now_iso)
+
+
+class NotificationLog(BaseDocument):
+    lead_id: str
+    scenario: str
+    recipients: List[str] = Field(default_factory=list)
+    status: str  # sent | failed | skipped
+    error_message: Optional[str] = None
+    created_at: str = Field(default_factory=utc_now_iso)

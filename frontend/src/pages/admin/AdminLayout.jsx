@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, Navigate } from "react-router-dom";
-import { LayoutDashboard, Building2, Compass, Users, FileDown, LogOut } from "lucide-react";
+import { LayoutDashboard, Building2, Compass, Users, FileDown, Bell, LogOut } from "lucide-react";
 import Logo from "@/components/brand/Logo";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ const LINKS = [
     { to: "/admin/residence-explorer", label: "Explorer", icon: Compass },
     { to: "/admin/leads", label: "Leads", icon: Users },
     { to: "/admin/downloads", label: "Downloads", icon: FileDown },
+    { to: "/admin/notifications", label: "Notifications", icon: Bell },
 ];
 
 export default function AdminLayout() {

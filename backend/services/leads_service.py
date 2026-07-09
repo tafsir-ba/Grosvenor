@@ -8,7 +8,7 @@ from core.db import db
 from domain.base import utc_now_iso
 from domain.enums import ANONYMOUS_LEAD_TYPES, CLICK_LEAD_TYPES, LeadStatus, LeadType
 from domain.models import Lead, LeadCreate, LeadUpdate
-from services import crm, email_service
+from services import crm, email_service, notification_service
 
 COLLECTION = "leads"
 
@@ -33,9 +33,11 @@ async def create_lead(payload: LeadCreate) -> Lead:
 
     res = await db[COLLECTION].insert_one(doc)
     lead_id = str(res.inserted_id)
+    doc["_id"] = lead_id
+
+    await notification_service.notify_lead_recipients(doc)
 
     if payload.lead_type not in ANONYMOUS_LEAD_TYPES:
-        doc["_id"] = lead_id
         await email_service.send_lead_notifications(doc)
 
     return await get_lead(lead_id)
