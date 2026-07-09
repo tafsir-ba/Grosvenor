@@ -15,6 +15,10 @@ def test_external_email_includes_brand_assets_and_cta():
     assert "brand-hero-external.png" in html
     assert "#064F73" in html
     assert "#C6862B" in html
+    assert "Cormorant+Garamond" in html or "Cormorant Garamond" in html
+    assert "Signika" in html
+    assert "letter-spacing:0.28em" in html
+    assert "border-radius:9999px" in html
     assert "Explore residences" in html
     assert "Thank you, Jane" in html
 
@@ -32,6 +36,8 @@ def test_internal_email_uses_compact_header_and_admin_cta():
         cta_gold=False,
     )
     assert "brand-header.png" in html
+    assert "Source+Sans+3" in html or "Source Sans 3" in html
+    assert "border-radius:9999px" in html
     assert "/admin/leads" in html
     assert "Internal notification" in html
     assert "jane@example.com" in html

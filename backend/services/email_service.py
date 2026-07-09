@@ -126,9 +126,9 @@ def send_scenario_lead_notification(*, lead: dict, scenario_label: str, to_email
         preheader=f"New {scenario_label} lead from {name}",
         eyebrow="New lead",
         title=f"{scenario_label}",
-        body_html=(
-            "<p>A new lead has been captured on the website. "
-            "The details are summarised below.</p>"
+        body_html=email_templates.render_body_paragraphs(
+            "A new lead has been captured on the website. "
+            "The details are summarised below.",
         ),
         table_rows=table_rows,
         cta_label="View in admin",
@@ -168,11 +168,11 @@ def send_lead_confirmation(lead: dict) -> bool:
         preheader="Thank you for your interest in Grosvenor Vistas.",
         eyebrow="Thank you",
         title=f"Thank you, {first}",
-        body_html=(
-            "<p>We have received your enquiry and a member of our team "
-            "will be in touch shortly.</p>"
-            "<p>In the meantime, you are welcome to explore the residences, "
-            "amenities, and location at Grosvenor Vistas.</p>"
+        body_html=email_templates.render_body_paragraphs(
+            "We have received your enquiry and a member of our team "
+            "will be in touch shortly.",
+            "In the meantime, you are welcome to explore the residences, "
+            "amenities, and location at Grosvenor Vistas.",
         ),
         cta_label="Explore residences",
         cta_href=f"{site_url}/residences",
@@ -253,9 +253,9 @@ def send_residence_to_buyer(
         preheader=f"Your residence details for {unit_number} at Grosvenor Vistas.",
         eyebrow="Your residence",
         title=f"Residence {unit_number}",
-        body_html=(
-            "<p>Please find the details for the residence discussed with our team below. "
-            "The floor plan is attached when available.</p>"
+        body_html=email_templates.render_body_paragraphs(
+            "Please find the details for the residence discussed with our team below. "
+            "The floor plan is attached when available.",
         ),
         table_rows=detail_rows,
         note_html=note_html,
