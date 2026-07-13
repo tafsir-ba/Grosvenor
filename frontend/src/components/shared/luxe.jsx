@@ -46,13 +46,13 @@ export function useIsDesktop() {
 }
 
 // Designed placeholder map that links to the real Google Maps location.
-export function PlaceholderMap({ className = `h-[58vh] lg:h-[64vh] ${ROUND}` }) {
+export function PlaceholderMap({ className = `h-[58vh] lg:h-[64vh] ${ROUND}`, testId = "placeholder-map" }) {
     return (
         <a
             href={PROJECT.contact.mapUrl}
             target="_blank"
             rel="noreferrer"
-            data-testid="placeholder-map"
+            data-testid={testId}
             aria-label="Open Grosvenor Vistas location in Google Maps"
             className={`group relative block overflow-hidden border border-brand-beige ${className}`}
         >

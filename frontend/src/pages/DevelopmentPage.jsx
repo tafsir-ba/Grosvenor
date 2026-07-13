@@ -5,6 +5,7 @@ import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
 import { useUnits } from "@/hooks/useData";
 import { DEVELOPMENT_BUILDINGS, DEV_FEATURES, AMENITY_PREVIEW, MASTERPLAN_IMAGE } from "@/lib/constants";
+import { developmentStatCards } from "@/lib/format";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 function buildingStats(units, b) {
@@ -23,21 +24,9 @@ function buildingStats(units, b) {
     };
 }
 
-function devStats(units) {
-    const townhouses = units.filter((u) => u.total_surface >= 4500).length;
-    const apartmentBuildings = new Set(
-        units.filter((u) => u.total_surface < 4500).map((u) => u.building),
-    ).size;
-    return [
-        { value: String(units.length || "—"), label: "Residences" },
-        { value: String(apartmentBuildings || "—"), label: "Apartment Buildings" },
-        { value: String(townhouses || "—"), label: "Townhouses" },
-    ];
-}
-
 export default function DevelopmentPage() {
     const { units, loading, error } = useUnits({ sort: "price_asc" });
-    const stats = devStats(units);
+    const stats = developmentStatCards(units);
 
     return (
         <div data-testid="development-page">

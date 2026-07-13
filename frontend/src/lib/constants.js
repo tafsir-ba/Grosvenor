@@ -191,6 +191,16 @@ export const HOME_RESIDENCE_CATEGORIES = [
     },
 ];
 
+export function homeCategoryForKey(key) {
+    if (!key) return null;
+    return HOME_RESIDENCE_CATEGORIES.find((c) => c.key === key) || null;
+}
+
+export function unitMatchesHomeCategory(unit, category) {
+    if (!category || unit.total_surface == null) return false;
+    return unit.total_surface >= category.min && unit.total_surface < category.max;
+}
+
 export function collectionForSurface(surface) {
     return COLLECTIONS.find((c) => surface >= c.min && surface < c.max) || COLLECTIONS[0];
 }

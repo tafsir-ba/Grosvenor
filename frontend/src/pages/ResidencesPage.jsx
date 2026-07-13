@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ArrowRight, X } from "lucide-react";
 import { motion } from "framer-motion";
@@ -8,7 +8,7 @@ import CtaButton from "@/components/shared/CtaButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnits } from "@/hooks/useData";
-import { BUILDINGS, COLLECTIONS, UNIT_STATUSES } from "@/lib/constants";
+import { BUILDINGS, COLLECTIONS, UNIT_STATUSES, homeCategoryForKey, unitMatchesHomeCategory } from "@/lib/constants";
 import { formatPrice, minStartingPrice } from "@/lib/format";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
@@ -48,6 +48,7 @@ export default function ResidencesPage() {
     const status = params.get("status") || "all";
     const sort = params.get("sort") || "building";
     const collection = params.get("collection") || "all";
+    const tierKey = params.get("tier");
 
     const query = useMemo(() => {
         const q = { sort };
@@ -73,8 +74,24 @@ export default function ResidencesPage() {
         };
     }).filter((t) => t.count > 0), [allUnits]);
 
-    const activeTier = TIERS.find((t) => t.key === collection);
-    const displayedUnits = activeTier ? units.filter(activeTier.test) : units;
+    const activeHomeTier = homeCategoryForKey(tierKey);
+    const activeTier = !activeHomeTier && collection !== "all" ? TIERS.find((t) => t.key === collection) : null;
+
+    const displayedUnits = useMemo(() => {
+        if (activeHomeTier) {
+            return units.filter((u) => unitMatchesHomeCategory(u, activeHomeTier));
+        }
+        if (activeTier) {
+            return units.filter(activeTier.test);
+        }
+        return units;
+    }, [units, activeHomeTier, activeTier]);
+
+    useEffect(() => {
+        if (!activeHomeTier) return;
+        const id = setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
+        return () => clearTimeout(id);
+    }, [activeHomeTier?.key]);
 
     const setParam = (key, value) => {
         const next = new URLSearchParams(params);
@@ -83,10 +100,18 @@ export default function ResidencesPage() {
         setParams(next);
     };
 
+    const clearCategoryFilter = () => {
+        const next = new URLSearchParams(params);
+        next.delete("collection");
+        next.delete("tier");
+        setParams(next);
+    };
+
     // A collection card becomes the filter: set collection, clear building, scroll down.
     const selectCollection = (key) => {
         const next = new URLSearchParams(params);
         next.set("collection", key);
+        next.delete("tier");
         next.delete("building");
         setParams(next);
         setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
@@ -166,11 +191,11 @@ export default function ResidencesPage() {
             <section id="availability" className="container-wide pb-24 md:pb-32">
                 <div className="mb-10 px-2 md:px-6"><Eyebrow>Availability</Eyebrow><h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl">Every residence, live</h2></div>
 
-                {activeTier && (
+                {(activeTier || activeHomeTier) && (
                     <div className="mb-6 px-2 md:px-6">
-                        <button onClick={() => setParam("collection", "all")} data-testid="clear-collection" className="inline-flex items-center gap-2.5 rounded-full border border-brand-gold/40 bg-brand-gold/10 px-5 py-2 font-sans text-sm text-brand-ink transition-colors hover:bg-brand-gold/20">
+                        <button onClick={clearCategoryFilter} data-testid="clear-collection" className="inline-flex items-center gap-2.5 rounded-full border border-brand-gold/40 bg-brand-gold/10 px-5 py-2 font-sans text-sm text-brand-ink transition-colors hover:bg-brand-gold/20">
                             <span className="lux-eyebrow text-brand-gold/70">Collection</span>
-                            <span className="font-medium">{activeTier.name}</span>
+                            <span className="font-medium">{activeHomeTier?.name || activeTier?.name}</span>
                             <X className="h-4 w-4 text-brand-ink/60" />
                         </button>
                     </div>
