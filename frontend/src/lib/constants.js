@@ -203,7 +203,7 @@ export const HOME_AMENITY_HIGHLIGHTS = [
     { icon: "waves", title: "Rooftop Infinity Pool", line: "Infinity-edge pools with sweeping views across the hillside." },
     { icon: "dumbbell", title: "Rooftop Gym", line: "Private fitness studios on every block, open to residents." },
     { icon: "key", title: "Smart Locks", line: "Keyless entry with smart-lock technology at every door." },
-    { icon: "car", title: "Underground Parking", line: "Secure underground parking for every residence." },
+    { icon: "car", title: "Underground Parking", line: "Secure underground parking provided for every residence." },
 ];
 
 // Homepage lifestyle panels — image-led, minimal copy.

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, MapPin, Waves, Dumbbell, KeyRound, Car } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
-import { Eyebrow, fadeUp, ROUND, useIsDesktop } from "@/components/shared/luxe";
+import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 import { useUnits } from "@/hooks/useData";
 import {
     PROJECT,
@@ -149,14 +149,12 @@ function ProjectHighlights({ highlights, error }) {
 }
 
 function HeroSection() {
-    const desktop = useIsDesktop();
     const [videoFailed, setVideoFailed] = useState(false);
-    const showVideo = desktop && !videoFailed;
 
     return (
         <section className="container-wide pb-8 pt-32 md:pb-10 md:pt-36" data-testid="hero-section">
             <div className={`relative h-[86vh] overflow-hidden ${ROUND}`}>
-                {showVideo ? (
+                {!videoFailed ? (
                     <video
                         autoPlay
                         muted
@@ -174,7 +172,7 @@ function HeroSection() {
                     <img
                         src={HOME_MEDIA.heroFallback}
                         alt="Rooftop terrace and pool at Grosvenor Vistas"
-                        data-testid={desktop ? "hero-fallback-image" : "hero-mobile-image"}
+                        data-testid="hero-fallback-image"
                         className="absolute inset-0 h-full w-full object-cover object-center"
                     />
                 )}
@@ -242,7 +240,7 @@ function LifestyleShowcase() {
                 <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">A life, elevated</h2>
             </motion.div>
             <div className="grid gap-4 px-2 md:grid-cols-3 md:gap-5 md:px-6">
-                {HOME_LIFESTYLE_PANELS.map((panel, i) => (
+                {HOME_LIFESTYLE_PANELS.map((panel) => (
                     <motion.div
                         key={panel.title}
                         {...fadeUp}
