@@ -191,6 +191,28 @@ export const HOME_RESIDENCE_CATEGORIES = [
     },
 ];
 
+// Homepage media — single source of truth for hero fallback and location map.
+export const HOME_MEDIA = {
+    heroVideo: "/video/hero.mp4",
+    heroFallback: "/media/grosvenor-website-header.webp",
+    locationMap: "/media/grosvenor-map.webp",
+};
+
+// Homepage amenity highlights (4 items — titles only on dedicated Amenities page).
+export const HOME_AMENITY_HIGHLIGHTS = [
+    { icon: "waves", title: "Rooftop Infinity Pool", line: "Infinity-edge pools with sweeping views across the hillside." },
+    { icon: "dumbbell", title: "Rooftop Gym", line: "Private fitness studios on every block, open to residents." },
+    { icon: "key", title: "Smart Locks", line: "Keyless entry with smart-lock technology at every door." },
+    { icon: "car", title: "Underground Parking", line: "Secure underground parking for every residence." },
+];
+
+// Homepage lifestyle panels — image-led, minimal copy.
+export const HOME_LIFESTYLE_PANELS = [
+    { title: "Privacy", line: "A private, gated residential setting.", image: "/gallery/gate-entrance.png" },
+    { title: "Elevation", line: "Elevated views over Kingston.", image: "/gallery/ext-rooftop-seaview.png" },
+    { title: "Modern Living", line: "Contemporary spaces designed for ease.", image: "/gallery/model-unit-living-room.png" },
+];
+
 export function homeCategoryForKey(key) {
     if (!key) return null;
     return HOME_RESIDENCE_CATEGORIES.find((c) => c.key === key) || null;

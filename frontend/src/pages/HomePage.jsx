@@ -1,23 +1,22 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, MapPin, Waves, Dumbbell, KeyRound, Car, Shield, Mountain, Home } from "lucide-react";
+import { ArrowRight, MapPin, Waves, Dumbbell, KeyRound, Car } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
-import { Eyebrow, fadeUp, ROUND, PlaceholderMap, useIsDesktop } from "@/components/shared/luxe";
+import { Eyebrow, fadeUp, ROUND, useIsDesktop } from "@/components/shared/luxe";
 import { useUnits } from "@/hooks/useData";
-import { PROJECT, HOME_RESIDENCE_CATEGORIES, unitMatchesHomeCategory } from "@/lib/constants";
-import { formatPrice, minStartingPrice, homePageHighlights } from "@/lib/format";
+import {
+    PROJECT,
+    HOME_RESIDENCE_CATEGORIES,
+    HOME_MEDIA,
+    HOME_AMENITY_HIGHLIGHTS,
+    HOME_LIFESTYLE_PANELS,
+    unitMatchesHomeCategory,
+} from "@/lib/constants";
+import { homePageHighlights } from "@/lib/format";
 
-const HERO_IMG = "/gallery/hero-fallback.png";
-const HERO_MOBILE_IMG = "/media/hero-aerial.png";
-const HERO_VIDEO = "/video/hero.mp4";
+const AMENITY_ICONS = { waves: Waves, dumbbell: Dumbbell, key: KeyRound, car: Car };
 const FINAL_IMG = "/gallery/ext-aerial.png";
-
-const LIFESTYLE = [
-    { title: "Privacy", line: "Strata-approved security, controlled access, and a private residential setting.", icon: Shield },
-    { title: "Elevation", line: "A hillside location designed to capture cooling breezes and elevated views over Kingston.", icon: Mountain },
-    { title: "Modern Living", line: "Contemporary residences with thoughtful layouts and spaces designed for everyday ease.", icon: Home },
-];
 
 export default function HomePage() {
     const { units: allUnits, loading, error } = useUnits({ sort: "price_asc" });
@@ -41,21 +40,15 @@ export default function HomePage() {
     }, [availableUnits]);
 
     const highlights = homePageHighlights(allUnits, availableUnits, loading);
-    const startingPrice = formatPrice(minStartingPrice(availableUnits));
 
     return (
         <div data-testid="home-page" className="bg-brand-warm text-brand-ink">
             <HeroSection />
 
             <section className="container-wide py-14 md:py-20" data-testid="home-residences">
-                <div className="mb-10 flex flex-wrap items-end justify-between gap-6 px-2 md:mb-12 md:px-6">
-                    <div>
-                        <Eyebrow>The Residences</Eyebrow>
-                        <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">Find your space</h2>
-                    </div>
-                    <p className="max-w-sm font-sans text-brand-ink/60">
-                        {loading ? "Loading residences…" : error ? "Residence pricing is temporarily unavailable." : `Forty-three residences, defined by space and position — from ${startingPrice}.`}
-                    </p>
+                <div className="mb-10 px-2 md:mb-12 md:px-6">
+                    <Eyebrow>The Residences</Eyebrow>
+                    <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">Find your space</h2>
                 </div>
 
                 <ProjectHighlights highlights={highlights} error={error} />
@@ -97,8 +90,8 @@ export default function HomePage() {
                 )}
             </section>
 
-            <LifestyleFeatures />
             <AmenitiesShowcase />
+            <LifestyleShowcase />
 
             <section className="container-wide py-14 md:py-20" data-testid="home-location">
                 <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
@@ -114,7 +107,7 @@ export default function HomePage() {
                             <CtaButton to="/location" variant="outline" data-testid="home-explore-location">Explore Location</CtaButton>
                         </div>
                     </motion.div>
-                    <PlaceholderMap testId="home-map" className={`h-[48vh] lg:h-[52vh] ${ROUND}`} />
+                    <LocationMapImage />
                 </div>
             </section>
 
@@ -157,15 +150,33 @@ function ProjectHighlights({ highlights, error }) {
 
 function HeroSection() {
     const desktop = useIsDesktop();
+    const [videoFailed, setVideoFailed] = useState(false);
+    const showVideo = desktop && !videoFailed;
+
     return (
         <section className="container-wide pb-8 pt-32 md:pb-10 md:pt-36" data-testid="hero-section">
             <div className={`relative h-[86vh] overflow-hidden ${ROUND}`}>
-                {desktop ? (
-                    <video autoPlay muted loop playsInline preload="metadata" poster={HERO_IMG} data-testid="hero-video" className="absolute inset-0 h-full w-full object-cover">
-                        <source src={HERO_VIDEO} type="video/mp4" />
+                {showVideo ? (
+                    <video
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        poster={HOME_MEDIA.heroFallback}
+                        data-testid="hero-video"
+                        onError={() => setVideoFailed(true)}
+                        className="absolute inset-0 h-full w-full object-cover"
+                    >
+                        <source src={HOME_MEDIA.heroVideo} type="video/mp4" />
                     </video>
                 ) : (
-                    <img src={HERO_MOBILE_IMG} alt="Aerial view of Grosvenor Vistas" data-testid="hero-mobile-image" className="absolute inset-0 h-full w-full object-cover object-center" />
+                    <img
+                        src={HOME_MEDIA.heroFallback}
+                        alt="Rooftop terrace and pool at Grosvenor Vistas"
+                        data-testid={desktop ? "hero-fallback-image" : "hero-mobile-image"}
+                        className="absolute inset-0 h-full w-full object-cover object-center"
+                    />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/65 via-brand-ink/10 to-transparent" />
                 <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }} className="absolute inset-x-0 bottom-0 p-8 md:p-16 lg:p-20">
@@ -182,41 +193,7 @@ function HeroSection() {
     );
 }
 
-function LifestyleFeatures() {
-    return (
-        <section className="container-wide py-14 md:py-20" data-testid="home-lifestyle-features">
-            <motion.div {...fadeUp} className="mb-10 px-2 md:mb-12 md:px-6">
-                <Eyebrow>The Lifestyle</Eyebrow>
-                <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">A life, elevated</h2>
-            </motion.div>
-            <div className="grid gap-4 px-2 md:grid-cols-3 md:gap-5 md:px-6">
-                {LIFESTYLE.map((l) => (
-                    <motion.div
-                        key={l.title}
-                        {...fadeUp}
-                        data-testid={`lifestyle-feature-${l.title.toLowerCase().replace(/ /g, "-")}`}
-                        className={`flex flex-col gap-4 bg-brand-ivory p-8 ${ROUND}`}
-                    >
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full border border-brand-gold/30 text-brand-gold">
-                            <l.icon className="h-5 w-5" strokeWidth={1.4} />
-                        </span>
-                        <h3 className="lux-title text-2xl text-brand-blue md:text-3xl">{l.title}</h3>
-                        <p className="font-sans text-base leading-relaxed text-brand-ink/65">{l.line}</p>
-                    </motion.div>
-                ))}
-            </div>
-        </section>
-    );
-}
-
 function AmenitiesShowcase() {
-    const highlights = [
-        { icon: Waves, title: "Rooftop Infinity Pool" },
-        { icon: Dumbbell, title: "Rooftop Gym" },
-        { icon: KeyRound, title: "Smart Locks" },
-        { icon: Car, title: "Assigned Underground Parking" },
-    ];
-
     return (
         <section className="container-wide py-14 md:py-20" data-testid="home-amenities">
             <motion.div {...fadeUp} className="mb-10 flex flex-col gap-6 px-2 md:mb-12 md:flex-row md:items-end md:justify-between md:px-6">
@@ -229,24 +206,91 @@ function AmenitiesShowcase() {
                 </Link>
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-[1.75rem] border border-brand-beige bg-brand-beige md:rounded-[2.5rem]" data-testid="amenity-highlights">
-                {highlights.map((a, i) => (
+            <div className="grid grid-cols-1 gap-4 px-2 sm:grid-cols-2 md:px-6 lg:grid-cols-4" data-testid="amenity-highlights">
+                {HOME_AMENITY_HIGHLIGHTS.map((a, i) => {
+                    const Icon = AMENITY_ICONS[a.icon];
+                    return (
+                        <motion.div
+                            key={a.title}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-40px" }}
+                            transition={{ duration: 0.6, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                            data-testid={`amenity-highlight-${i}`}
+                            className={`group flex h-full flex-col gap-4 bg-brand-ivory p-8 transition-colors duration-300 hover:bg-brand-warm ${ROUND}`}
+                        >
+                            <span className="flex h-14 w-14 items-center justify-center rounded-full border border-brand-gold/30 text-brand-gold transition-colors duration-300 group-hover:bg-brand-gold group-hover:text-white">
+                                <Icon className="h-6 w-6" strokeWidth={1.4} />
+                            </span>
+                            <div>
+                                <h3 className="lux-title text-xl font-light text-brand-blue md:text-2xl">{a.title}</h3>
+                                <p className="mt-3 min-h-[3.25rem] font-sans text-sm leading-relaxed text-brand-ink/65">{a.line}</p>
+                            </div>
+                        </motion.div>
+                    );
+                })}
+            </div>
+        </section>
+    );
+}
+
+function LifestyleShowcase() {
+    return (
+        <section className="container-wide py-14 md:py-20" data-testid="home-lifestyle-features">
+            <motion.div {...fadeUp} className="mb-10 px-2 md:mb-12 md:px-6">
+                <Eyebrow>The Lifestyle</Eyebrow>
+                <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">A life, elevated</h2>
+            </motion.div>
+            <div className="grid gap-4 px-2 md:grid-cols-3 md:gap-5 md:px-6">
+                {HOME_LIFESTYLE_PANELS.map((panel, i) => (
                     <motion.div
-                        key={a.title}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-40px" }}
-                        transition={{ duration: 0.6, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
-                        data-testid={`amenity-highlight-${i}`}
-                        className="group flex flex-col items-start gap-5 bg-brand-ivory p-8 transition-colors duration-300 hover:bg-brand-warm md:p-10"
+                        key={panel.title}
+                        {...fadeUp}
+                        data-testid={`lifestyle-feature-${panel.title.toLowerCase().replace(/ /g, "-")}`}
+                        className={`group relative h-[52vh] overflow-hidden md:h-[60vh] ${ROUND}`}
                     >
-                        <span className="flex h-14 w-14 items-center justify-center rounded-full border border-brand-gold/30 text-brand-gold transition-colors duration-300 group-hover:bg-brand-gold group-hover:text-white">
-                            <a.icon className="h-6 w-6" strokeWidth={1.4} />
-                        </span>
-                        <h3 className="lux-title text-xl font-light text-brand-blue md:text-2xl">{a.title}</h3>
+                        <img
+                            src={panel.image}
+                            alt=""
+                            loading="lazy"
+                            className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-brand-ink/20 to-transparent" />
+                        <div className="absolute inset-x-0 bottom-0 p-7 text-white md:p-8">
+                            <h3 className="lux-title text-3xl md:text-4xl">{panel.title}</h3>
+                            <p className="mt-2 max-w-xs font-sans text-sm text-white/85">{panel.line}</p>
+                        </div>
                     </motion.div>
                 ))}
             </div>
         </section>
+    );
+}
+
+function LocationMapImage() {
+    return (
+        <a
+            href={PROJECT.contact.mapUrl}
+            target="_blank"
+            rel="noreferrer"
+            data-testid="home-map"
+            aria-label="Open Grosvenor Vistas location in Google Maps"
+            className={`group block overflow-hidden border border-brand-beige bg-brand-ivory ${ROUND}`}
+        >
+            <div className="flex min-h-[48vh] items-center justify-center p-4 md:min-h-[52vh] md:p-6">
+                <img
+                    src={HOME_MEDIA.locationMap}
+                    alt="Map showing Grosvenor Vistas in Grosvenor Heights, Kingston"
+                    loading="lazy"
+                    className="max-h-[44vh] w-full object-contain transition-transform duration-500 group-hover:scale-[1.02] md:max-h-[48vh]"
+                />
+            </div>
+            <div className="flex items-center justify-between gap-4 border-t border-brand-beige px-5 py-4 md:px-6">
+                <span className="lux-title text-xl text-brand-blue md:text-2xl">Grosvenor Heights</span>
+                <span className="lux-eyebrow flex items-center gap-2 text-brand-gold">
+                    Open in Maps <ArrowRight className="h-4 w-4" />
+                </span>
+            </div>
+        </a>
     );
 }
