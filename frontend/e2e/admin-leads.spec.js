@@ -226,6 +226,7 @@ test.describe("Brochure download UX (mocked API)", () => {
         );
 
         await page.goto("/");
+        await page.evaluate(() => window.scrollTo(0, 500));
         await page.getByTestId("fab-toggle").click();
         await page.getByTestId("fab-brochure").click();
         await page.getByTestId("fab-brochure-first-name").fill("Test");

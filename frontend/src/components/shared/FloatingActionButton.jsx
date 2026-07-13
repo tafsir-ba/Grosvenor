@@ -18,9 +18,22 @@ export default function FloatingActionButton() {
     const [open, setOpen] = useState(false);
     const [brochureOpen, setBrochureOpen] = useState(false);
     const [iconIdx, setIconIdx] = useState(0);
+    const [scrolled, setScrolled] = useState(false);
     const { downloads } = useDownloads();
     const brochure = downloads.find((d) => d.type === "brochure");
     const pricelist = downloads.find((d) => d.type === "pricelist");
+
+    // Delay FAB until the user scrolls past the hero.
+    useEffect(() => {
+        const onScroll = () => {
+            const visible = window.scrollY > 400;
+            setScrolled(visible);
+            if (!visible) setOpen(false);
+        };
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
 
     // Collapsed icon slowly rotates between actions to hint what's inside.
     useEffect(() => {
@@ -56,7 +69,11 @@ export default function FloatingActionButton() {
 
     return (
         <>
-            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4" data-testid="fab">
+            <div
+                className={`fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4 transition-all duration-500 ${scrolled ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"}`}
+                data-testid="fab"
+                data-visible={scrolled ? "true" : "false"}
+            >
                 <AnimatePresence>
                     {open && (
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-end gap-3.5">

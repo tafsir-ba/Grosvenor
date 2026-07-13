@@ -151,6 +151,46 @@ export const COLLECTIONS = [
     },
 ];
 
+// Homepage residence categories — 4 simplified cards (Residences page keeps full COLLECTIONS).
+export const HOME_RESIDENCE_CATEGORIES = [
+    {
+        key: "vista",
+        name: "Vista Residences",
+        subtitle: null,
+        min: 0,
+        max: 1750,
+        cardImage: "/gallery/home-staging-kitchen-2.png",
+        collectionKey: "vista",
+    },
+    {
+        key: "signature",
+        name: "Signature Residences",
+        subtitle: null,
+        min: 1750,
+        max: 2600,
+        cardImage: "/gallery/homestaging-bathroom-4.png",
+        collectionKey: "signature",
+    },
+    {
+        key: "skyline",
+        name: "Skyline Residences",
+        subtitle: "Penthouse",
+        min: 2600,
+        max: 4500,
+        cardImage: "/gallery/ext-rooftop-seaview.png",
+        collectionKey: "skyline",
+    },
+    {
+        key: "town",
+        name: "Town Residences",
+        subtitle: "Townhouses",
+        min: 4500,
+        max: Infinity,
+        cardImage: "/gallery/townhouse-new.png",
+        collectionKey: "townhouses",
+    },
+];
+
 export function collectionForSurface(surface) {
     return COLLECTIONS.find((c) => surface >= c.min && surface < c.max) || COLLECTIONS[0];
 }
