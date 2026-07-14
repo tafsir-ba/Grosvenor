@@ -86,7 +86,7 @@ export default function Footer() {
                     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-2">
                         <a href={LEGAL.privacyUrl} target="_blank" rel="noreferrer" data-testid="footer-privacy-link" className="uppercase transition-colors hover:text-brand-gold">Privacy Policy</a>
                         <a href={LEGAL.legalUrl} target="_blank" rel="noreferrer" data-testid="footer-legal-link" className="uppercase transition-colors hover:text-brand-gold">Legal</a>
-                        <span className="normal-case tracking-normal text-brand-ink/40" data-testid="footer-credit">{LEGAL.credit}</span>
+                        <a href={LEGAL.creditUrl} target="_blank" rel="noreferrer" data-testid="footer-credit" className="normal-case tracking-normal text-brand-ink/40 transition-colors hover:text-brand-gold">{LEGAL.credit}</a>
                     </div>
                 </div>
             </div>
