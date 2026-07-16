@@ -8,7 +8,7 @@ import CtaButton from "@/components/shared/CtaButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnit, useUnits } from "@/hooks/useData";
 import { formatPrice, formatSurface, formatUnitDetailPrice } from "@/lib/format";
-import { BUILDINGS, LEAD_TYPE, PROJECT, collectionForSurface } from "@/lib/constants";
+import { BUILDINGS, LEAD_TYPE, PROJECT, collectionForSurface, homeCategoryForSurface } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
@@ -171,7 +171,11 @@ export default function UnitDetailPage() {
                     <Eyebrow>Residence Overview</Eyebrow>
                     <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">{collection.name}</h2>
                     <p className="mt-6 font-sans text-lg leading-relaxed text-brand-ink/65" data-testid="unit-description">{collection.blurb}</p>
-                    <Link to={`/residences?collection=${collection.key}`} data-testid="collection-link" className="lux-eyebrow mt-8 inline-flex items-center gap-2 text-brand-gold transition-colors hover:text-brand-ink">
+                    <Link
+                        to={`/residences?tier=${(homeCategoryForSurface(unit.total_surface) || { key: collection.key }).key}`}
+                        data-testid="collection-link"
+                        className="lux-eyebrow mt-8 inline-flex items-center gap-2 text-brand-gold transition-colors hover:text-brand-ink"
+                    >
                         Explore {collection.name} <ArrowRight className="h-4 w-4" />
                     </Link>
                 </motion.div>

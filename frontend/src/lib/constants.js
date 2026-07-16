@@ -152,7 +152,7 @@ export const COLLECTIONS = [
     },
 ];
 
-// Homepage residence categories — 4 simplified cards (Residences page keeps full COLLECTIONS).
+// Public residence categories — 4 simplified cards (homepage + Residences page).
 export const HOME_RESIDENCE_CATEGORIES = [
     {
         key: "vista",
@@ -216,7 +216,15 @@ export const HOME_LIFESTYLE_PANELS = [
 
 export function homeCategoryForKey(key) {
     if (!key) return null;
-    return HOME_RESIDENCE_CATEGORIES.find((c) => c.key === key) || null;
+    return (
+        HOME_RESIDENCE_CATEGORIES.find((c) => c.key === key || c.collectionKey === key)
+        || null
+    );
+}
+
+export function homeCategoryForSurface(surface) {
+    if (surface == null) return null;
+    return HOME_RESIDENCE_CATEGORIES.find((c) => surface >= c.min && surface < c.max) || null;
 }
 
 export function unitMatchesHomeCategory(unit, category) {

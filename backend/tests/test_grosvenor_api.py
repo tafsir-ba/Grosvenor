@@ -6,6 +6,7 @@ Covers: units (list/filter/sort, slug), leads (form + click), downloads
 Requires a running API. Set REACT_APP_BACKEND_URL, or add it to frontend/.env.
 """
 import os
+import re
 import uuid
 from pathlib import Path
 
@@ -99,10 +100,13 @@ class TestUnits:
             assert forbidden not in sample, f"forbidden field present: {forbidden}"
         for amenity in sample.get("amenities", []):
             lower = amenity.lower()
-            assert "bedroom" not in lower, f"prohibited amenity copy: {amenity}"
-            assert "bathroom" not in lower, f"prohibited amenity copy: {amenity}"
             assert "floor plan" not in lower, f"prohibited amenity copy: {amenity}"
+            assert not re.search(r"\b\d+\s*-?\s*bed", lower), f"prohibited bed count amenity: {amenity}"
+            assert not re.search(r"\b\d+\s*-?\s*bath", lower), f"prohibited bath count amenity: {amenity}"
         assert "_id" in sample and "slug" in sample
+        # Canonical residence finishes must be present on inventory units.
+        assert "Large floor-to-ceiling windows" in sample.get("amenities", [])
+        assert "Porcelain tiled flooring throughout" in sample.get("amenities", [])
 
     def test_filter_by_building(self, session):
         # discover a real building from listing

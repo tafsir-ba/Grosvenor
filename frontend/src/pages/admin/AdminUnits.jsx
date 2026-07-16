@@ -54,7 +54,7 @@ function UnitFields({ form, setForm }) {
             </div>
             <div className="col-span-2 space-y-2">
                 <Label>Residence Features (one per line)</Label>
-                <Textarea data-testid="unit-amenities-input" value={form.amenities} onChange={set("amenities")} rows={8} placeholder={"Open-plan living spaces\nFloor-to-ceiling windows\nContemporary kitchen cabinetry and fixtures"} />
+                <Textarea data-testid="unit-amenities-input" value={form.amenities} onChange={set("amenities")} rows={8} placeholder={"Large floor-to-ceiling windows\nPorcelain tiled flooring throughout\nSolid surface kitchen countertops"} />
             </div>
         </>
     );

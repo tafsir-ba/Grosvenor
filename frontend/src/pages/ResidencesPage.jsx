@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ArrowRight, Map, X } from "lucide-react";
 import { motion } from "framer-motion";
-import Hero from "@/components/shared/Hero";
 import UnitCard from "@/components/shared/UnitCard";
 import CtaButton from "@/components/shared/CtaButton";
 import StatusBadge from "@/components/shared/StatusBadge";
@@ -10,9 +9,15 @@ import ResidenceExplorerMap from "@/components/shared/ResidenceExplorerMap";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnits } from "@/hooks/useData";
-import { BUILDINGS, COLLECTIONS, UNIT_STATUSES, homeCategoryForKey, unitMatchesHomeCategory } from "@/lib/constants";
+import {
+    BUILDINGS,
+    HOME_RESIDENCE_CATEGORIES,
+    UNIT_STATUSES,
+    homeCategoryForKey,
+    unitMatchesHomeCategory,
+} from "@/lib/constants";
 import { formatPrice, formatSurface, formatUnitListPrice, minStartingPrice, statusMeta, unitFloor } from "@/lib/format";
-import { Eyebrow, fadeUp } from "@/components/shared/luxe";
+import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 const STATUSES = [
     { value: "all", label: "All Statuses" },
@@ -28,13 +33,6 @@ const SORTS = [
     { value: "surface_desc", label: "Largest Surface" },
 ];
 
-const TIERS = COLLECTIONS.map((c) => ({
-    key: c.key,
-    name: c.name,
-    image: c.cardImage,
-    test: (u) => u.total_surface >= c.min && u.total_surface < c.max,
-}));
-
 function shortBuilding(value) {
     return BUILDINGS.find((b) => b.value === value)?.short || value;
 }
@@ -49,8 +47,7 @@ export default function ResidencesPage() {
     const building = params.get("building") || "all";
     const status = params.get("status") || "all";
     const sort = params.get("sort") || "building";
-    const collection = params.get("collection") || "all";
-    const tierKey = params.get("tier");
+    const tierKey = params.get("tier") || params.get("collection");
     const selectedSlug = params.get("unit");
 
     const query = useMemo(() => {
@@ -64,32 +61,31 @@ export default function ResidencesPage() {
     const { units: allUnits } = useUnits({ sort: "price_asc" });
     const { units: mapUnits, loading: mapLoading } = useUnits({ sort: "building" });
 
-    const tiers = useMemo(() => TIERS.map((t) => {
-        const all = allUnits.filter(t.test);
-        const avail = all.filter((u) => u.status === "available");
-        const surfaces = all.map((u) => u.total_surface).filter(Boolean);
-        const prices = avail.map((u) => u.price).filter(Boolean);
+    const availableUnits = useMemo(() => allUnits.filter((u) => u.status === "available"), [allUnits]);
+
+    const tiers = useMemo(() => HOME_RESIDENCE_CATEGORIES.map((c) => {
+        const us = availableUnits.filter((u) => unitMatchesHomeCategory(u, c));
+        const surfaces = us.map((u) => u.total_surface).filter(Boolean);
+        const prices = us.map((u) => u.price).filter(Boolean);
         return {
-            ...t,
-            count: all.length,
-            availCount: avail.length,
+            key: c.key,
+            name: c.name,
+            subtitle: c.subtitle,
+            image: c.cardImage,
+            count: us.length,
             minSurface: surfaces.length ? Math.min(...surfaces) : null,
             minPrice: prices.length ? Math.min(...prices) : null,
         };
-    }).filter((t) => t.count > 0), [allUnits]);
+    }), [availableUnits]);
 
     const activeHomeTier = homeCategoryForKey(tierKey);
-    const activeTier = !activeHomeTier && collection !== "all" ? TIERS.find((t) => t.key === collection) : null;
 
     const displayedUnits = useMemo(() => {
         if (activeHomeTier) {
             return units.filter((u) => unitMatchesHomeCategory(u, activeHomeTier));
         }
-        if (activeTier) {
-            return units.filter(activeTier.test);
-        }
         return units;
-    }, [units, activeHomeTier, activeTier]);
+    }, [units, activeHomeTier]);
 
     const selectedUnit = useMemo(
         () => (selectedSlug ? allUnits.find((u) => u.slug === selectedSlug) : null),
@@ -142,62 +138,61 @@ export default function ResidencesPage() {
     const selectUnitFromMap = (unit) => {
         const next = new URLSearchParams(params);
         next.set("unit", unit.slug);
-        // Clear collection/tier filters so the selected unit is visible in the list.
         next.delete("collection");
         next.delete("tier");
         setParams(next);
         setTimeout(scrollToSelectedResidence, 100);
     };
 
-    const selectCollection = (key) => {
+    const selectTier = (key) => {
         const next = new URLSearchParams(params);
-        next.set("collection", key);
-        next.delete("tier");
+        next.set("tier", key);
+        next.delete("collection");
         next.delete("building");
         next.delete("unit");
         setParams(next);
         setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
     };
 
-    const startingPrice = formatPrice(minStartingPrice(allUnits.filter((u) => u.status === "available")));
+    const startingPrice = formatPrice(minStartingPrice(availableUnits));
 
     return (
-        <div data-testid="residences-page">
-            <Hero image="/gallery/buildings-01.png" overline="Residences" title="Find your space" subtitle={`Forty-three residences, defined by space and position — from ${startingPrice}.`} />
-
-            <section className="container-wide py-16 md:py-24">
-                <motion.div {...fadeUp} className="max-w-3xl px-2 md:px-6">
-                    <Eyebrow>The Collection</Eyebrow>
-                    <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">Discover the residences visually first</h2>
-                    <p className="mt-6 font-sans text-lg text-brand-ink/70">A family of distinct collections, each designed around light, space and elevated views. Choose a collection to reveal its availability, or explore every residence below.</p>
+        <div data-testid="residences-page" className="bg-brand-warm text-brand-ink">
+            <section className="container-wide pb-14 pt-32 md:pb-20 md:pt-40">
+                <motion.div {...fadeUp} className="mb-10 px-2 md:mb-12 md:px-6">
+                    <Eyebrow>The Residences</Eyebrow>
+                    <h1 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">Find your space</h1>
+                    <p className="mt-5 max-w-2xl font-sans text-lg text-brand-ink/65">
+                        Forty-three residences across four collections — from {startingPrice}.
+                    </p>
                 </motion.div>
-            </section>
 
-            <section className="container-wide pb-16 md:pb-24">
-                <motion.div {...fadeUp} className="mb-8 px-2 md:px-6">
-                    <Eyebrow>Collections</Eyebrow>
-                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Choose your collection</h2>
-                </motion.div>
-                <div className="grid gap-6 md:grid-cols-3">
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     {tiers.map((t) => (
                         <button
                             key={t.key}
                             type="button"
-                            onClick={() => selectCollection(t.key)}
+                            onClick={() => selectTier(t.key)}
                             data-testid={`residence-tier-${t.key}`}
-                            className="group relative block h-[64vh] w-full overflow-hidden rounded-2xl text-left"
+                            className={`group relative block h-[48vh] w-full overflow-hidden text-left md:h-[52vh] ${ROUND}`}
                         >
                             <img src={t.image} alt={t.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/85 via-brand-ink/15 to-transparent" />
-                            <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                                <h3 className="lux-title text-3xl md:text-4xl">{t.name}</h3>
-                                {t.minSurface && <p className="mt-2 font-sans text-sm uppercase tracking-[0.18em] text-white/80">From {t.minSurface.toLocaleString()} sq ft</p>}
-                                {t.minPrice ? (
-                                    <p className="mt-1 font-sans text-white/85">From USD {t.minPrice.toLocaleString()}</p>
-                                ) : (
-                                    <p className="mt-1 font-sans text-white/75">Enquire for availability</p>
+                            <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-7">
+                                <h2 className="lux-title text-2xl md:text-3xl">{t.name}</h2>
+                                {t.subtitle && <p className="mt-1 font-sans text-xs uppercase tracking-[0.16em] text-white/70">{t.subtitle}</p>}
+                                {t.minSurface && (
+                                    <p className="mt-2 font-sans text-sm uppercase tracking-[0.18em] text-white/80">
+                                        From {t.minSurface.toLocaleString()} sq ft
+                                    </p>
                                 )}
-                                <span className="lux-eyebrow mt-3 inline-flex items-center gap-2 text-brand-gold">View Availability <ArrowRight className="h-4 w-4" /></span>
+                                <p className="mt-2 font-sans text-white/90">
+                                    {t.minPrice ? `From USD ${t.minPrice.toLocaleString()}` : "Price on request"}
+                                </p>
+                                <p className="font-sans text-sm text-white/70">{t.count} available</p>
+                                <span className="lux-eyebrow mt-3 inline-flex items-center gap-2 text-brand-gold">
+                                    View Availability <ArrowRight className="h-4 w-4" />
+                                </span>
                             </div>
                         </button>
                     ))}
@@ -228,11 +223,11 @@ export default function ResidencesPage() {
             <section id="availability" className="container-wide pb-24 md:pb-32">
                 <div className="mb-10 px-2 md:px-6"><Eyebrow>Availability</Eyebrow><h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl">Every residence, live</h2></div>
 
-                {(activeTier || activeHomeTier) && (
+                {activeHomeTier && (
                     <div className="mb-6 px-2 md:px-6">
                         <button onClick={clearCategoryFilter} data-testid="clear-collection" className="inline-flex items-center gap-2.5 rounded-full border border-brand-gold/40 bg-brand-gold/10 px-5 py-2 font-sans text-sm text-brand-ink transition-colors hover:bg-brand-gold/20">
                             <span className="lux-eyebrow text-brand-gold/70">Collection</span>
-                            <span className="font-medium">{activeHomeTier?.name || activeTier?.name}</span>
+                            <span className="font-medium">{activeHomeTier.name}</span>
                             <X className="h-4 w-4 text-brand-ink/60" />
                         </button>
                     </div>

@@ -12,18 +12,18 @@ from services.units_service import make_slug
 
 CSV_PATH = Path(__file__).parent / "units.csv"
 
-# Default residence features (editable per unit in the admin panel).
-# Public copy must not reference bedrooms, bathrooms, floor plans, or room types.
+# Default residence features (synced to all units on startup; editable per unit in admin).
 _DEFAULT_AMENITIES = [
-    "Open-plan living spaces",
-    "Floor-to-ceiling windows",
-    "SPC Laminate flooring",
-    "Solid surface countertops",
-    "Recessed lighting",
-    "Contemporary kitchen cabinetry and fixtures",
-    "Provisioning for telephone and cable",
-    "Air-conditioning throughout",
-    "Utility closet",
+    "Large floor-to-ceiling windows",
+    "Porcelain tiled flooring throughout",
+    "Solid surface kitchen countertops",
+    "Contemporary kitchen cabinetry",
+    "Built-in wardrobes in all bedrooms",
+    "Recessed LED lighting",
+    "Dedicated laundry room",
+    "Master bathroom with bathtub and separate walk-in shower",
+    "Secondary bathrooms with walk-in showers",
+    "Premium bathroom fixtures and fittings",
 ]
 
 # Friendly block name (CSV) -> canonical building value used across the app.
@@ -80,6 +80,9 @@ async def seed_inventory():
         now = utc_now_iso()
         docs = [{**d, "created_at": now, "updated_at": now} for d in load_units_from_csv()]
         await db.units.insert_many(docs)
+    else:
+        # Keep public residence features in sync with the canonical list.
+        await db.units.update_many({}, {"$set": {"amenities": list(_DEFAULT_AMENITIES)}})
 
     if await db.downloads.count_documents({}) == 0:
         await db.downloads.insert_many([dict(d) for d in _DOWNLOADS])

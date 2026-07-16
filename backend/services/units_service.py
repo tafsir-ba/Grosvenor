@@ -11,8 +11,10 @@ from domain.models import Unit, UnitCreate, UnitUpdate
 
 COLLECTION = "units"
 
+# Block inventory-style bed/bath counts and floor-plan references.
+# Finish copy may mention bedrooms/bathrooms (e.g. "Built-in wardrobes in all bedrooms").
 _FORBIDDEN_AMENITY_RE = re.compile(
-    r"bedroom|bathroom|floor\s*plan|ensuite|principal\s*suite|guest\s*wc",
+    r"\b\d+\s*-?\s*bed(?:room)?s?\b|\b\d+\s*-?\s*bath(?:room)?s?\b|floor\s*plan|ensuite|principal\s*suite|guest\s*wc",
     re.IGNORECASE,
 )
 
