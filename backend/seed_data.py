@@ -12,7 +12,7 @@ from services.units_service import make_slug
 
 CSV_PATH = Path(__file__).parent / "units.csv"
 
-# Default residence features (synced to all units on startup; editable per unit in admin).
+# Default residence features (applied on insert + one-time migration; editable per unit in admin).
 _DEFAULT_AMENITIES = [
     "Large floor-to-ceiling windows",
     "Porcelain tiled flooring throughout",
@@ -25,6 +25,10 @@ _DEFAULT_AMENITIES = [
     "Secondary bathrooms with walk-in showers",
     "Premium bathroom fixtures and fittings",
 ]
+
+# Bump only when intentionally re-applying the canonical amenities list to all units.
+_AMENITIES_VERSION = "2026-07-16"
+_META_ID = "seed"
 
 # Friendly block name (CSV) -> canonical building value used across the app.
 _BLOCK_TO_BUILDING = {
@@ -74,15 +78,40 @@ _DOWNLOADS = [
 ]
 
 
+def should_apply_amenities_migration(meta_doc) -> bool:
+    """True only when the one-time amenities migration has not yet been recorded."""
+    if not meta_doc:
+        return True
+    return meta_doc.get("amenities_version") != _AMENITIES_VERSION
+
+
+async def apply_amenities_migration_once():
+    """Apply canonical amenities once, then leave per-unit admin edits alone."""
+    meta = await db.meta.find_one({"_id": _META_ID})
+    if not should_apply_amenities_migration(meta):
+        return False
+    await db.units.update_many({}, {"$set": {"amenities": list(_DEFAULT_AMENITIES)}})
+    await db.meta.update_one(
+        {"_id": _META_ID},
+        {"$set": {"amenities_version": _AMENITIES_VERSION}},
+        upsert=True,
+    )
+    return True
+
+
 async def seed_inventory():
     if await db.units.count_documents({}) == 0:
         from domain.base import utc_now_iso
         now = utc_now_iso()
         docs = [{**d, "created_at": now, "updated_at": now} for d in load_units_from_csv()]
         await db.units.insert_many(docs)
+        await db.meta.update_one(
+            {"_id": _META_ID},
+            {"$set": {"amenities_version": _AMENITIES_VERSION}},
+            upsert=True,
+        )
     else:
-        # Keep public residence features in sync with the canonical list.
-        await db.units.update_many({}, {"$set": {"amenities": list(_DEFAULT_AMENITIES)}})
+        await apply_amenities_migration_once()
 
     if await db.downloads.count_documents({}) == 0:
         await db.downloads.insert_many([dict(d) for d in _DOWNLOADS])

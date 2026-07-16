@@ -95,8 +95,9 @@ export default function ResidencesPage() {
     const mapPass = useCallback((u) => {
         if (building !== "all" && u.building !== building) return false;
         if (status !== "all" && u.status !== status) return false;
+        if (activeHomeTier && !unitMatchesHomeCategory(u, activeHomeTier)) return false;
         return true;
-    }, [building, status]);
+    }, [building, status, activeHomeTier]);
 
     useEffect(() => {
         if (!activeHomeTier) return;
