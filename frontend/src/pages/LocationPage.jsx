@@ -12,10 +12,10 @@ const HIGHLIGHTS = [
 ];
 
 const NEARBY = [
-    { group: "Schools", items: ["Immaculate Conception High", "Hillel Academy", "Campion College", "American International School"] },
-    { group: "Shopping", items: ["Manor Park Plaza", "Sovereign Centre", "Liguanea shops & cafés"] },
+    { group: "Schools", items: ["Immaculate Conception High", "Hillel Academy", "Queens High", "Stella Maris Prep School", "Emmanuel Academy"] },
+    { group: "Shopping", items: ["Manor Park Plaza", "Sovereign Centre", "Super Valu", "Market Place", "Loshushan", "PriceSmart"] },
     { group: "Business Districts", items: ["New Kingston (15 min)", "Half Way Tree (12 min)", "Downtown Kingston (25 min)"] },
-    { group: "Major Roads", items: ["Constant Spring Road", "Manor Park Road", "Stony Hill main road"] },
+    { group: "Major Roads", items: ["Constant Spring Road", "Stony Hill main road", "Norbrook Road", "Barbican Road", "Mannings Hill Road"] },
 ];
 
 export default function LocationPage() {
