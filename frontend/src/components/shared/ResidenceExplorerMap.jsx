@@ -45,7 +45,7 @@ export default function ResidenceExplorerMap({
     const [level, setLevel] = useState(1);
     const [hover, setHover] = useState(null);
 
-    const clickHint = variant === "public" ? "View in listing" : "Click to open details";
+    const clickHint = variant === "public" ? "Click to highlight below" : "Click to open details";
 
     useEffect(() => { onViewChange?.(view); }, [view, onViewChange]);
     useEffect(() => { if (resetSignal) { setView("aerial"); setHover(null); } }, [resetSignal]);

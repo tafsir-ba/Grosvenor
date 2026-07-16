@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { ArrowRight, X } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { ArrowRight, Map, X } from "lucide-react";
 import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
 import UnitCard from "@/components/shared/UnitCard";
 import CtaButton from "@/components/shared/CtaButton";
+import StatusBadge from "@/components/shared/StatusBadge";
 import ResidenceExplorerMap from "@/components/shared/ResidenceExplorerMap";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnits } from "@/hooks/useData";
 import { BUILDINGS, COLLECTIONS, UNIT_STATUSES, homeCategoryForKey, unitMatchesHomeCategory } from "@/lib/constants";
-import { formatPrice, minStartingPrice, statusMeta } from "@/lib/format";
+import { formatPrice, formatSurface, formatUnitListPrice, minStartingPrice, statusMeta, unitFloor } from "@/lib/format";
 import { Eyebrow, fadeUp } from "@/components/shared/luxe";
 
 const STATUSES = [
@@ -33,6 +34,15 @@ const TIERS = COLLECTIONS.map((c) => ({
     image: c.cardImage,
     test: (u) => u.total_surface >= c.min && u.total_surface < c.max,
 }));
+
+function shortBuilding(value) {
+    return BUILDINGS.find((b) => b.value === value)?.short || value;
+}
+
+function scrollToSelectedResidence() {
+    const el = document.getElementById("selected-residence") || document.getElementById("selected-unit-panel");
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
 
 export default function ResidencesPage() {
     const [params, setParams] = useSearchParams();
@@ -99,10 +109,10 @@ export default function ResidencesPage() {
     }, [activeHomeTier?.key]);
 
     useEffect(() => {
-        if (!selectedSlug) return;
-        const id = setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
+        if (!selectedSlug || loading) return;
+        const id = setTimeout(scrollToSelectedResidence, 80);
         return () => clearTimeout(id);
-    }, [selectedSlug]);
+    }, [selectedSlug, loading, displayedUnits]);
 
     const setParam = (key, value) => {
         const next = new URLSearchParams(params);
@@ -124,11 +134,19 @@ export default function ResidencesPage() {
         setParams(next);
     };
 
+    const returnToMap = () => {
+        clearUnitSelection();
+        setTimeout(() => document.getElementById("residences-explorer")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
+    };
+
     const selectUnitFromMap = (unit) => {
         const next = new URLSearchParams(params);
         next.set("unit", unit.slug);
+        // Clear collection/tier filters so the selected unit is visible in the list.
+        next.delete("collection");
+        next.delete("tier");
         setParams(next);
-        setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
+        setTimeout(scrollToSelectedResidence, 100);
     };
 
     const selectCollection = (key) => {
@@ -136,6 +154,7 @@ export default function ResidencesPage() {
         next.set("collection", key);
         next.delete("tier");
         next.delete("building");
+        next.delete("unit");
         setParams(next);
         setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
     };
@@ -151,27 +170,6 @@ export default function ResidencesPage() {
                     <Eyebrow>The Collection</Eyebrow>
                     <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">Discover the residences visually first</h2>
                     <p className="mt-6 font-sans text-lg text-brand-ink/70">A family of distinct collections, each designed around light, space and elevated views. Choose a collection to reveal its availability, or explore every residence below.</p>
-                </motion.div>
-            </section>
-
-            <section className="container-wide pb-16 md:pb-24">
-                <motion.div {...fadeUp} className="mb-8 px-2 md:px-6">
-                    <Eyebrow>Explore</Eyebrow>
-                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Navigate the development</h2>
-                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/65">Select a building, floor, and residence to locate it in the live availability list below.</p>
-                </motion.div>
-                <motion.div {...fadeUp} className="px-2 md:px-6" data-testid="residences-explorer">
-                    {mapLoading ? (
-                        <Skeleton className="h-[52vh] w-full rounded-2xl" />
-                    ) : (
-                        <ResidenceExplorerMap
-                            units={mapUnits}
-                            selectedSlug={selectedSlug}
-                            onSelect={selectUnitFromMap}
-                            pass={mapPass}
-                            variant="public"
-                        />
-                    )}
                 </motion.div>
             </section>
 
@@ -206,6 +204,27 @@ export default function ResidencesPage() {
                 </div>
             </section>
 
+            <section id="explore" className="container-wide pb-10 md:pb-14">
+                <motion.div {...fadeUp} className="mb-8 px-2 md:px-6">
+                    <Eyebrow>Explore</Eyebrow>
+                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Navigate the development</h2>
+                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/65">Select a building, floor, and residence. We’ll highlight it in the live list below so you can open it with one clear step.</p>
+                </motion.div>
+                <motion.div {...fadeUp} className="px-2 md:px-6" id="residences-explorer" data-testid="residences-explorer">
+                    {mapLoading ? (
+                        <Skeleton className="h-[52vh] w-full rounded-2xl" />
+                    ) : (
+                        <ResidenceExplorerMap
+                            units={mapUnits}
+                            selectedSlug={selectedSlug}
+                            onSelect={selectUnitFromMap}
+                            pass={mapPass}
+                            variant="public"
+                        />
+                    )}
+                </motion.div>
+            </section>
+
             <section id="availability" className="container-wide pb-24 md:pb-32">
                 <div className="mb-10 px-2 md:px-6"><Eyebrow>Availability</Eyebrow><h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl">Every residence, live</h2></div>
 
@@ -220,23 +239,44 @@ export default function ResidencesPage() {
                 )}
 
                 {selectedUnit && (
-                    <div className="mb-6 px-2 md:px-6" data-testid="selected-unit-chip">
-                        <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-brand-gold/40 bg-brand-gold/10 px-5 py-2.5 font-sans text-sm text-brand-ink">
-                            <span>
-                                <span className="lux-eyebrow text-brand-gold/70">Selected</span>
-                                {" "}
-                                <span className="font-medium">Residence {selectedUnit.unit_number}</span>
-                            </span>
-                            <Link
-                                to={`/residences/${selectedUnit.slug}`}
-                                data-testid="selected-unit-view"
-                                className="inline-flex items-center gap-1.5 font-medium text-brand-gold transition-colors hover:text-brand-ink"
-                            >
-                                View Residence <ArrowRight className="h-4 w-4" />
-                            </Link>
-                            <button type="button" onClick={clearUnitSelection} data-testid="clear-unit-selection" aria-label="Clear selection" className="text-brand-ink/60 transition-colors hover:text-brand-ink">
-                                <X className="h-4 w-4" />
-                            </button>
+                    <div
+                        id="selected-unit-panel"
+                        data-testid="selected-unit-panel"
+                        className="sticky top-20 z-20 mb-8 scroll-mt-28 border border-brand-gold/40 bg-brand-warm/95 px-4 py-5 shadow-[0_16px_40px_rgba(74,69,63,0.12)] backdrop-blur md:px-6"
+                    >
+                        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                            <div>
+                                <p className="lux-eyebrow text-brand-gold">Selected from the map</p>
+                                <div className="mt-2 flex flex-wrap items-center gap-3">
+                                    <h3 className="lux-title text-3xl text-brand-blue md:text-4xl">Residence {selectedUnit.unit_number}</h3>
+                                    <StatusBadge status={selectedUnit.status} />
+                                </div>
+                                <p className="mt-2 font-sans text-sm text-brand-ink/65">
+                                    {shortBuilding(selectedUnit.building)} · {unitFloor(selectedUnit)} · {formatSurface(selectedUnit.total_surface)} · {formatUnitListPrice(selectedUnit)}
+                                </p>
+                            </div>
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                                <CtaButton to={`/residences/${selectedUnit.slug}`} data-testid="selected-unit-view" className="w-full sm:w-auto">
+                                    View this residence <ArrowRight className="h-4 w-4" />
+                                </CtaButton>
+                                <button
+                                    type="button"
+                                    onClick={returnToMap}
+                                    data-testid="return-to-map"
+                                    className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-ink/20 px-5 py-3.5 font-sans text-sm text-brand-ink/75 transition-colors hover:border-brand-gold hover:text-brand-gold"
+                                >
+                                    <Map className="h-4 w-4" /> Back to map
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={clearUnitSelection}
+                                    data-testid="clear-unit-selection"
+                                    aria-label="Clear selection"
+                                    className="inline-flex items-center justify-center gap-2 self-center rounded-full p-2 text-brand-ink/50 transition-colors hover:text-brand-ink sm:self-auto"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
