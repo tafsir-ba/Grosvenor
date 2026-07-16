@@ -8,7 +8,7 @@ import CtaButton from "@/components/shared/CtaButton";
 import ExplorerMap from "@/components/admin/ExplorerMap";
 import { useUnits } from "@/hooks/useData";
 import { api, formatApiError } from "@/lib/api";
-import { formatPrice, formatSurface, unitFloor } from "@/lib/format";
+import { formatPrice, formatSurface, unitFloor, formatUnitDetailPrice, statusMeta } from "@/lib/format";
 import { BUILDINGS, LEAD_TYPE } from "@/lib/constants";
 import { getUnitType, EXPLORER_TYPE_OPTIONS } from "@/lib/explorerData";
 import { submitAdminLeadPayload } from "@/lib/tracking";
@@ -98,7 +98,7 @@ export default function ResidenceExplorer() {
                     <h1 className="lux-title text-3xl text-brand-blue md:text-4xl">Residence Explorer</h1>
                     <div className="flex flex-wrap items-center gap-3">
                         <Select value={statusF} onValueChange={setStatusF}><SelectTrigger className="h-9 w-36" data-testid="filter-status"><SelectValue placeholder="Status" /></SelectTrigger>
-                            <SelectContent><SelectItem value="all">All statuses</SelectItem><SelectItem value="available">Available</SelectItem><SelectItem value="reserved">Reserved</SelectItem><SelectItem value="sold">Sold</SelectItem></SelectContent></Select>
+                            <SelectContent><SelectItem value="all">All statuses</SelectItem><SelectItem value="available">{statusMeta("available").label}</SelectItem><SelectItem value="reserved">{statusMeta("reserved").label}</SelectItem><SelectItem value="sold">{statusMeta("sold").label}</SelectItem></SelectContent></Select>
                         <Select value={typeF} onValueChange={setTypeF}><SelectTrigger className="h-9 w-52" data-testid="filter-type"><SelectValue placeholder="Type" /></SelectTrigger>
                             <SelectContent><SelectItem value="all">All types</SelectItem>{TYPE_OPTS.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent></Select>
                         <button onClick={reset} data-testid="explorer-reset" className="inline-flex items-center gap-2 rounded-full border border-brand-ink/15 px-4 py-2 font-sans text-sm text-brand-ink/70 transition-colors hover:border-brand-gold hover:text-brand-gold"><RotateCcw className="h-3.5 w-3.5" /> Reset</button>
@@ -139,7 +139,7 @@ export default function ResidenceExplorer() {
                             </div>
 
                             <dl className="mt-4 space-y-2.5">
-                                {[["Total Surface", formatSurface(selected.total_surface)], ["Living Area", formatSurface(selected.living_area ?? selected.total_surface)], ["Balcony", formatSurface(selected.balcony_surface)], ["Price", selected.status === "sold" ? "Now sold" : formatPrice(selected.price, selected.currency)]].map(([l, v]) => (
+                                {[["Total Surface", formatSurface(selected.total_surface)], ["Living Area", formatSurface(selected.living_area ?? selected.total_surface)], ["Balcony", formatSurface(selected.balcony_surface)], ["Price", formatUnitDetailPrice(selected)]].map(([l, v]) => (
                                     <div key={l} className="flex items-baseline justify-between"><dt className="font-sans text-xs uppercase tracking-[0.12em] text-brand-ink/45">{l}</dt><dd className="font-display text-lg text-brand-ink">{v}</dd></div>
                                 ))}
                             </dl>

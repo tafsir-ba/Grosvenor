@@ -59,7 +59,7 @@ export default function AdminDashboard() {
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard label="Total Units" value={stats.units_total} />
                 <StatCard label="Available" value={stats.units_by_status.available} accent="text-brand-green" />
-                <StatCard label="Sold" value={stats.units_by_status.sold} accent="text-muted-foreground" />
+                <StatCard label="Under contract" value={stats.units_by_status.sold} accent="text-muted-foreground" />
                 <StatCard label="Total Leads" value={stats.leads_total} accent="text-brand-blue" />
             </div>
 

@@ -1,22 +1,23 @@
-import { useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight, X } from "lucide-react";
 import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
 import UnitCard from "@/components/shared/UnitCard";
 import CtaButton from "@/components/shared/CtaButton";
+import ResidenceExplorerMap from "@/components/shared/ResidenceExplorerMap";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnits } from "@/hooks/useData";
 import { BUILDINGS, COLLECTIONS, UNIT_STATUSES, homeCategoryForKey, unitMatchesHomeCategory } from "@/lib/constants";
-import { formatPrice, minStartingPrice } from "@/lib/format";
-import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
+import { formatPrice, minStartingPrice, statusMeta } from "@/lib/format";
+import { Eyebrow, fadeUp } from "@/components/shared/luxe";
 
 const STATUSES = [
     { value: "all", label: "All Statuses" },
     ...UNIT_STATUSES.map((value) => ({
         value,
-        label: value.charAt(0).toUpperCase() + value.slice(1),
+        label: statusMeta(value).label,
     })),
 ];
 const SORTS = [
@@ -26,21 +27,12 @@ const SORTS = [
     { value: "surface_desc", label: "Largest Surface" },
 ];
 
-// Lifestyle collections (shared source of truth) → size-range filters.
 const TIERS = COLLECTIONS.map((c) => ({
     key: c.key,
     name: c.name,
     image: c.cardImage,
     test: (u) => u.total_surface >= c.min && u.total_surface < c.max,
 }));
-
-// Aerial orientation legend — the four physical blocks within the development.
-const BLOCKS = [
-    { n: "01", label: "Heliconia" },
-    { n: "02", label: "Hibiscus" },
-    { n: "03", label: "Ginger Lily" },
-    { n: "04", label: "Begonia Townhouses" },
-];
 
 export default function ResidencesPage() {
     const [params, setParams] = useSearchParams();
@@ -49,6 +41,7 @@ export default function ResidencesPage() {
     const sort = params.get("sort") || "building";
     const collection = params.get("collection") || "all";
     const tierKey = params.get("tier");
+    const selectedSlug = params.get("unit");
 
     const query = useMemo(() => {
         const q = { sort };
@@ -59,6 +52,7 @@ export default function ResidencesPage() {
 
     const { units, loading, error } = useUnits(query);
     const { units: allUnits } = useUnits({ sort: "price_asc" });
+    const { units: mapUnits, loading: mapLoading } = useUnits({ sort: "building" });
 
     const tiers = useMemo(() => TIERS.map((t) => {
         const all = allUnits.filter(t.test);
@@ -87,11 +81,28 @@ export default function ResidencesPage() {
         return units;
     }, [units, activeHomeTier, activeTier]);
 
+    const selectedUnit = useMemo(
+        () => (selectedSlug ? allUnits.find((u) => u.slug === selectedSlug) : null),
+        [allUnits, selectedSlug],
+    );
+
+    const mapPass = useCallback((u) => {
+        if (building !== "all" && u.building !== building) return false;
+        if (status !== "all" && u.status !== status) return false;
+        return true;
+    }, [building, status]);
+
     useEffect(() => {
         if (!activeHomeTier) return;
         const id = setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
         return () => clearTimeout(id);
     }, [activeHomeTier?.key]);
+
+    useEffect(() => {
+        if (!selectedSlug) return;
+        const id = setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
+        return () => clearTimeout(id);
+    }, [selectedSlug]);
 
     const setParam = (key, value) => {
         const next = new URLSearchParams(params);
@@ -107,7 +118,19 @@ export default function ResidencesPage() {
         setParams(next);
     };
 
-    // A collection card becomes the filter: set collection, clear building, scroll down.
+    const clearUnitSelection = () => {
+        const next = new URLSearchParams(params);
+        next.delete("unit");
+        setParams(next);
+    };
+
+    const selectUnitFromMap = (unit) => {
+        const next = new URLSearchParams(params);
+        next.set("unit", unit.slug);
+        setParams(next);
+        setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
+    };
+
     const selectCollection = (key) => {
         const next = new URLSearchParams(params);
         next.set("collection", key);
@@ -123,7 +146,6 @@ export default function ResidencesPage() {
         <div data-testid="residences-page">
             <Hero image="/gallery/buildings-01.png" overline="Residences" title="Find your space" subtitle={`Forty-three residences, defined by space and position — from ${startingPrice}.`} />
 
-            {/* Intro */}
             <section className="container-wide py-16 md:py-24">
                 <motion.div {...fadeUp} className="max-w-3xl px-2 md:px-6">
                     <Eyebrow>The Collection</Eyebrow>
@@ -132,30 +154,27 @@ export default function ResidencesPage() {
                 </motion.div>
             </section>
 
-            {/* Aerial orientation */}
             <section className="container-wide pb-16 md:pb-24">
                 <motion.div {...fadeUp} className="mb-8 px-2 md:px-6">
-                    <Eyebrow>Orientation</Eyebrow>
-                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">How the community comes together</h2>
-                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/65">Three residential blocks and the Begonia townhouses, set within landscaped, gated grounds in Grosvenor Heights.</p>
+                    <Eyebrow>Explore</Eyebrow>
+                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Navigate the development</h2>
+                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/65">Select a building, floor, and residence to locate it in the live availability list below.</p>
                 </motion.div>
-                <motion.div {...fadeUp} className={`relative overflow-hidden ${ROUND}`} data-testid="residences-aerial">
-                    <img src="/gallery/ext-aerial.png" alt="Aerial view of Grosvenor Vistas" loading="lazy" className="h-[52vh] w-full scale-110 object-cover md:h-[64vh]" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/70 via-transparent to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-6 md:p-10">
-                        <div className="flex flex-wrap gap-x-8 gap-y-3">
-                            {BLOCKS.map((b) => (
-                                <div key={b.label} className="flex items-baseline gap-2.5 text-white" data-testid={`aerial-label-${b.label.split(" ")[0].toLowerCase()}`}>
-                                    <span className="font-sans text-xs tracking-[0.2em] text-brand-gold">{b.n}</span>
-                                    <span className="lux-title text-xl md:text-2xl">{b.label}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                <motion.div {...fadeUp} className="px-2 md:px-6" data-testid="residences-explorer">
+                    {mapLoading ? (
+                        <Skeleton className="h-[52vh] w-full rounded-2xl" />
+                    ) : (
+                        <ResidenceExplorerMap
+                            units={mapUnits}
+                            selectedSlug={selectedSlug}
+                            onSelect={selectUnitFromMap}
+                            pass={mapPass}
+                            variant="public"
+                        />
+                    )}
                 </motion.div>
             </section>
 
-            {/* Collection tiers */}
             <section className="container-wide pb-16 md:pb-24">
                 <motion.div {...fadeUp} className="mb-8 px-2 md:px-6">
                     <Eyebrow>Collections</Eyebrow>
@@ -168,7 +187,7 @@ export default function ResidencesPage() {
                             type="button"
                             onClick={() => selectCollection(t.key)}
                             data-testid={`residence-tier-${t.key}`}
-                            className={`group relative block h-[64vh] w-full overflow-hidden text-left ${ROUND}`}
+                            className="group relative block h-[64vh] w-full overflow-hidden rounded-2xl text-left"
                         >
                             <img src={t.image} alt={t.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/85 via-brand-ink/15 to-transparent" />
@@ -187,7 +206,6 @@ export default function ResidencesPage() {
                 </div>
             </section>
 
-            {/* Detailed availability */}
             <section id="availability" className="container-wide pb-24 md:pb-32">
                 <div className="mb-10 px-2 md:px-6"><Eyebrow>Availability</Eyebrow><h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl">Every residence, live</h2></div>
 
@@ -198,6 +216,28 @@ export default function ResidencesPage() {
                             <span className="font-medium">{activeHomeTier?.name || activeTier?.name}</span>
                             <X className="h-4 w-4 text-brand-ink/60" />
                         </button>
+                    </div>
+                )}
+
+                {selectedUnit && (
+                    <div className="mb-6 px-2 md:px-6" data-testid="selected-unit-chip">
+                        <div className="inline-flex flex-wrap items-center gap-3 rounded-full border border-brand-gold/40 bg-brand-gold/10 px-5 py-2.5 font-sans text-sm text-brand-ink">
+                            <span>
+                                <span className="lux-eyebrow text-brand-gold/70">Selected</span>
+                                {" "}
+                                <span className="font-medium">Residence {selectedUnit.unit_number}</span>
+                            </span>
+                            <Link
+                                to={`/residences/${selectedUnit.slug}`}
+                                data-testid="selected-unit-view"
+                                className="inline-flex items-center gap-1.5 font-medium text-brand-gold transition-colors hover:text-brand-ink"
+                            >
+                                View Residence <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <button type="button" onClick={clearUnitSelection} data-testid="clear-unit-selection" aria-label="Clear selection" className="text-brand-ink/60 transition-colors hover:text-brand-ink">
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
                     </div>
                 )}
 
@@ -241,7 +281,9 @@ export default function ResidencesPage() {
                     <p className="py-20 text-center text-brand-ink/60" data-testid="no-residences">No residences match your filters.</p>
                 ) : (
                     <div className="divide-y divide-brand-beige border-y border-brand-beige px-2 md:px-6">
-                        {displayedUnits.map((u) => <UnitCard key={u.slug} unit={u} />)}
+                        {displayedUnits.map((u) => (
+                            <UnitCard key={u.slug} unit={u} highlighted={u.slug === selectedSlug} />
+                        ))}
                     </div>
                 )}
 

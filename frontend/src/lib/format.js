@@ -53,6 +53,16 @@ export function statusMeta(status) {
     return STATUS_META[status] || STATUS_META.available;
 }
 
+export function formatUnitListPrice(unit) {
+    if (unit.status === "sold") return "—";
+    return formatPrice(unit.price, unit.currency);
+}
+
+export function formatUnitDetailPrice(unit) {
+    if (unit.status === "sold") return statusMeta("sold").label;
+    return formatPrice(unit.price, unit.currency);
+}
+
 export function floorLabel(floor) {
     const map = { 1: "1st floor", 2: "2nd floor", 3: "3rd floor" };
     return map[floor] || `${floor}th floor`;

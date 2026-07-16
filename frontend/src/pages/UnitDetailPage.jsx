@@ -7,7 +7,7 @@ import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnit, useUnits } from "@/hooks/useData";
-import { formatPrice, formatSurface } from "@/lib/format";
+import { formatPrice, formatSurface, formatUnitDetailPrice } from "@/lib/format";
 import { BUILDINGS, LEAD_TYPE, PROJECT, collectionForSurface } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
@@ -96,9 +96,8 @@ export default function UnitDetailPage() {
         );
     }
 
-    const sold = unit.status === "sold";
+    const priceText = formatUnitDetailPrice(unit);
     const building = shortBuilding(unit.building);
-    const priceText = sold ? "Now sold" : formatPrice(unit.price, unit.currency);
 
     const leadCtx = {
         unit: unit.unit_number,

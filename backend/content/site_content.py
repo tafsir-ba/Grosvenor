@@ -18,7 +18,7 @@ FAQ_ITEMS = [
     },
     {
         "q": "How is pricing presented?",
-        "a": "Each residence is listed with its total surface, balcony surface and price in USD. Availability updates as residences are reserved or sold.",
+        "a": "Each residence is listed with its total surface, balcony surface and price in USD. Availability updates as residences move under offer or under contract.",
     },
     {
         "q": "Do you offer financing?",
