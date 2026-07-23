@@ -381,6 +381,10 @@ class TestDownloads:
         types = {d["type"] for d in items}
         assert "brochure" in types
         assert "pricelist" in types
+        broch = next(d for d in items if d["type"] == "brochure")
+        assert "file_url" not in broch or broch.get("file_url") in (None, "")
+        price = next(d for d in items if d["type"] == "pricelist")
+        assert price.get("file_url")
 
     def test_pricelist_open(self, session):
         items = session.get(f"{API}/downloads").json()
@@ -420,8 +424,25 @@ class TestDownloads:
         r = session.post(f"{API}/downloads/{broch['_id']}/access",
                          json={"lead": lead})
         assert r.status_code == 200, r.text
-        assert r.json().get("file_url")
+        file_url = r.json().get("file_url")
+        assert file_url
+        assert file_url.startswith("/api/downloads/file/")
+        # Tokenized URL must stream the PDF
+        token = file_url.rsplit("/", 1)[-1]
+        file_resp = session.get(f"{API}/downloads/file/{token}")
+        assert file_resp.status_code == 200, file_resp.text
+        assert "pdf" in file_resp.headers.get("content-type", "").lower()
+        # Token remains valid within TTL (PDF viewers may re-fetch).
+        again = session.get(f"{API}/downloads/file/{token}")
+        assert again.status_code == 200
+        # Guessable legacy public path must not be returned by access.
+        assert "/downloads/grosvenor-vistas-brochure.pdf" not in file_url
 
+    def test_brochure_not_served_as_public_static_guess(self, session):
+        # Legacy public path must not be returned by the API after gating.
+        items = session.get(f"{API}/downloads").json()
+        broch = next(d for d in items if d["type"] == "brochure")
+        assert "/downloads/grosvenor-vistas-brochure.pdf" not in str(broch)
 
 # -------------------- auth --------------------
 class TestAuth:

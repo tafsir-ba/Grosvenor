@@ -70,7 +70,7 @@ def load_units_from_csv():
 
 _DOWNLOADS = [
     {"title": "Grosvenor Vistas Brochure", "type": "brochure",
-     "file_url": "/downloads/grosvenor-vistas-brochure.pdf",
+     "file_url": "grosvenor-vistas-brochure.pdf",
      "description": "The complete development brochure."},
     {"title": "Current Price List", "type": "pricelist",
      "file_url": "/downloads/grosvenor-vistas-pricelist.pdf",
@@ -115,3 +115,6 @@ async def seed_inventory():
 
     if await db.downloads.count_documents({}) == 0:
         await db.downloads.insert_many([dict(d) for d in _DOWNLOADS])
+    else:
+        from services.downloads_service import ensure_brochure_protected_path
+        await ensure_brochure_protected_path()

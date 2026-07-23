@@ -14,7 +14,6 @@ const INPUT_CLS =
     "rounded-xl border-brand-ink/15 bg-white/70 text-brand-ink placeholder:text-brand-ink/35 focus-visible:ring-1 focus-visible:ring-brand-gold focus-visible:border-brand-gold";
 
 const EMPTY = { first_name: "", last_name: "", phone: "", email: "", message: "", consent: false };
-const LEADS_ACTION = `${process.env.REACT_APP_BACKEND_URL || ""}/api/leads`;
 
 function leadReference(result) {
     if (!result || typeof result !== "object") return null;
@@ -75,7 +74,7 @@ export default function LeadForm({
             setSubmitted({ message: successMessage, reference, nextSteps: successNextSteps });
             onSuccess && onSuccess(result);
         } catch (err) {
-            toast.error(formatApiError(err.response?.data?.detail) || "Submission failed.");
+            toast.error(formatApiError(err.response?.data?.detail) || err.message || "Submission failed.");
         } finally {
             setSubmitting(false);
         }
@@ -120,9 +119,6 @@ export default function LeadForm({
     return (
         <form
             onSubmit={handleSubmit}
-            method="post"
-            action={LEADS_ACTION}
-            noValidate
             className="space-y-5"
             data-testid={`${testIdPrefix}-form`}
         >
@@ -202,9 +198,6 @@ export default function LeadForm({
                     />
                 </div>
             )}
-
-            <input type="hidden" name="lead_type" value={leadType} />
-            <input type="hidden" name="consent" value={form.consent ? "true" : "false"} />
 
             <label className="flex cursor-pointer items-start gap-3 pt-1" htmlFor={`${testIdPrefix}-consent`}>
                 <Checkbox

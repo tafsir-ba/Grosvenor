@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# App source (units.csv + protected_floorplans are included = baked into image)
+# App source (units.csv + protected_floorplans + protected_downloads are baked into the image)
 COPY . .
 
 # DigitalOcean App Platform injects $PORT (defaults to 8080)

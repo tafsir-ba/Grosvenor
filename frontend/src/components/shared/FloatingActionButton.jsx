@@ -43,15 +43,18 @@ export default function FloatingActionButton() {
     }, [open]);
 
     const gatedSubmit = async (payload) => {
-        if (!brochure) return;
-        await accessDownload(brochure._id, payload);
-        setBrochureOpen(false);
+        const id = brochure?._id || brochure?.id;
+        if (!id) {
+            throw new Error("Brochure is temporarily unavailable. Please try again shortly.");
+        }
+        await accessDownload(id, payload);
     };
 
     const openPricelist = async () => {
-        if (!pricelist) return;
+        const id = pricelist?._id || pricelist?.id;
+        if (!id) return;
         try {
-            await accessDownload(pricelist._id, null);
+            await accessDownload(id, null);
             setOpen(false);
         } catch (err) {
             toast.error(formatApiError(err.response?.data?.detail) || "Unable to open file.");
@@ -136,6 +139,7 @@ export default function FloatingActionButton() {
                         testIdPrefix="fab-brochure"
                         submitFn={gatedSubmit}
                         successMessage="Your brochure is opening in a new tab."
+                        onSuccess={() => setBrochureOpen(false)}
                     />
                 </DialogContent>
             </Dialog>

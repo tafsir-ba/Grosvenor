@@ -18,3 +18,5 @@ async def create_indexes():
     await db.notification_logs.create_index("lead_id")
     await db.notification_logs.create_index("created_at")
     await db.downloads.create_index("type")
+    await db.download_tokens.create_index("token", unique=True)
+    await db.download_tokens.create_index("expires_at", expireAfterSeconds=0)

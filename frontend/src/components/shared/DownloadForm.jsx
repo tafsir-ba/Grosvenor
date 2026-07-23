@@ -16,14 +16,14 @@ export default function DownloadForm({ download, dark = false, compact = false }
 
     const handleOpen = async () => {
         try {
-            await accessDownload(download._id, null);
+            await accessDownload(download._id || download.id, null);
         } catch (err) {
             toast.error(formatApiError(err.response?.data?.detail) || "Unable to open file.");
         }
     };
 
     const gatedSubmit = async (leadPayload) => {
-        await accessDownload(download._id, leadPayload);
+        await accessDownload(download._id || download.id, leadPayload);
     };
 
     const brochureDialog = (
