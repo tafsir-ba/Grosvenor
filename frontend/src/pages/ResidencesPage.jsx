@@ -35,41 +35,38 @@ const SORTS = [
     { value: "surface_desc", label: "Largest Surface" },
 ];
 
-const PRICE_BANDS = [
-    { value: "all", label: "Any price" },
-    { value: "0-450000", label: "Under US$450k" },
-    { value: "450000-600000", label: "US$450k – 600k" },
-    { value: "600000-800000", label: "US$600k – 800k" },
-    { value: "800000+", label: "US$800k+" },
-];
-
-const SIZE_BANDS = [
-    { value: "all", label: "Any size" },
-    { value: "0-2000", label: "Under 2,000 sq ft" },
-    { value: "2000-3000", label: "2,000 – 3,000 sq ft" },
-    { value: "3000-4000", label: "3,000 – 4,000 sq ft" },
-    { value: "4000+", label: "4,000+ sq ft" },
-];
-
-function parseBand(value) {
-    if (!value || value === "all") return null;
-    if (value.endsWith("+")) {
-        const min = Number(value.slice(0, -1));
-        return Number.isFinite(min) ? { min, max: null } : null;
-    }
-    const [minRaw, maxRaw] = value.split("-");
-    const min = Number(minRaw);
-    const max = Number(maxRaw);
-    if (!Number.isFinite(min) || !Number.isFinite(max)) return null;
-    return { min, max };
+function parseOptionalNumber(raw) {
+    if (raw == null || raw === "") return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
 }
 
-function matchesBand(num, band) {
-    if (!band) return true;
+function unitMatchesQuery(u, unitQuery) {
+    if (!unitQuery) return true;
+    const q = unitQuery.toLowerCase();
+    const unitNumber = String(u.unit_number || "").toLowerCase();
+    const slug = String(u.slug || "").toLowerCase();
+    const buildingLabel = String(u.building || "").toLowerCase();
+    return unitNumber.includes(q) || slug.includes(q) || `${buildingLabel}${unitNumber}`.includes(q.replace(/\s+/g, ""));
+}
+
+function unitMatchesRange(num, min, max) {
+    if (min == null && max == null) return true;
     if (num == null || !Number.isFinite(Number(num))) return false;
     const n = Number(num);
-    if (n < band.min) return false;
-    if (band.max != null && n > band.max) return false;
+    if (min != null && n < min) return false;
+    if (max != null && n > max) return false;
+    return true;
+}
+
+/** Single filter predicate for list + map (DRY). */
+function matchesResidenceFilters(u, { building, status, activeHomeTier, unitQuery, minPrice, maxPrice, minSize, maxSize }) {
+    if (building !== "all" && u.building !== building) return false;
+    if (status !== "all" && u.status !== status) return false;
+    if (activeHomeTier && !unitMatchesHomeCategory(u, activeHomeTier)) return false;
+    if (!unitMatchesQuery(u, unitQuery)) return false;
+    if (!unitMatchesRange(u.price, minPrice, maxPrice)) return false;
+    if (!unitMatchesRange(u.total_surface, minSize, maxSize)) return false;
     return true;
 }
 
@@ -106,8 +103,10 @@ export default function ResidencesPage() {
     const status = params.get("status") || "all";
     const sort = params.get("sort") || "building";
     const unitQuery = (params.get("q") || "").trim();
-    const priceBand = params.get("price") || "all";
-    const sizeBand = params.get("size") || "all";
+    const minPrice = parseOptionalNumber(params.get("min_price"));
+    const maxPrice = parseOptionalNumber(params.get("max_price"));
+    const minSize = parseOptionalNumber(params.get("min_size"));
+    const maxSize = parseOptionalNumber(params.get("max_size"));
     const tierKey = params.get("tier") || params.get("collection");
     const selectedSlug = params.get("unit");
 
@@ -132,50 +131,35 @@ export default function ResidencesPage() {
     }), [availableUnits]);
 
     const activeHomeTier = homeCategoryForKey(tierKey);
-    const priceFilter = useMemo(() => parseBand(priceBand), [priceBand]);
-    const sizeFilter = useMemo(() => parseBand(sizeBand), [sizeBand]);
+
+    const filterCtx = useMemo(
+        () => ({ building, status, activeHomeTier, unitQuery, minPrice, maxPrice, minSize, maxSize }),
+        [building, status, activeHomeTier, unitQuery, minPrice, maxPrice, minSize, maxSize],
+    );
 
     const displayedUnits = useMemo(() => {
-        let list = allUnits;
-        if (building !== "all") list = list.filter((u) => u.building === building);
-        if (status !== "all") list = list.filter((u) => u.status === status);
-        if (activeHomeTier) list = list.filter((u) => unitMatchesHomeCategory(u, activeHomeTier));
-        if (unitQuery) {
-            const q = unitQuery.toLowerCase();
-            list = list.filter((u) => {
-                const unitNumber = String(u.unit_number || "").toLowerCase();
-                const slug = String(u.slug || "").toLowerCase();
-                const buildingLabel = String(u.building || "").toLowerCase();
-                return unitNumber.includes(q) || slug.includes(q) || `${buildingLabel}${unitNumber}`.includes(q.replace(/\s+/g, ""));
-            });
-        }
-        if (priceFilter) list = list.filter((u) => matchesBand(u.price, priceFilter));
-        if (sizeFilter) list = list.filter((u) => matchesBand(u.total_surface, sizeFilter));
+        const list = allUnits.filter((u) => matchesResidenceFilters(u, filterCtx));
         return sortUnits(list, sort);
-    }, [allUnits, building, status, sort, activeHomeTier, unitQuery, priceFilter, sizeFilter]);
+    }, [allUnits, filterCtx, sort]);
 
     const selectedUnit = useMemo(
         () => (selectedSlug ? allUnits.find((u) => u.slug === selectedSlug) : null),
         [allUnits, selectedSlug],
     );
 
-    const mapPass = useCallback((u) => {
-        if (building !== "all" && u.building !== building) return false;
-        if (status !== "all" && u.status !== status) return false;
-        if (activeHomeTier && !unitMatchesHomeCategory(u, activeHomeTier)) return false;
-        if (unitQuery) {
-            const q = unitQuery.toLowerCase();
-            const unitNumber = String(u.unit_number || "").toLowerCase();
-            const slug = String(u.slug || "").toLowerCase();
-            const buildingLabel = String(u.building || "").toLowerCase();
-            if (!(unitNumber.includes(q) || slug.includes(q) || `${buildingLabel}${unitNumber}`.includes(q.replace(/\s+/g, "")))) {
-                return false;
-            }
-        }
-        if (priceFilter && !matchesBand(u.price, priceFilter)) return false;
-        if (sizeFilter && !matchesBand(u.total_surface, sizeFilter)) return false;
-        return true;
-    }, [building, status, activeHomeTier, unitQuery, priceFilter, sizeFilter]);
+    const mapPass = useCallback((u) => matchesResidenceFilters(u, filterCtx), [filterCtx]);
+
+    const priceBounds = useMemo(() => {
+        const prices = allUnits.map((u) => u.price).filter((p) => p != null && Number.isFinite(Number(p))).map(Number);
+        if (!prices.length) return null;
+        return { min: Math.min(...prices), max: Math.max(...prices) };
+    }, [allUnits]);
+
+    const sizeBounds = useMemo(() => {
+        const surfaces = allUnits.map((u) => u.total_surface).filter((s) => s != null && Number.isFinite(Number(s))).map(Number);
+        if (!surfaces.length) return null;
+        return { min: Math.min(...surfaces), max: Math.max(...surfaces) };
+    }, [allUnits]);
 
     useEffect(() => {
         if (!activeHomeTier) return;
@@ -206,12 +190,19 @@ export default function ResidencesPage() {
     const clearBuyerFilters = () => {
         const next = new URLSearchParams(params);
         next.delete("q");
+        next.delete("min_price");
+        next.delete("max_price");
+        next.delete("min_size");
+        next.delete("max_size");
+        // Legacy P2 band params (if bookmarked)
         next.delete("price");
         next.delete("size");
         setParams(next);
     };
 
-    const hasBuyerFilters = Boolean(unitQuery || priceBand !== "all" || sizeBand !== "all");
+    const hasBuyerFilters = Boolean(
+        unitQuery || minPrice != null || maxPrice != null || minSize != null || maxSize != null,
+    );
 
     const clearUnitSelection = () => {
         const next = new URLSearchParams(params);
@@ -380,7 +371,7 @@ export default function ResidencesPage() {
                 )}
 
                 <div className="mb-10 flex flex-col gap-6 border-b border-brand-beige px-2 pb-8 md:px-6" data-testid="residence-filters">
-                    <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <div>
                             <label htmlFor="filter-unit-search" className="lux-eyebrow mb-2 block text-brand-ink/50">Unit ID</label>
                             <Input
@@ -396,36 +387,62 @@ export default function ResidencesPage() {
                             />
                         </div>
                         <div>
-                            <p className="lux-eyebrow mb-2 text-brand-ink/50">Price</p>
-                            <Select value={priceBand} onValueChange={(v) => setParam("price", v)}>
-                                <SelectTrigger data-testid="filter-price"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {PRICE_BANDS.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
+                            <p className="lux-eyebrow mb-2 text-brand-ink/50">
+                                Price (USD){priceBounds ? ` · ${formatPrice(priceBounds.min)}–${formatPrice(priceBounds.max)}` : ""}
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Input
+                                    id="filter-min-price"
+                                    data-testid="filter-min-price"
+                                    type="number"
+                                    inputMode="numeric"
+                                    placeholder="Min"
+                                    value={params.get("min_price") || ""}
+                                    onChange={(e) => setParam("min_price", e.target.value)}
+                                    className="rounded-xl border-brand-ink/15 bg-white/70"
+                                    aria-label="Minimum price"
+                                />
+                                <Input
+                                    id="filter-max-price"
+                                    data-testid="filter-max-price"
+                                    type="number"
+                                    inputMode="numeric"
+                                    placeholder="Max"
+                                    value={params.get("max_price") || ""}
+                                    onChange={(e) => setParam("max_price", e.target.value)}
+                                    className="rounded-xl border-brand-ink/15 bg-white/70"
+                                    aria-label="Maximum price"
+                                />
+                            </div>
                         </div>
                         <div>
-                            <p className="lux-eyebrow mb-2 text-brand-ink/50">Size</p>
-                            <Select value={sizeBand} onValueChange={(v) => setParam("size", v)}>
-                                <SelectTrigger data-testid="filter-size"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    {SIZE_BANDS.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="flex items-end">
-                            {hasBuyerFilters ? (
-                                <button
-                                    type="button"
-                                    onClick={clearBuyerFilters}
-                                    data-testid="clear-buyer-filters"
-                                    className="font-sans text-sm text-brand-ink/60 underline underline-offset-2 transition-colors hover:text-brand-gold"
-                                >
-                                    Clear search &amp; ranges
-                                </button>
-                            ) : (
-                                <p className="pb-2 font-sans text-xs text-brand-ink/45">Search by unit, price, or size</p>
-                            )}
+                            <p className="lux-eyebrow mb-2 text-brand-ink/50">
+                                Size (sq ft){sizeBounds ? ` · ${Math.round(sizeBounds.min).toLocaleString()}–${Math.round(sizeBounds.max).toLocaleString()}` : ""}
+                            </p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Input
+                                    id="filter-min-size"
+                                    data-testid="filter-min-size"
+                                    type="number"
+                                    inputMode="numeric"
+                                    placeholder="Min"
+                                    value={params.get("min_size") || ""}
+                                    onChange={(e) => setParam("min_size", e.target.value)}
+                                    className="rounded-xl border-brand-ink/15 bg-white/70"
+                                    aria-label="Minimum surface"
+                                />
+                                <Input
+                                    id="filter-max-size"
+                                    data-testid="filter-max-size"
+                                    type="number"
+                                    inputMode="numeric"
+                                    placeholder="Max"
+                                    value={params.get("max_size") || ""}
+                                    onChange={(e) => setParam("max_size", e.target.value)}
+                                    className="rounded-xl border-brand-ink/15 bg-white/70"
+                                    aria-label="Maximum surface"
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -455,9 +472,21 @@ export default function ResidencesPage() {
                                 </Select>
                             </div>
                         </div>
-                        <p className="font-sans text-sm text-brand-ink/60" data-testid="residence-count">
-                            {loading ? "Loading residences…" : `${displayedUnits.length} residence${displayedUnits.length === 1 ? "" : "s"}`}
-                        </p>
+                        <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4">
+                            {hasBuyerFilters && (
+                                <button
+                                    type="button"
+                                    onClick={clearBuyerFilters}
+                                    data-testid="clear-buyer-filters"
+                                    className="font-sans text-sm text-brand-ink/60 underline underline-offset-2 transition-colors hover:text-brand-gold"
+                                >
+                                    Clear search &amp; ranges
+                                </button>
+                            )}
+                            <p className="font-sans text-sm text-brand-ink/60" data-testid="residence-count">
+                                {loading ? "Loading residences…" : `${displayedUnits.length} residence${displayedUnits.length === 1 ? "" : "s"}`}
+                            </p>
+                        </div>
                     </div>
                 </div>
 

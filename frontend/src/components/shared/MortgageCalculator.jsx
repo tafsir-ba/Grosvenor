@@ -4,16 +4,33 @@ import { Label } from "@/components/ui/label";
 
 const INPUT_CLS = "rounded-xl border-brand-ink/15 bg-white/70 text-brand-ink focus-visible:ring-1 focus-visible:ring-brand-gold focus-visible:border-brand-gold";
 
+/** Single source for calculator starting inputs — assumption copy is derived from these. */
+export const MORTGAGE_CALC_DEFAULTS = {
+    price: 420000,
+    deposit: 63000,
+    rate: 9.5,
+    term: 25,
+};
+
 function money(n) {
     if (!isFinite(n) || n <= 0) return "—";
     return "US$" + Math.round(n).toLocaleString();
 }
 
+function assumptionCopy(defaults) {
+    const depositPct = defaults.price > 0 ? Math.round((defaults.deposit / defaults.price) * 100) : 0;
+    return (
+        `Estimates only, for illustration. Default inputs (about ${depositPct}% deposit, ${defaults.rate}% interest, ${defaults.term}-year term) ` +
+        "are starting points for exploration — not a quote, credit offer, or Sagicor rate. " +
+        "Actual rates, deposit requirements, and eligibility differ for local and overseas buyers and are confirmed by your lender."
+    );
+}
+
 export default function MortgageCalculator() {
-    const [price, setPrice] = useState(420000);
-    const [deposit, setDeposit] = useState(63000);
-    const [rate, setRate] = useState(9.5);
-    const [term, setTerm] = useState(25);
+    const [price, setPrice] = useState(MORTGAGE_CALC_DEFAULTS.price);
+    const [deposit, setDeposit] = useState(MORTGAGE_CALC_DEFAULTS.deposit);
+    const [rate, setRate] = useState(MORTGAGE_CALC_DEFAULTS.rate);
+    const [term, setTerm] = useState(MORTGAGE_CALC_DEFAULTS.term);
 
     const { loan, monthly } = useMemo(() => {
         const loanAmt = Math.max(0, Number(price) - Number(deposit));
@@ -48,7 +65,7 @@ export default function MortgageCalculator() {
                     <p className="mt-2 font-display text-3xl text-brand-blue" data-testid="calc-loan">{money(loan)}</p>
                 </div>
                 <p className="font-sans text-xs leading-relaxed text-brand-ink/45" data-testid="calc-assumptions">
-                    Estimates only, for illustration. Default inputs (about 15% deposit, 9.5% interest, 25-year term) are starting points for exploration — not a quote, credit offer, or Sagicor rate. Actual rates, deposit requirements, and eligibility differ for local and overseas buyers and are confirmed by your lender.
+                    {assumptionCopy(MORTGAGE_CALC_DEFAULTS)}
                 </p>
             </div>
         </div>
