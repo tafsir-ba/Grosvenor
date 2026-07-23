@@ -1,6 +1,6 @@
 """Downloads business logic — gated brochure vs open price list (single rule)."""
 import secrets
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import List, Optional
 
@@ -31,6 +31,19 @@ def _safe_object_id(value: str) -> Optional[ObjectId]:
         return ObjectId(value)
     except (InvalidId, TypeError):
         return None
+
+
+def token_is_expired(expires_at, now: Optional[datetime] = None) -> bool:
+    """True when token expiry is missing or in the past.
+
+    Motor's default codec returns naive datetimes; utc_now() is timezone-aware.
+    Normalize naive values as UTC before comparing.
+    """
+    if not expires_at:
+        return True
+    if getattr(expires_at, "tzinfo", None) is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    return expires_at < (now or utc_now())
 
 
 def to_public_download(download: Download) -> dict:
@@ -118,8 +131,7 @@ async def resolve_download_token(token: str) -> tuple[Path, str]:
     doc = await db[TOKENS_COL].find_one({"token": token})
     if not doc:
         raise HTTPException(status_code=404, detail="Download not found")
-    expires_at = doc.get("expires_at")
-    if not expires_at or expires_at < utc_now():
+    if token_is_expired(doc.get("expires_at")):
         raise HTTPException(status_code=404, detail="Download link has expired")
 
     download = await get_download(str(doc.get("download_id")))
