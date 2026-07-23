@@ -9,7 +9,15 @@ import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR } from "@/lib/constants";
 import { useFaq } from "@/hooks/useData";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
-const scrollToApply = () => document.getElementById("apply")?.scrollIntoView({ behavior: "smooth" });
+const scrollToApply = () => {
+    const section = document.getElementById("apply");
+    section?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // After scroll settles, move focus into the form so mobile users land on the application fields.
+    window.setTimeout(() => {
+        const firstField = document.querySelector('[data-testid="mortgage-first-name"]');
+        if (firstField && typeof firstField.focus === "function") firstField.focus({ preventScroll: true });
+    }, 450);
+};
 
 export default function MortgagePage() {
     const { data: faq, loading: faqLoading, error: faqError } = useFaq();

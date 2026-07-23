@@ -47,7 +47,9 @@ export default function MortgageCalculator() {
                     <p className="lux-eyebrow text-brand-ink/45">Estimated Loan Amount</p>
                     <p className="mt-2 font-display text-3xl text-brand-blue" data-testid="calc-loan">{money(loan)}</p>
                 </div>
-                <p className="font-sans text-xs text-brand-ink/45">Estimates only, for illustration. Actual terms are confirmed by your lender.</p>
+                <p className="font-sans text-xs leading-relaxed text-brand-ink/45" data-testid="calc-assumptions">
+                    Estimates only, for illustration. Default inputs (about 15% deposit, 9.5% interest, 25-year term) are starting points for exploration — not a quote, credit offer, or Sagicor rate. Actual rates, deposit requirements, and eligibility differ for local and overseas buyers and are confirmed by your lender.
+                </p>
             </div>
         </div>
     );

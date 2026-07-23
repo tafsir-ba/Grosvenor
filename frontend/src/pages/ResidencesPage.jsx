@@ -7,6 +7,7 @@ import CtaButton from "@/components/shared/CtaButton";
 import StatusBadge from "@/components/shared/StatusBadge";
 import ResidenceExplorerMap from "@/components/shared/ResidenceExplorerMap";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnits } from "@/hooks/useData";
 import {
@@ -33,6 +34,44 @@ const SORTS = [
     { value: "price_desc", label: "Price · High to Low" },
     { value: "surface_desc", label: "Largest Surface" },
 ];
+
+const PRICE_BANDS = [
+    { value: "all", label: "Any price" },
+    { value: "0-450000", label: "Under US$450k" },
+    { value: "450000-600000", label: "US$450k – 600k" },
+    { value: "600000-800000", label: "US$600k – 800k" },
+    { value: "800000+", label: "US$800k+" },
+];
+
+const SIZE_BANDS = [
+    { value: "all", label: "Any size" },
+    { value: "0-2000", label: "Under 2,000 sq ft" },
+    { value: "2000-3000", label: "2,000 – 3,000 sq ft" },
+    { value: "3000-4000", label: "3,000 – 4,000 sq ft" },
+    { value: "4000+", label: "4,000+ sq ft" },
+];
+
+function parseBand(value) {
+    if (!value || value === "all") return null;
+    if (value.endsWith("+")) {
+        const min = Number(value.slice(0, -1));
+        return Number.isFinite(min) ? { min, max: null } : null;
+    }
+    const [minRaw, maxRaw] = value.split("-");
+    const min = Number(minRaw);
+    const max = Number(maxRaw);
+    if (!Number.isFinite(min) || !Number.isFinite(max)) return null;
+    return { min, max };
+}
+
+function matchesBand(num, band) {
+    if (!band) return true;
+    if (num == null || !Number.isFinite(Number(num))) return false;
+    const n = Number(num);
+    if (n < band.min) return false;
+    if (band.max != null && n > band.max) return false;
+    return true;
+}
 
 function shortBuilding(value) {
     return BUILDINGS.find((b) => b.value === value)?.short || value;
@@ -66,6 +105,9 @@ export default function ResidencesPage() {
     const building = params.get("building") || "all";
     const status = params.get("status") || "all";
     const sort = params.get("sort") || "building";
+    const unitQuery = (params.get("q") || "").trim();
+    const priceBand = params.get("price") || "all";
+    const sizeBand = params.get("size") || "all";
     const tierKey = params.get("tier") || params.get("collection");
     const selectedSlug = params.get("unit");
 
@@ -90,14 +132,27 @@ export default function ResidencesPage() {
     }), [availableUnits]);
 
     const activeHomeTier = homeCategoryForKey(tierKey);
+    const priceFilter = useMemo(() => parseBand(priceBand), [priceBand]);
+    const sizeFilter = useMemo(() => parseBand(sizeBand), [sizeBand]);
 
     const displayedUnits = useMemo(() => {
         let list = allUnits;
         if (building !== "all") list = list.filter((u) => u.building === building);
         if (status !== "all") list = list.filter((u) => u.status === status);
         if (activeHomeTier) list = list.filter((u) => unitMatchesHomeCategory(u, activeHomeTier));
+        if (unitQuery) {
+            const q = unitQuery.toLowerCase();
+            list = list.filter((u) => {
+                const unitNumber = String(u.unit_number || "").toLowerCase();
+                const slug = String(u.slug || "").toLowerCase();
+                const buildingLabel = String(u.building || "").toLowerCase();
+                return unitNumber.includes(q) || slug.includes(q) || `${buildingLabel}${unitNumber}`.includes(q.replace(/\s+/g, ""));
+            });
+        }
+        if (priceFilter) list = list.filter((u) => matchesBand(u.price, priceFilter));
+        if (sizeFilter) list = list.filter((u) => matchesBand(u.total_surface, sizeFilter));
         return sortUnits(list, sort);
-    }, [allUnits, building, status, sort, activeHomeTier]);
+    }, [allUnits, building, status, sort, activeHomeTier, unitQuery, priceFilter, sizeFilter]);
 
     const selectedUnit = useMemo(
         () => (selectedSlug ? allUnits.find((u) => u.slug === selectedSlug) : null),
@@ -108,8 +163,19 @@ export default function ResidencesPage() {
         if (building !== "all" && u.building !== building) return false;
         if (status !== "all" && u.status !== status) return false;
         if (activeHomeTier && !unitMatchesHomeCategory(u, activeHomeTier)) return false;
+        if (unitQuery) {
+            const q = unitQuery.toLowerCase();
+            const unitNumber = String(u.unit_number || "").toLowerCase();
+            const slug = String(u.slug || "").toLowerCase();
+            const buildingLabel = String(u.building || "").toLowerCase();
+            if (!(unitNumber.includes(q) || slug.includes(q) || `${buildingLabel}${unitNumber}`.includes(q.replace(/\s+/g, "")))) {
+                return false;
+            }
+        }
+        if (priceFilter && !matchesBand(u.price, priceFilter)) return false;
+        if (sizeFilter && !matchesBand(u.total_surface, sizeFilter)) return false;
         return true;
-    }, [building, status, activeHomeTier]);
+    }, [building, status, activeHomeTier, unitQuery, priceFilter, sizeFilter]);
 
     useEffect(() => {
         if (!activeHomeTier) return;
@@ -125,7 +191,7 @@ export default function ResidencesPage() {
 
     const setParam = (key, value) => {
         const next = new URLSearchParams(params);
-        if (value === "all") next.delete(key);
+        if (!value || value === "all") next.delete(key);
         else next.set(key, value);
         setParams(next);
     };
@@ -136,6 +202,16 @@ export default function ResidencesPage() {
         next.delete("tier");
         setParams(next);
     };
+
+    const clearBuyerFilters = () => {
+        const next = new URLSearchParams(params);
+        next.delete("q");
+        next.delete("price");
+        next.delete("size");
+        setParams(next);
+    };
+
+    const hasBuyerFilters = Boolean(unitQuery || priceBand !== "all" || sizeBand !== "all");
 
     const clearUnitSelection = () => {
         const next = new URLSearchParams(params);
@@ -303,36 +379,86 @@ export default function ResidencesPage() {
                     </div>
                 )}
 
-                <div className="mb-10 flex flex-col gap-4 border-b border-brand-beige px-2 pb-8 md:flex-row md:items-end md:justify-between md:px-6" data-testid="residence-filters">
-                    <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3 md:max-w-2xl">
+                <div className="mb-10 flex flex-col gap-6 border-b border-brand-beige px-2 pb-8 md:px-6" data-testid="residence-filters">
+                    <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <div>
-                            <p className="lux-eyebrow mb-2 text-brand-ink/50">Building</p>
-                            <Select value={building} onValueChange={(v) => setParam("building", v)}>
-                                <SelectTrigger data-testid="filter-building"><SelectValue /></SelectTrigger>
+                            <label htmlFor="filter-unit-search" className="lux-eyebrow mb-2 block text-brand-ink/50">Unit ID</label>
+                            <Input
+                                id="filter-unit-search"
+                                data-testid="filter-unit-search"
+                                type="search"
+                                inputMode="search"
+                                placeholder="e.g. A101"
+                                value={unitQuery}
+                                onChange={(e) => setParam("q", e.target.value.trimStart())}
+                                className="rounded-xl border-brand-ink/15 bg-white/70"
+                                aria-label="Search by unit ID"
+                            />
+                        </div>
+                        <div>
+                            <p className="lux-eyebrow mb-2 text-brand-ink/50">Price</p>
+                            <Select value={priceBand} onValueChange={(v) => setParam("price", v)}>
+                                <SelectTrigger data-testid="filter-price"><SelectValue /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Buildings</SelectItem>
-                                    {BUILDINGS.map((b) => <SelectItem key={b.value} value={b.value}>{b.short}</SelectItem>)}
+                                    {PRICE_BANDS.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
                                 </SelectContent>
                             </Select>
                         </div>
                         <div>
-                            <p className="lux-eyebrow mb-2 text-brand-ink/50">Status</p>
-                            <Select value={status} onValueChange={(v) => setParam("status", v)}>
-                                <SelectTrigger data-testid="filter-status"><SelectValue /></SelectTrigger>
-                                <SelectContent>{STATUSES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
+                            <p className="lux-eyebrow mb-2 text-brand-ink/50">Size</p>
+                            <Select value={sizeBand} onValueChange={(v) => setParam("size", v)}>
+                                <SelectTrigger data-testid="filter-size"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    {SIZE_BANDS.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
+                                </SelectContent>
                             </Select>
                         </div>
-                        <div>
-                            <p className="lux-eyebrow mb-2 text-brand-ink/50">Sort</p>
-                            <Select value={sort} onValueChange={(v) => setParam("sort", v)}>
-                                <SelectTrigger data-testid="filter-sort"><SelectValue /></SelectTrigger>
-                                <SelectContent>{SORTS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
-                            </Select>
+                        <div className="flex items-end">
+                            {hasBuyerFilters ? (
+                                <button
+                                    type="button"
+                                    onClick={clearBuyerFilters}
+                                    data-testid="clear-buyer-filters"
+                                    className="font-sans text-sm text-brand-ink/60 underline underline-offset-2 transition-colors hover:text-brand-gold"
+                                >
+                                    Clear search &amp; ranges
+                                </button>
+                            ) : (
+                                <p className="pb-2 font-sans text-xs text-brand-ink/45">Search by unit, price, or size</p>
+                            )}
                         </div>
                     </div>
-                    <p className="font-sans text-sm text-brand-ink/60" data-testid="residence-count">
-                        {loading ? "Loading residences…" : `${displayedUnits.length} residence${displayedUnits.length === 1 ? "" : "s"}`}
-                    </p>
+                    <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3 md:max-w-2xl">
+                            <div>
+                                <p className="lux-eyebrow mb-2 text-brand-ink/50">Building</p>
+                                <Select value={building} onValueChange={(v) => setParam("building", v)}>
+                                    <SelectTrigger data-testid="filter-building"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Buildings</SelectItem>
+                                        {BUILDINGS.map((b) => <SelectItem key={b.value} value={b.value}>{b.short}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <p className="lux-eyebrow mb-2 text-brand-ink/50">Status</p>
+                                <Select value={status} onValueChange={(v) => setParam("status", v)}>
+                                    <SelectTrigger data-testid="filter-status"><SelectValue /></SelectTrigger>
+                                    <SelectContent>{STATUSES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <p className="lux-eyebrow mb-2 text-brand-ink/50">Sort</p>
+                                <Select value={sort} onValueChange={(v) => setParam("sort", v)}>
+                                    <SelectTrigger data-testid="filter-sort"><SelectValue /></SelectTrigger>
+                                    <SelectContent>{SORTS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <p className="font-sans text-sm text-brand-ink/60" data-testid="residence-count">
+                            {loading ? "Loading residences…" : `${displayedUnits.length} residence${displayedUnits.length === 1 ? "" : "s"}`}
+                        </p>
+                    </div>
                 </div>
 
                 {error ? (

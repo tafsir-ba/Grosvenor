@@ -14,8 +14,29 @@ const INPUT_CLS =
     "rounded-xl border-brand-ink/15 bg-white/70 text-brand-ink placeholder:text-brand-ink/35 focus-visible:ring-1 focus-visible:ring-brand-gold focus-visible:border-brand-gold";
 const INPUT_ERR_CLS = "border-destructive focus-visible:ring-destructive";
 
-const EMPTY = { first_name: "", last_name: "", phone: "", email: "", message: "", consent: false };
+const EMPTY = {
+    first_name: "",
+    last_name: "",
+    phone: "",
+    email: "",
+    message: "",
+    preferred_date: "",
+    preferred_time: "",
+    consent: false,
+};
 const PHONE_RE = /^[+\d][\d\s().-]{6,}$/;
+
+function buildMessageWithVisitPrefs(form) {
+    const base = (form.message || "").trim();
+    const date = (form.preferred_date || "").trim();
+    const time = (form.preferred_time || "").trim();
+    if (!date && !time) return base || null;
+    const parts = [];
+    if (date) parts.push(`Preferred date: ${date}`);
+    if (time) parts.push(`Preferred time: ${time}`);
+    const prefLine = parts.join(" · ");
+    return base ? `${prefLine}\n\n${base}` : prefLine;
+}
 
 function leadReference(result) {
     if (!result || typeof result !== "object") return null;
@@ -41,6 +62,7 @@ export default function LeadForm({
     fields = ["first_name", "last_name", "phone", "email", "message"],
     submitLabel = "Send Enquiry",
     messagePlaceholder = "How can we help?",
+    showVisitPreferences = false,
     onSuccess,
     submitFn, // optional override (e.g. gated download access)
     successMessage = "Thank you — we'll be in touch shortly.",
@@ -86,12 +108,17 @@ export default function LeadForm({
         }
         setSubmitting(true);
         try {
+            const message = showVisitPreferences
+                ? buildMessageWithVisitPrefs(form)
+                : fields.includes("message")
+                  ? form.message.trim() || null
+                  : null;
             const data = {
                 first_name: form.first_name.trim() || null,
                 last_name: form.last_name.trim() || null,
                 phone: form.phone.trim() || null,
                 email: form.email.trim() || null,
-                message: fields.includes("message") ? form.message.trim() || null : null,
+                message,
                 consent: form.consent,
             };
             let result = null;
@@ -243,6 +270,34 @@ export default function LeadForm({
                     <FieldError id={`${testIdPrefix}-email-error`}>{errors.email}</FieldError>
                 </div>
             </div>
+            {showVisitPreferences && (
+                <div className="grid gap-5 sm:grid-cols-2">
+                    <div className="space-y-2">
+                        <Label htmlFor={`${testIdPrefix}-preferred-date`}>Preferred visit date</Label>
+                        <Input
+                            id={`${testIdPrefix}-preferred-date`}
+                            name="preferred_date"
+                            type="date"
+                            data-testid={`${testIdPrefix}-preferred-date`}
+                            className={INPUT_CLS}
+                            value={form.preferred_date}
+                            onChange={update("preferred_date")}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor={`${testIdPrefix}-preferred-time`}>Preferred time</Label>
+                        <Input
+                            id={`${testIdPrefix}-preferred-time`}
+                            name="preferred_time"
+                            type="time"
+                            data-testid={`${testIdPrefix}-preferred-time`}
+                            className={INPUT_CLS}
+                            value={form.preferred_time}
+                            onChange={update("preferred_time")}
+                        />
+                    </div>
+                </div>
+            )}
             {fields.includes("message") && (
                 <div className="space-y-2">
                     <Label htmlFor={`${testIdPrefix}-message`}>Message</Label>

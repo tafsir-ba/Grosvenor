@@ -72,12 +72,18 @@ export default function ContactPage() {
 
                     <motion.div {...fadeUp} className="rounded-[1.75rem] border border-brand-beige bg-brand-ivory p-8 md:p-10" data-testid="contact-form-card">
                         <Tabs defaultValue="visit">
-                            <TabsList className="mb-8 grid w-full grid-cols-2" data-testid="contact-tabs">
+                            <TabsList className="mb-8 grid w-full grid-cols-2" data-testid="contact-tabs" aria-label="Contact enquiry type">
                                 <TabsTrigger value="visit" data-testid="tab-visit" aria-label="Book Showroom Visit">Book Showroom Visit</TabsTrigger>
                                 <TabsTrigger value="general" data-testid="tab-general" aria-label="General Contact">General Contact</TabsTrigger>
                             </TabsList>
                             <TabsContent value="visit">
-                                <LeadForm leadType={LEAD_TYPE.BOOK_SHOWROOM_VISIT} submitLabel="Request a Visit" messagePlaceholder="Let us know your preferred day or time." testIdPrefix="visit" />
+                                <LeadForm
+                                    leadType={LEAD_TYPE.BOOK_SHOWROOM_VISIT}
+                                    submitLabel="Request a Visit"
+                                    messagePlaceholder="Anything else we should know?"
+                                    testIdPrefix="visit"
+                                    showVisitPreferences
+                                />
                             </TabsContent>
                             <TabsContent value="general">
                                 <LeadForm leadType={LEAD_TYPE.GENERAL_CONTACT} submitLabel="Send Message" messagePlaceholder="How can we help?" testIdPrefix="general" />
