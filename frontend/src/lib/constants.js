@@ -21,11 +21,14 @@ export const PROJECT = {
 };
 
 // Legal / compliance — single source of truth.
+// Privacy/Legal documents are hosted by Evo Home (developer/vendor for Grosvenor Vistas / Niaviv Ltd.).
 export const LEGAL = {
     privacyUrl: "https://evo-home.ch/en/privacy",
     legalUrl: "https://evo-home.ch/en/legal",
+    privacyLabel: "Evo Home Privacy Policy",
+    legalLabel: "Evo Home Legal",
     consentText:
-        "By completing the form, you authorize Evo Home to store and process the personal data submitted above to provide you the requested content.",
+        "By completing the form, you authorize Evo Home (developer partner for Grosvenor Vistas / Niaviv Ltd.) to store and process the personal data submitted above to provide you the requested content.",
     credit: "Designed and developed by Evohome",
     creditUrl: "https://evo-home.ch/en/",
     disclaimer:

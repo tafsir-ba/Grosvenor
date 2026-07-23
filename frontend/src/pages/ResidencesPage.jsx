@@ -42,6 +42,24 @@ function scrollToSelectedResidence() {
     el?.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
+function sortUnits(list, sort) {
+    const next = [...list];
+    if (sort === "price_asc") {
+        next.sort((a, b) => (a.price ?? Number.POSITIVE_INFINITY) - (b.price ?? Number.POSITIVE_INFINITY));
+    } else if (sort === "price_desc") {
+        next.sort((a, b) => (b.price ?? Number.NEGATIVE_INFINITY) - (a.price ?? Number.NEGATIVE_INFINITY));
+    } else if (sort === "surface_desc") {
+        next.sort((a, b) => (b.total_surface ?? 0) - (a.total_surface ?? 0));
+    } else {
+        next.sort((a, b) => {
+            const byBuilding = String(a.building || "").localeCompare(String(b.building || ""));
+            if (byBuilding !== 0) return byBuilding;
+            return String(a.unit_number || "").localeCompare(String(b.unit_number || ""), undefined, { numeric: true });
+        });
+    }
+    return next;
+}
+
 export default function ResidencesPage() {
     const [params, setParams] = useSearchParams();
     const building = params.get("building") || "all";
@@ -50,16 +68,8 @@ export default function ResidencesPage() {
     const tierKey = params.get("tier") || params.get("collection");
     const selectedSlug = params.get("unit");
 
-    const query = useMemo(() => {
-        const q = { sort };
-        if (building !== "all") q.building = building;
-        if (status !== "all") q.status = status;
-        return q;
-    }, [building, status, sort]);
-
-    const { units, loading, error } = useUnits(query);
-    const { units: allUnits } = useUnits({ sort: "price_asc" });
-    const { units: mapUnits, loading: mapLoading } = useUnits({ sort: "building" });
+    // Single inventory fetch — filters/sorts applied client-side to avoid flashy multi-request loading.
+    const { units: allUnits, loading, error } = useUnits({ sort: "building" });
 
     const availableUnits = useMemo(() => allUnits.filter((u) => u.status === "available"), [allUnits]);
 
@@ -81,11 +91,12 @@ export default function ResidencesPage() {
     const activeHomeTier = homeCategoryForKey(tierKey);
 
     const displayedUnits = useMemo(() => {
-        if (activeHomeTier) {
-            return units.filter((u) => unitMatchesHomeCategory(u, activeHomeTier));
-        }
-        return units;
-    }, [units, activeHomeTier]);
+        let list = allUnits;
+        if (building !== "all") list = list.filter((u) => u.building === building);
+        if (status !== "all") list = list.filter((u) => u.status === status);
+        if (activeHomeTier) list = list.filter((u) => unitMatchesHomeCategory(u, activeHomeTier));
+        return sortUnits(list, sort);
+    }, [allUnits, building, status, sort, activeHomeTier]);
 
     const selectedUnit = useMemo(
         () => (selectedSlug ? allUnits.find((u) => u.slug === selectedSlug) : null),
@@ -155,7 +166,7 @@ export default function ResidencesPage() {
         setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
     };
 
-    const startingPrice = formatPrice(minStartingPrice(availableUnits));
+    const startingPrice = loading ? null : formatPrice(minStartingPrice(availableUnits));
 
     return (
         <div data-testid="residences-page" className="bg-brand-warm text-brand-ink">
@@ -164,40 +175,54 @@ export default function ResidencesPage() {
                     <Eyebrow>The Residences</Eyebrow>
                     <h1 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">Find your space</h1>
                     <p className="mt-5 max-w-2xl font-sans text-lg text-brand-ink/65">
-                        Forty-three residences across four collections — from {startingPrice}.
+                        Forty-three residences across four collections
+                        {startingPrice ? ` — from ${startingPrice}.` : loading ? "." : ` — from ${formatPrice(null)}.`}
                     </p>
                 </motion.div>
 
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                    {tiers.map((t) => (
-                        <button
-                            key={t.key}
-                            type="button"
-                            onClick={() => selectTier(t.key)}
-                            data-testid={`residence-tier-${t.key}`}
-                            className={`group relative block h-[48vh] w-full overflow-hidden text-left md:h-[52vh] ${ROUND}`}
-                        >
-                            <img src={t.image} alt={t.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/85 via-brand-ink/15 to-transparent" />
-                            <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-7">
-                                <h2 className="lux-title text-2xl md:text-3xl">{t.name}</h2>
-                                {t.subtitle && <p className="mt-1 font-sans text-xs uppercase tracking-[0.16em] text-white/70">{t.subtitle}</p>}
-                                {t.minSurface && (
-                                    <p className="mt-2 font-sans text-sm uppercase tracking-[0.18em] text-white/80">
-                                        From {t.minSurface.toLocaleString()} sq ft
+                {loading ? (
+                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-testid="residence-tiers-loading" aria-busy="true" aria-live="polite">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <Skeleton key={`tier-skeleton-${i}`} className={`h-[48vh] w-full md:h-[52vh] ${ROUND}`} />
+                        ))}
+                        <p className="sr-only">Loading residence collections…</p>
+                    </div>
+                ) : error ? (
+                    <p className="px-2 font-sans text-sm text-destructive md:px-6" data-testid="residence-tiers-error">
+                        We could not load residence availability. Please try again shortly.
+                    </p>
+                ) : (
+                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                        {tiers.map((t) => (
+                            <button
+                                key={t.key}
+                                type="button"
+                                onClick={() => selectTier(t.key)}
+                                data-testid={`residence-tier-${t.key}`}
+                                className={`group relative block h-[48vh] w-full overflow-hidden text-left md:h-[52vh] ${ROUND}`}
+                            >
+                                <img src={t.image} alt={t.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/85 via-brand-ink/15 to-transparent" />
+                                <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-7">
+                                    <h2 className="lux-title text-2xl md:text-3xl">{t.name}</h2>
+                                    {t.subtitle && <p className="mt-1 font-sans text-xs uppercase tracking-[0.16em] text-white/70">{t.subtitle}</p>}
+                                    {t.minSurface && (
+                                        <p className="mt-2 font-sans text-sm uppercase tracking-[0.18em] text-white/80">
+                                            From {t.minSurface.toLocaleString()} sq ft
+                                        </p>
+                                    )}
+                                    <p className="mt-2 font-sans text-white/90">
+                                        {t.minPrice ? `From USD ${t.minPrice.toLocaleString()}` : "Price on request"}
                                     </p>
-                                )}
-                                <p className="mt-2 font-sans text-white/90">
-                                    {t.minPrice ? `From USD ${t.minPrice.toLocaleString()}` : "Price on request"}
-                                </p>
-                                <p className="font-sans text-sm text-white/70">{t.count} available</p>
-                                <span className="lux-eyebrow mt-3 inline-flex items-center gap-2 text-brand-gold">
-                                    View Availability <ArrowRight className="h-4 w-4" />
-                                </span>
-                            </div>
-                        </button>
-                    ))}
-                </div>
+                                    <p className="font-sans text-sm text-white/70">{t.count} available</p>
+                                    <span className="lux-eyebrow mt-3 inline-flex items-center gap-2 text-brand-gold">
+                                        View Availability <ArrowRight className="h-4 w-4" />
+                                    </span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                )}
             </section>
 
             <section id="explore" className="container-wide pb-10 md:pb-14">
@@ -207,11 +232,11 @@ export default function ResidencesPage() {
                     <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/65">Select a building, floor, and residence. We’ll highlight it in the live list below so you can open it with one clear step.</p>
                 </motion.div>
                 <motion.div {...fadeUp} className="px-2 md:px-6" id="residences-explorer" data-testid="residences-explorer">
-                    {mapLoading ? (
+                    {loading ? (
                         <Skeleton className="h-[52vh] w-full rounded-2xl" />
                     ) : (
                         <ResidenceExplorerMap
-                            units={mapUnits}
+                            units={allUnits}
                             selectedSlug={selectedSlug}
                             onSelect={selectUnitFromMap}
                             pass={mapPass}
@@ -304,15 +329,28 @@ export default function ResidencesPage() {
                             </Select>
                         </div>
                     </div>
-                    <p className="font-sans text-sm text-brand-ink/60" data-testid="residence-count">{loading ? "Loading…" : `${displayedUnits.length} residence${displayedUnits.length === 1 ? "" : "s"}`}</p>
+                    <p className="font-sans text-sm text-brand-ink/60" data-testid="residence-count">
+                        {loading ? "Loading residences…" : `${displayedUnits.length} residence${displayedUnits.length === 1 ? "" : "s"}`}
+                    </p>
                 </div>
 
                 {error ? (
-                    <p className="px-2 py-20 text-center text-sm text-destructive md:px-6" data-testid="residences-error">
-                        Could not load residences. Please try again shortly.
-                    </p>
+                    <div className="px-2 py-16 text-center md:px-6" data-testid="residences-error">
+                        <p className="font-sans text-sm text-destructive">Could not load residences.</p>
+                        <button
+                            type="button"
+                            className="mt-4 font-sans text-sm text-brand-gold underline underline-offset-2"
+                            onClick={() => window.location.reload()}
+                            data-testid="residences-retry"
+                        >
+                            Retry
+                        </button>
+                    </div>
                 ) : loading ? (
-                    <div className="px-2 md:px-6">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={`residence-skeleton-${i}`} className="my-4 h-16" />)}</div>
+                    <div className="px-2 md:px-6" data-testid="residences-loading" aria-busy="true" aria-live="polite">
+                        <p className="mb-4 font-sans text-sm text-brand-ink/55">Fetching live availability…</p>
+                        {Array.from({ length: 6 }).map((_, i) => <Skeleton key={`residence-skeleton-${i}`} className="my-4 h-16" />)}
+                    </div>
                 ) : displayedUnits.length === 0 ? (
                     <p className="py-20 text-center text-brand-ink/60" data-testid="no-residences">No residences match your filters.</p>
                 ) : (

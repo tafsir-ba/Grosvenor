@@ -84,8 +84,8 @@ export default function Footer() {
                 <div className="mt-10 flex flex-col items-start justify-between gap-5 border-t border-brand-ink/10 pt-6 text-xs tracking-[0.14em] text-brand-ink/45 md:mt-12 md:flex-row md:items-center md:pt-8">
                     <p className="uppercase">© {new Date().getFullYear()} {PROJECT.name}</p>
                     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-6 sm:gap-y-2">
-                        <a href={LEGAL.privacyUrl} target="_blank" rel="noreferrer" data-testid="footer-privacy-link" className="uppercase transition-colors hover:text-brand-gold">Privacy Policy</a>
-                        <a href={LEGAL.legalUrl} target="_blank" rel="noreferrer" data-testid="footer-legal-link" className="uppercase transition-colors hover:text-brand-gold">Legal</a>
+                        <a href={LEGAL.privacyUrl} target="_blank" rel="noreferrer" data-testid="footer-privacy-link" className="uppercase transition-colors hover:text-brand-gold" title="Hosted by Evo Home for Grosvenor Vistas / Niaviv Ltd.">{LEGAL.privacyLabel}</a>
+                        <a href={LEGAL.legalUrl} target="_blank" rel="noreferrer" data-testid="footer-legal-link" className="uppercase transition-colors hover:text-brand-gold" title="Hosted by Evo Home for Grosvenor Vistas / Niaviv Ltd.">{LEGAL.legalLabel}</a>
                         <a href={LEGAL.creditUrl} target="_blank" rel="noreferrer" data-testid="footer-credit" className="normal-case tracking-normal text-brand-ink/40 transition-colors hover:text-brand-gold">{LEGAL.credit}</a>
                     </div>
                 </div>

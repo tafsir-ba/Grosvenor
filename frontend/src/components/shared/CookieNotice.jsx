@@ -42,7 +42,7 @@ export default function CookieNotice() {
                         </div>
                         <p className="mt-4 font-sans text-sm leading-relaxed text-brand-ink/65">
                             We use cookies to enhance your experience and understand how our site is used. See our{" "}
-                            <a href={LEGAL.privacyUrl} target="_blank" rel="noreferrer" className="text-brand-gold underline underline-offset-2" data-testid="cookie-privacy-link">Privacy Policy</a>.
+                            <a href={LEGAL.privacyUrl} target="_blank" rel="noreferrer" className="text-brand-gold underline underline-offset-2" data-testid="cookie-privacy-link" title="Hosted by Evo Home for Grosvenor Vistas / Niaviv Ltd.">{LEGAL.privacyLabel}</a>.
                         </p>
 
                         <AnimatePresence initial={false}>

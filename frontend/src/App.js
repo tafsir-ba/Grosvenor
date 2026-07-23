@@ -32,7 +32,7 @@ function App() {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <Toaster position="top-right" richColors closeButton />
+                <Toaster position="top-center" richColors closeButton visibleToasts={5} />
                 <Routes>
                     <Route element={<SiteLayout />}>
                         <Route path="/" element={<HomePage />} />
