@@ -212,7 +212,7 @@ export default function UnitDetailPage() {
 
             {/* ENQUIRY — Request Information */}
             <section id="enquire" className="container-wide pb-16 md:pb-24">
-                <motion.div {...fadeUp} className={`overflow-hidden bg-brand-ivory ${ROUND}`}>
+                <motion.div {...fadeUp} className={`bg-brand-ivory ${ROUND}`}>
                     <div className="grid lg:grid-cols-2">
                         <div className="flex flex-col justify-center p-10 md:p-14">
                             <Eyebrow>Enquire</Eyebrow>

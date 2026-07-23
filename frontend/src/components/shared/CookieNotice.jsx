@@ -30,10 +30,10 @@ export default function CookieNotice() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 40 }}
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="fixed bottom-24 left-4 right-20 z-[60] max-w-sm sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-md"
+                    className="pointer-events-none fixed bottom-24 left-4 z-[60] w-[min(calc(100%-5.5rem),22rem)] sm:bottom-5 sm:left-5 sm:w-full sm:max-w-md"
                     data-testid="cookie-notice"
                 >
-                    <div className="rounded-2xl border border-brand-beige bg-brand-warm/95 p-5 shadow-[0_20px_60px_rgba(74,69,63,0.18)] backdrop-blur-xl sm:rounded-3xl sm:p-7">
+                    <div className="pointer-events-auto rounded-2xl border border-brand-beige bg-brand-warm/95 p-5 shadow-[0_20px_60px_rgba(74,69,63,0.18)] backdrop-blur-xl sm:rounded-3xl sm:p-7">
                         <div className="flex items-center gap-3">
                             <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-gold/12 text-brand-gold sm:h-10 sm:w-10">
                                 <Cookie className="h-4 w-4 sm:h-5 sm:w-5" />

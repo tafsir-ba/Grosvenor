@@ -20,7 +20,7 @@ export default function SiteLayout() {
     return (
         <div className="flex min-h-screen flex-col bg-brand-warm text-brand-ink">
             <Header />
-            <main className="flex-1">
+            <main className="flex-1 pb-28 md:pb-10">
                 <Outlet />
             </main>
             <Footer />
