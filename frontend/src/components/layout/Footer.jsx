@@ -63,11 +63,19 @@ export default function Footer() {
                                 <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-brand-gold" />
                                 <span>{PROJECT.contact.address}</span>
                             </li>
-                            <li>
-                                <a href="https://instagram.com" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 text-brand-ink/75 transition-colors hover:text-brand-gold">
-                                    <Instagram className="h-4 w-4 text-brand-gold" /> Instagram
-                                </a>
-                            </li>
+                            {PROJECT.social?.instagram ? (
+                                <li>
+                                    <a
+                                        href={PROJECT.social.instagram}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        data-testid="footer-instagram"
+                                        className="inline-flex items-center gap-3 text-brand-ink/75 transition-colors hover:text-brand-gold"
+                                    >
+                                        <Instagram className="h-4 w-4 text-brand-gold" /> Instagram
+                                    </a>
+                                </li>
+                            ) : null}
                         </ul>
                     </div>
                 </div>

@@ -14,7 +14,7 @@ FAQ_ITEMS = [
     },
     {
         "q": "How many residences are there?",
-        "a": "The development comprises 43 residences across three blocks — Heliconia, Hibiscus and Ginger Lily — plus the Begonia townhouses.",
+        "a": "The development comprises 43 residences in total: 41 apartments across Heliconia, Hibiscus and Ginger Lily, plus 2 Begonia townhouses.",
     },
     {
         "q": "How is pricing presented?",
@@ -26,7 +26,7 @@ FAQ_ITEMS = [
     },
     {
         "q": "How do I reserve a residence?",
-        "a": "Contact us to discuss availability and place a reservation. We keep the process simple and clear.",
+        "a": "Reservations are handled directly with our team — there is no self-serve hold online. Contact us or book a showroom visit and we will confirm availability and guide you through the reservation steps.",
     },
 ]
 

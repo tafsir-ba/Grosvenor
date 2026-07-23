@@ -2,12 +2,15 @@ import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
 import LeadForm from "@/components/shared/LeadForm";
+import DownloadForm from "@/components/shared/DownloadForm";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Eyebrow, fadeUp, PlaceholderMap, ROUND } from "@/components/shared/luxe";
 import { PROJECT, LEAD_TYPE } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
+import { useDownloads } from "@/hooks/useData";
 
 export default function ContactPage() {
+    const { downloads, loading: downloadsLoading } = useDownloads();
     const channels = [
         { icon: Phone, label: "Call", value: PROJECT.contact.phone, href: PROJECT.contact.phoneHref, type: LEAD_TYPE.PHONE_CLICK, testid: "contact-phone" },
         { icon: MessageCircle, label: "WhatsApp", value: PROJECT.contact.whatsappNumber, href: PROJECT.contact.whatsapp, type: LEAD_TYPE.WHATSAPP_CLICK, testid: "contact-whatsapp", external: true },
@@ -20,7 +23,6 @@ export default function ContactPage() {
 
             <section className="container-wide py-16 md:py-24">
                 <div className="grid gap-14 px-2 md:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-                    {/* Details */}
                     <motion.div {...fadeUp}>
                         <Eyebrow>Get in Touch</Eyebrow>
                         <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">We're here to help</h2>
@@ -49,9 +51,25 @@ export default function ContactPage() {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="mt-12" data-testid="contact-downloads">
+                            <Eyebrow>Downloads</Eyebrow>
+                            <h3 className="lux-title mt-4 text-2xl text-brand-blue sm:text-3xl">Brochure & price list</h3>
+                            <p className="mt-3 max-w-md font-sans text-sm text-brand-ink/60">
+                                Save the project brochure (details required) or open the current price list.
+                            </p>
+                            <div className="mt-6 space-y-1">
+                                {downloadsLoading && <p className="font-sans text-sm text-brand-ink/55">Loading downloads…</p>}
+                                {!downloadsLoading && downloads.length === 0 && (
+                                    <p className="font-sans text-sm text-brand-ink/55">Downloads will appear here shortly.</p>
+                                )}
+                                {downloads.map((d) => (
+                                    <DownloadForm key={d._id || d.id} download={d} />
+                                ))}
+                            </div>
+                        </div>
                     </motion.div>
 
-                    {/* Form */}
                     <motion.div {...fadeUp} className="rounded-[1.75rem] border border-brand-beige bg-brand-ivory p-8 md:p-10" data-testid="contact-form-card">
                         <Tabs defaultValue="visit">
                             <TabsList className="mb-8 grid w-full grid-cols-2" data-testid="contact-tabs">

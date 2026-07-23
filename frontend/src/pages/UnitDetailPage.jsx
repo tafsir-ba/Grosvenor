@@ -51,7 +51,13 @@ function Gallery({ images, unitNumber }) {
                     </button>
                 ))}
             </div>
-            <p className="mt-4 font-sans text-xs text-brand-ink/50">Images shown are indicative and may not represent the exact residence.</p>
+            <p className="mt-4 font-sans text-xs text-brand-ink/50">
+                Images shown are indicative and may not represent the exact residence. For residence-specific details,{" "}
+                <button type="button" onClick={scrollToEnquiry} className="text-brand-gold underline underline-offset-2">
+                    request information
+                </button>
+                {" "}or download the brochure from Contact / the floating menu.
+            </p>
         </div>
     );
 }
@@ -71,7 +77,12 @@ export default function UnitDetailPage() {
     const related = useMemo(() => {
         if (!unit || !collection) return [];
         return allUnits
-            .filter((u) => u.slug !== unit.slug && u.total_surface >= collection.min && u.total_surface < collection.max)
+            .filter((u) => (
+                u.slug !== unit.slug
+                && u.status === "available"
+                && u.total_surface >= collection.min
+                && u.total_surface < collection.max
+            ))
             .slice(0, 3);
     }, [allUnits, unit, collection]);
 

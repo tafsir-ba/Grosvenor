@@ -30,17 +30,17 @@ export default function CookieNotice() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 40 }}
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="fixed bottom-5 left-5 z-[60] w-[calc(100%-2.5rem)] max-w-md"
+                    className="fixed bottom-24 left-4 right-20 z-[60] max-w-sm sm:bottom-5 sm:left-5 sm:right-auto sm:max-w-md"
                     data-testid="cookie-notice"
                 >
-                    <div className="rounded-3xl border border-brand-beige bg-brand-warm/95 p-7 shadow-[0_20px_60px_rgba(74,69,63,0.18)] backdrop-blur-xl">
+                    <div className="rounded-2xl border border-brand-beige bg-brand-warm/95 p-5 shadow-[0_20px_60px_rgba(74,69,63,0.18)] backdrop-blur-xl sm:rounded-3xl sm:p-7">
                         <div className="flex items-center gap-3">
-                            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-gold/12 text-brand-gold">
-                                <Cookie className="h-5 w-5" />
+                            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-gold/12 text-brand-gold sm:h-10 sm:w-10">
+                                <Cookie className="h-4 w-4 sm:h-5 sm:w-5" />
                             </span>
-                            <h3 className="lux-title text-2xl text-brand-blue">A note on cookies</h3>
+                            <h3 className="lux-title text-xl text-brand-blue sm:text-2xl">A note on cookies</h3>
                         </div>
-                        <p className="mt-4 font-sans text-sm leading-relaxed text-brand-ink/65">
+                        <p className="mt-3 font-sans text-xs leading-relaxed text-brand-ink/65 sm:mt-4 sm:text-sm">
                             We use cookies to enhance your experience and understand how our site is used. See our{" "}
                             <a href={LEGAL.privacyUrl} target="_blank" rel="noreferrer" className="text-brand-gold underline underline-offset-2" data-testid="cookie-privacy-link" title="Hosted by Evo Home for Grosvenor Vistas / Niaviv Ltd.">{LEGAL.privacyLabel}</a>.
                         </p>

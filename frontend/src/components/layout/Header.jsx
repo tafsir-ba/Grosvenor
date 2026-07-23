@@ -27,8 +27,13 @@ export default function Header() {
                 {/* Left: Menu */}
                 <Sheet>
                     <SheetTrigger asChild>
-                        <button data-testid="menu-trigger" className="group flex items-center gap-3.5 text-brand-ink">
-                            <span className="flex flex-col items-start gap-[6px]">
+                        <button
+                            type="button"
+                            data-testid="menu-trigger"
+                            aria-label="Open menu"
+                            className="group flex items-center gap-3.5 text-brand-ink"
+                        >
+                            <span className="flex flex-col items-start gap-[6px]" aria-hidden="true">
                                 <span className="h-px w-7 bg-current transition-all duration-300 group-hover:w-4" />
                                 <span className="h-px w-7 bg-current" />
                                 <span className="h-px w-7 bg-current transition-all duration-300 group-hover:w-5" />
@@ -80,16 +85,18 @@ export default function Header() {
 
                 {/* Right: Instagram + Book a Visit pill */}
                 <div className="flex items-center gap-5 md:gap-7">
-                    <a
-                        href="https://instagram.com"
-                        target="_blank"
-                        rel="noreferrer"
-                        data-testid="header-instagram"
-                        aria-label="Instagram"
-                        className="hidden text-brand-ink transition-colors hover:text-brand-gold sm:inline-flex"
-                    >
-                        <Instagram className="h-5 w-5" />
-                    </a>
+                    {PROJECT.social?.instagram ? (
+                        <a
+                            href={PROJECT.social.instagram}
+                            target="_blank"
+                            rel="noreferrer"
+                            data-testid="header-instagram"
+                            aria-label="Instagram"
+                            className="hidden text-brand-ink transition-colors hover:text-brand-gold sm:inline-flex"
+                        >
+                            <Instagram className="h-5 w-5" />
+                        </a>
+                    ) : null}
                     <Link
                         to="/contact"
                         data-testid="header-contact"

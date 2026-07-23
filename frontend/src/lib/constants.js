@@ -6,6 +6,8 @@ export const PROJECT = {
     tagline: "Elevated living in Grosvenor Heights",
     location: "Grosvenor Heights · Manor Park · Kingston 8 · Jamaica",
     unitsCount: 43,
+    apartmentCount: 41,
+    townhouseCount: 2,
     contact: {
         phone: "+1 (876) 484-4244",
         phoneHref: "tel:+18764844244",
@@ -17,6 +19,10 @@ export const PROJECT = {
         mapUrl: "https://maps.app.goo.gl/HKF8wRKzt6VaiSxW7",
         mapEmbed:
             "https://maps.google.com/maps?q=Grosvenor%20Heights%2C%20Manor%20Park%2C%20Kingston%208%2C%20Jamaica&t=k&z=17&output=embed",
+    },
+    // Official profile URL when ready; omit/empty to hide Instagram CTAs.
+    social: {
+        instagram: "",
     },
 };
 
@@ -32,7 +38,7 @@ export const LEGAL = {
     credit: "Designed and developed by Evohome",
     creditUrl: "https://evo-home.ch/en/",
     disclaimer:
-        "Grosvenor Vistas is a development of Niaviv Ltd., located at 3A Grosvenor Height, Manor Park, Kingston 8, Company Registration No. 2018-00141. The development comprises 43 apartments ranging in size from 1,671 sq ft to 3,644 sq ft, and 2 townhouses measuring 4,845 sq ft each. The buildings are constructed with reinforced concrete slab roofs and feature polished concrete and tile flooring. Estimated completion is scheduled for 2026. No price escalation applies. The development was approved by the Kingston & St. Andrew Municipal Corporation on November 14th, 2023. Approved plans may be viewed at 3A Grosvenor Heights, Kingston, Jamaica.",
+        "Grosvenor Vistas is a development of Niaviv Ltd., located at 3A Grosvenor Heights, Manor Park, Kingston 8, Company Registration No. 2018-00141. The development comprises 43 residences in total — 41 apartments ranging in size from 1,671 sq ft to 3,644 sq ft, and 2 townhouses measuring 4,845 sq ft each. The buildings are constructed with reinforced concrete slab roofs and feature polished concrete and tile flooring. Estimated completion is scheduled for 2026. No price escalation applies. The development was approved by the Kingston & St. Andrew Municipal Corporation on November 14th, 2023. Approved plans may be viewed at 3A Grosvenor Heights, Kingston, Jamaica.",
     disclaimerSecondary:
         "All images, renderings, dimensions, specifications, finishes, and other information contained on this website and in associated marketing materials are provided for illustrative purposes only. The developer reserves the right to modify, amend, substitute, or vary any aspect of the development, including but not limited to layouts, floor plans, specifications, materials, finishes, and amenities, without prior notice or obligation.",
 };
