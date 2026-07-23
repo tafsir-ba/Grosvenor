@@ -225,6 +225,17 @@ class TestLeads:
         r = session.post(f"{API}/leads", json=payload)
         assert r.status_code == 422, f"expected 422 got {r.status_code} {r.text}"
 
+    def test_create_lead_whitespace_names_422(self, session):
+        payload = {
+            "first_name": "   ",
+            "last_name": "\t",
+            "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
+            "lead_type": "general_contact",
+            "consent": True,
+        }
+        r = session.post(f"{API}/leads", json=payload)
+        assert r.status_code == 422, f"expected 422 got {r.status_code} {r.text}"
+
     def test_track_whatsapp_anonymous_click(self, session):
         r = session.post(f"{API}/track",
                          json={"lead_type": "whatsapp_click",

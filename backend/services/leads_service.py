@@ -30,6 +30,17 @@ EXPORT_COLUMNS = [
 ]
 
 
+def normalize_lead_create(payload: LeadCreate) -> LeadCreate:
+    """Strip contact fields so whitespace-only values cannot pass required checks."""
+    data = payload.model_dump()
+    for key in ("first_name", "last_name", "phone", "message"):
+        if isinstance(data.get(key), str):
+            data[key] = data[key].strip() or None
+    if isinstance(data.get("email"), str):
+        data["email"] = data["email"].strip() or None
+    return LeadCreate(**data)
+
+
 def _safe_object_id(lead_id: str) -> Optional[ObjectId]:
     try:
         return ObjectId(lead_id)
@@ -87,18 +98,20 @@ def schedule_post_lead_notifications(doc: dict, *, send_confirmation: bool) -> N
 
 
 async def create_lead(payload: LeadCreate) -> Lead:
+    normalized = normalize_lead_create(payload)
+
     # Real form submissions require contact info + consent; click events do not.
-    if payload.lead_type not in ANONYMOUS_LEAD_TYPES:
-        if not payload.first_name or not payload.last_name or not payload.email:
+    if normalized.lead_type not in ANONYMOUS_LEAD_TYPES:
+        if not normalized.first_name or not normalized.last_name or not normalized.email:
             raise HTTPException(status_code=422, detail="First name, last name and email are required.")
-        if not payload.consent:
+        if not normalized.consent:
             raise HTTPException(status_code=422, detail="Please accept the data processing consent to continue.")
 
-    lead = Lead(**payload.model_dump())
+    lead = Lead(**normalized.model_dump())
     doc = lead.to_mongo()
 
     # Anonymous clicks are not pushed to the CRM as contacts.
-    if payload.lead_type not in ANONYMOUS_LEAD_TYPES:
+    if normalized.lead_type not in ANONYMOUS_LEAD_TYPES:
         reference = crm.push_lead(doc)
         if reference:
             doc["crm_synced"] = True
@@ -110,7 +123,7 @@ async def create_lead(payload: LeadCreate) -> Lead:
 
     schedule_post_lead_notifications(
         doc,
-        send_confirmation=payload.lead_type not in ANONYMOUS_LEAD_TYPES,
+        send_confirmation=normalized.lead_type not in ANONYMOUS_LEAD_TYPES,
     )
 
     return await get_lead(lead_id)

@@ -12,6 +12,7 @@ import { useUnits } from "@/hooks/useData";
 import {
     BUILDINGS,
     HOME_RESIDENCE_CATEGORIES,
+    PROJECT,
     UNIT_STATUSES,
     homeCategoryForKey,
     unitMatchesHomeCategory,
@@ -175,7 +176,7 @@ export default function ResidencesPage() {
                     <Eyebrow>The Residences</Eyebrow>
                     <h1 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">Find your space</h1>
                     <p className="mt-5 max-w-2xl font-sans text-lg text-brand-ink/65">
-                        Forty-three residences across four collections
+                        {PROJECT.unitsCount} residences across four collections
                         {startingPrice ? ` — from ${startingPrice}.` : loading ? "." : ` — from ${formatPrice(null)}.`}
                     </p>
                 </motion.div>
