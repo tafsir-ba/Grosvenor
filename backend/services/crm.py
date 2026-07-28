@@ -1,7 +1,16 @@
 """CRM integration — the single, isolated outbound/inbound CRM boundary.
 
-The website never talks to the CRM anywhere else. Lead push is config-driven
-(env), so wiring the real CRM later is a configuration change, not a code change.
+Outbound leads target the EvoHome website-lead webhook:
+  POST https://crm.evo-home.ch/api/integrations/website/leads
+
+Allowed payload keys (strict — unknown keys are rejected):
+  firstName, lastName, email|phone, message, source, externalId, idempotencyKey
+  (projectId / projectReference must be omitted when the integration is locked
+  to its default project.)
+
+Auth (either header works):
+  X-Integration-Key: <apiKey>
+  Authorization: Bearer <apiKey>
 """
 import logging
 from typing import Optional
@@ -12,40 +21,91 @@ from core.config import settings
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_LEAD_SOURCE = "grosvenorvistas.com"
+
+
+def _compose_message(lead: dict) -> Optional[str]:
+    """Fold unit/attribution context into `message` (the only free-text CRM field)."""
+    parts: list[str] = []
+    visitor_message = (lead.get("message") or "").strip()
+    if visitor_message:
+        parts.append(visitor_message)
+
+    context: list[str] = []
+    lead_type = lead.get("lead_type")
+    if lead_type:
+        context.append(f"Inquiry type: {lead_type}")
+    project = lead.get("project")
+    if project:
+        context.append(f"Project: {project}")
+    if lead.get("source_unit"):
+        context.append(f"Residence: {lead.get('source_unit')}")
+    if lead.get("source_building"):
+        context.append(f"Building: {lead.get('source_building')}")
+    if lead.get("collection"):
+        context.append(f"Collection: {lead.get('collection')}")
+    if lead.get("residence_type"):
+        context.append(f"Residence type: {lead.get('residence_type')}")
+    if lead.get("unit_floor") is not None:
+        context.append(f"Floor: {lead.get('unit_floor')}")
+    if lead.get("unit_surface") is not None:
+        context.append(f"Total surface: {lead.get('unit_surface')}")
+    if lead.get("unit_living") is not None:
+        context.append(f"Living area: {lead.get('unit_living')}")
+    if lead.get("unit_balcony") is not None:
+        context.append(f"Balcony: {lead.get('unit_balcony')}")
+    if lead.get("unit_status"):
+        context.append(f"Unit status: {lead.get('unit_status')}")
+    if lead.get("source_page"):
+        context.append(f"Page: {lead.get('source_page')}")
+    if lead.get("source_url"):
+        context.append(f"URL: {lead.get('source_url')}")
+
+    utm_bits = []
+    for key in ("utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"):
+        value = lead.get(key)
+        if value:
+            utm_bits.append(f"{key}={value}")
+    if utm_bits:
+        context.append("UTM: " + " ".join(utm_bits))
+
+    if lead.get("consent") is True:
+        context.append("Consent: accepted")
+
+    if context:
+        parts.append("—\n" + "\n".join(context))
+
+    return "\n\n".join(parts) if parts else None
+
 
 def build_lead_payload(lead: dict) -> dict:
-    """Map an internal Lead document to the CRM's expected contact payload."""
-    return {
-        "contact": {
-            "first_name": lead.get("first_name"),
-            "last_name": lead.get("last_name"),
-            "email": lead.get("email"),
-            "phone": lead.get("phone"),
-        },
-        "note": lead.get("message"),
-        "project": lead.get("project"),
-        "inquiry_type": lead.get("lead_type"),
-        "residence_ref": lead.get("source_unit"),
-        "building_ref": lead.get("source_building"),
-        "collection": lead.get("collection"),
-        "unit_surface": lead.get("unit_surface"),
-        "unit_balcony": lead.get("unit_balcony"),
-        "unit_living": lead.get("unit_living"),
-        "unit_floor": lead.get("unit_floor"),
-        "unit_status": lead.get("unit_status"),
-        "residence_type": lead.get("residence_type"),
-        "source_page": lead.get("source_page"),
-        "source_url": lead.get("source_url"),
-        "consent_accepted": lead.get("consent"),
-        "attribution": {
-            "utm_source": lead.get("utm_source"),
-            "utm_medium": lead.get("utm_medium"),
-            "utm_campaign": lead.get("utm_campaign"),
-            "utm_content": lead.get("utm_content"),
-            "utm_term": lead.get("utm_term"),
-        },
-        "created_at": lead.get("created_at"),
+    """Map an internal Lead document to the EvoHome website-lead webhook payload."""
+    payload: dict = {
+        "firstName": (lead.get("first_name") or "").strip(),
+        "lastName": (lead.get("last_name") or "").strip(),
+        "source": DEFAULT_LEAD_SOURCE,
     }
+
+    email = lead.get("email")
+    phone = lead.get("phone")
+    if email:
+        payload["email"] = email
+    if phone:
+        payload["phone"] = phone
+
+    message = _compose_message(lead)
+    if message:
+        payload["message"] = message
+
+    lead_id = lead.get("_id") or lead.get("id")
+    if lead_id:
+        external_id = str(lead_id)
+        payload["externalId"] = external_id
+        payload["idempotencyKey"] = external_id
+
+    # Intentionally omit projectId / projectReference — integration is locked
+    # to its default destination project in EvoHome CRM settings.
+    return payload
 
 
 def map_crm_unit(record: dict) -> dict:
@@ -63,23 +123,45 @@ def map_crm_unit(record: dict) -> dict:
     }
 
 
+def _auth_headers() -> dict:
+    headers = {"Content-Type": "application/json"}
+    if not settings.CRM_API_KEY:
+        return headers
+
+    header_name = settings.CRM_AUTH_HEADER or "X-Integration-Key"
+    value = settings.CRM_API_KEY
+    if header_name.lower() == "authorization" and not value.lower().startswith("bearer "):
+        value = f"Bearer {value}"
+    headers[header_name] = value
+    return headers
+
+
+def _extract_crm_reference(data: dict) -> str:
+    """Parse EvoHome `{data:{leadId}}` as well as flat id/reference responses."""
+    if not isinstance(data, dict):
+        return "synced"
+    nested = data.get("data")
+    if isinstance(nested, dict):
+        lead_id = nested.get("leadId") or nested.get("id") or nested.get("reference")
+        if lead_id:
+            return str(lead_id)
+    return str(data.get("leadId") or data.get("id") or data.get("reference") or "synced")
+
+
 def push_lead(lead: dict) -> Optional[str]:
     """POST a lead to the CRM. Returns a CRM reference id, or None if disabled/failed."""
     if not settings.CRM_SYNC_ENABLED or not settings.CRM_WEBHOOK_URL:
         return None
-    headers = {"Content-Type": "application/json"}
-    if settings.CRM_API_KEY:
-        headers[settings.CRM_AUTH_HEADER] = settings.CRM_API_KEY
     try:
         resp = requests.post(
             settings.CRM_WEBHOOK_URL,
             json=build_lead_payload(lead),
-            headers=headers,
+            headers=_auth_headers(),
             timeout=8,
         )
         resp.raise_for_status()
         data = resp.json() if resp.content else {}
-        return str(data.get("id") or data.get("reference") or "synced")
+        return _extract_crm_reference(data)
     except Exception as exc:  # network/CRM errors must never break lead capture
         logger.warning("CRM lead push failed: %s", exc)
         return None
@@ -88,7 +170,7 @@ def push_lead(lead: dict) -> Optional[str]:
 def get_crm_status() -> dict:
     return {
         "enabled": settings.CRM_SYNC_ENABLED,
-        "configured": bool(settings.CRM_WEBHOOK_URL),
+        "configured": bool(settings.CRM_WEBHOOK_URL and settings.CRM_API_KEY),
         "webhook_url_set": bool(settings.CRM_WEBHOOK_URL),
     }
 

@@ -33,7 +33,11 @@ ADMIN_NAME=Admin
 CORS_ORIGINS=*
 EMAIL_ENABLED=false
 CRM_SYNC_ENABLED=false
+CRM_WEBHOOK_URL=https://crm.evo-home.ch/api/integrations/website/leads
+CRM_API_KEY=
+CRM_AUTH_HEADER=X-Integration-Key
 ```
+Set `CRM_SYNC_ENABLED=true` and `CRM_API_KEY` (EvoHome website integration key) to push leads. Do not commit the API key.
 
 `frontend/.env`:
 ```
@@ -44,7 +48,7 @@ REACT_APP_BACKEND_URL=http://localhost:8001
 ### Gotchas
 - `backend/core/config.py` / `core/db.py` read env at import time: missing `JWT_SECRET`, `MONGO_URL`, or `DB_NAME` crashes the app immediately. `ENVIRONMENT=production` additionally enforces a strong `ADMIN_PASSWORD` and explicit `CORS_ORIGINS` (no `*`).
 - Admin login: `admin@grosvenorvistas.com` / `admin123` (from `ADMIN_*`, re-seeded on every startup).
-- Email (Resend) and CRM sync are optional and disabled by default; the app logs a warning and runs fine without them.
+- Email (Resend) is optional and disabled by default. CRM lead push is optional — set `CRM_SYNC_ENABLED=true` plus `CRM_WEBHOOK_URL` / `CRM_API_KEY` to enable EvoHome sync.
 
 ### Lint / test / build
 - Backend tests: `cd backend && . .venv/bin/activate && python -m pytest`.

@@ -54,11 +54,12 @@ class Settings:
     ADMIN_NAME = os.environ.get("ADMIN_NAME", "Admin")
     COOKIE_SECURE = _resolve_cookie_secure()
 
-    # CRM (config-driven outbound sync — the single integration point)
+    # CRM — EvoHome website-lead webhook (services/crm.py)
     CRM_SYNC_ENABLED = os.environ.get("CRM_SYNC_ENABLED", "false").lower() == "true"
     CRM_WEBHOOK_URL = os.environ.get("CRM_WEBHOOK_URL", "")
     CRM_API_KEY = os.environ.get("CRM_API_KEY", "")
-    CRM_AUTH_HEADER = os.environ.get("CRM_AUTH_HEADER", "Authorization")
+    # EvoHome accepts X-Integration-Key or Authorization: Bearer <key>
+    CRM_AUTH_HEADER = os.environ.get("CRM_AUTH_HEADER", "X-Integration-Key")
 
     CORS_ORIGINS = _resolve_cors_origins()
 

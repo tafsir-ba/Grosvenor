@@ -110,16 +110,21 @@ async def create_lead(payload: LeadCreate) -> Lead:
     lead = Lead(**normalized.model_dump())
     doc = lead.to_mongo()
 
+    # Persist first so the CRM payload can carry externalId / idempotencyKey.
+    res = await db[COLLECTION].insert_one(doc)
+    lead_id = str(res.inserted_id)
+    doc["_id"] = lead_id
+
     # Anonymous clicks are not pushed to the CRM as contacts.
     if normalized.lead_type not in ANONYMOUS_LEAD_TYPES:
         reference = crm.push_lead(doc)
         if reference:
+            await db[COLLECTION].update_one(
+                {"_id": res.inserted_id},
+                {"$set": {"crm_synced": True, "crm_reference": reference}},
+            )
             doc["crm_synced"] = True
             doc["crm_reference"] = reference
-
-    res = await db[COLLECTION].insert_one(doc)
-    lead_id = str(res.inserted_id)
-    doc["_id"] = lead_id
 
     schedule_post_lead_notifications(
         doc,

@@ -58,7 +58,7 @@ services:
       - key: ADMIN_PASSWORD        # strong admin password (do NOT use the default)
         scope: RUN_TIME
         type: SECRET
-      - key: CRM_API_KEY           # leave blank for now (CRM not wired yet)
+      - key: CRM_API_KEY           # EvoHome website integration API key (set in DO secrets)
         scope: RUN_TIME
         type: SECRET
       # --- Non-secret config ---
@@ -76,13 +76,13 @@ services:
         value: ${APP_URL}
       - key: CRM_SYNC_ENABLED
         scope: RUN_TIME
-        value: "false"
+        value: "false"            # set "true" after CRM_API_KEY is configured
       - key: CRM_WEBHOOK_URL
         scope: RUN_TIME
-        value: ""
+        value: "https://crm.evo-home.ch/api/integrations/website/leads"
       - key: CRM_AUTH_HEADER
         scope: RUN_TIME
-        value: Authorization
+        value: X-Integration-Key
       - key: RESEND_API_KEY
         scope: RUN_TIME
         type: SECRET

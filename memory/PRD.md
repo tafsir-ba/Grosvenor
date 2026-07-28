@@ -29,10 +29,11 @@ DRY, separation of concerns) — not isolated pages. Showroom/model unit availab
 - **Download**: title, type (brochure=gated / pricelist=open), file_url.
 
 ## CRM
-External custom CRM is the intended master for units. Integration isolated in `services/crm.py`,
-config-driven via env (`CRM_SYNC_ENABLED`, `CRM_WEBHOOK_URL`, `CRM_API_KEY`, `CRM_AUTH_HEADER`).
-**Currently DISABLED** — leads stored locally + admin dashboard. Flip env to enable (no code change).
-Inbound unit sync mapping (`map_crm_unit`) + endpoint stub ready for wiring.
+EvoHome CRM (`crm.evo-home.ch`) is the destination for website leads. Integration isolated in
+`services/crm.py`. Leads OUT use the website webhook with flat camelCase fields (`firstName`,
+`lastName`, `email`|`phone`, `message`, `source`, `externalId`, `idempotencyKey`) and
+`X-Integration-Key` auth. Enable with `CRM_SYNC_ENABLED=true` + `CRM_WEBHOOK_URL` + `CRM_API_KEY`.
+Inbound unit sync mapping (`map_crm_unit`) + endpoint stub still pending.
 
 ## Implemented (2026-06-22)
 - 9 marketing pages: Home, The Development, Residences (+filters), Unit Detail, Amenities, Location,
@@ -118,7 +119,14 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Verified via screenshots: aerial, AB, C, TH views, hover card, click-to-detail, breadcrumb all working.
 - Fix (same fork): the aerial "Select a building" step now uses the correct **global development render** (`Global view/image.jpg` → `/explorer/aerial.jpg`) showing all three clusters, not the townhouse zoom. Townhouses view uses its own image (`/explorer/th.jpg`). Map images now render at natural aspect (img defines height, SVG stretches over it via `preserveAspectRatio="none"`) so no view is distorted.
 
-## Real Brochure, Price List & Per-Unit Floor Plans — 2026-06-24, fork
+## EvoHome CRM lead webhook — 2026-07-28
+- Wired leads OUT to EvoHome website integration (`POST /api/integrations/website/leads`).
+- Payload remapped to strict EvoHome schema (flat camelCase; unknown keys rejected). Unit/UTM
+  context folded into `message`. `projectId`/`projectReference` omitted (default project lock).
+- Auth defaults to `X-Integration-Key`; `Authorization: Bearer` also supported.
+- Leads are inserted before CRM push so `externalId` / `idempotencyKey` use the Mongo id.
+- Enable via `CRM_SYNC_ENABLED=true` + `CRM_API_KEY` (webhook URL preset in `.do/app.yaml`).
+
 - **Downloads:** Replaced placeholder brochure & price list with the client's real PDFs (`/public/downloads/grosvenor-vistas-brochure.pdf` gated, `…-pricelist.pdf` open). Seeded download docs already pointed there; both now serve 200.
 - **Per-unit floor plans (protected):** Every residence has its OWN floor-plan PDF (41 building units + 2 Begonia townhouses sharing one plan = all 43). Stored OUTSIDE the web root at `/app/backend/protected_floorplans/{unit_number}.pdf`.
 - **Protected delivery:** New admin-only `GET /api/admin/floorplans/{unit_number}` (require_admin, FileResponse). Verified 401 without token / 200 with / 404 unknown. Never exposed publicly.
@@ -126,7 +134,7 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Verified: backend curl matrix + UI (modal/iframe/blob/close) pass.
 
 
-- P1: Wire the real CRM (endpoint, auth, field names) — leads OUT + units IN sync.
+- P1: Wire inbound CRM unit sync (leads OUT to EvoHome website webhook is done).
 - POST-DEPLOY: "Send to buyer" action in the Residence Explorer — one-click email of a residence's floor-plan PDF + pricing/details (+ optional custom note, CC sales rep, reply-to). Needs an email provider (Resend/SendGrid) + verified sending domain. Decisions/keys pending.
 - ~~P1: Replace placeholder brochure/pricelist PDFs~~ — DONE 2026-06-24 (real PDFs in /public/downloads).
 - P2: Reserved-status units (none currently) styling already supported.

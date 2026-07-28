@@ -110,24 +110,22 @@ status / stage       ->  status   (mapped to available|reserved|sold)
 id                   ->  crm_id
 ```
 
-**B. Leads OUT (website → CRM)** — every captured lead is POSTed to a configurable CRM
-endpoint. Field map:
+**B. Leads OUT (website → EvoHome CRM)** — every non-anonymous lead is POSTed to the
+EvoHome website-lead webhook (`https://crm.evo-home.ch/api/integrations/website/leads`).
+The CRM schema is strict (unknown keys → 400). Field map:
 ```
-Lead field      ->  CRM payload
-name            ->  contact.name
-email           ->  contact.email
-phone           ->  contact.phone
-message         ->  note
-lead_type       ->  lead_type / category
-source_unit     ->  unit_ref
-source_building ->  building_ref
-source_url      ->  source_url
-utm_*           ->  attribution.*
-created_at      ->  created_at
+Lead field                         ->  CRM payload
+first_name                         ->  firstName
+last_name                          ->  lastName
+email                              ->  email          (email OR phone required)
+phone                              ->  phone
+message + unit/UTM/context         ->  message        (free-text only)
+(fixed)                            ->  source         = "grosvenorvistas.com"
+_id                                ->  externalId + idempotencyKey
+projectId / projectReference       ->  OMITTED        (integration locked to default project)
 ```
-Config-driven via env: `CRM_SYNC_ENABLED`, `CRM_WEBHOOK_URL`, `CRM_API_KEY`,
-`CRM_AUTH_HEADER`. Until you share the contract, leads are stored in our DB + admin
-dashboard and the sync flips on with one env change. **No code change needed later.**
+Auth: `X-Integration-Key: <apiKey>` (default) or `Authorization: Bearer <apiKey>`.
+Config via env: `CRM_SYNC_ENABLED`, `CRM_WEBHOOK_URL`, `CRM_API_KEY`, `CRM_AUTH_HEADER`.
 
 ---
 
@@ -193,9 +191,8 @@ UTM params parsed once on load, persisted, and attached to every lead automatica
 ---
 
 ## 9. Assumptions & Open Questions
-1. **CRM API** — not yet provided. I'll build the config-driven adapter + a seeded sample
-   inventory so the site is fully functional now, and wire your real CRM when you share
-   the endpoint/auth/field names. ✅ assumed.
+1. **CRM API** — EvoHome website-lead webhook wired for leads OUT. Inbound unit sync
+   still pending (mapping stub ready in `map_crm_unit`).
 2. **Currency & surface unit** — assuming **price in USD** and **surface in sq ft**.
    Confirm (USD vs JMD; sq ft vs m²).
 3. **Price List gating** — you said price list needs no info, but "Download Price List" is a
