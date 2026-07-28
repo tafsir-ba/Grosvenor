@@ -108,8 +108,34 @@ def test_auth_headers_authorization_keeps_existing_bearer_prefix():
 
 
 def test_push_lead_disabled_returns_none():
-    with patch.object(crm.settings, "CRM_SYNC_ENABLED", False):
+    with patch.object(crm.settings, "CRM_SYNC_ENABLED", False), patch.object(
+        crm.settings, "CRM_WEBHOOK_URL", "https://crm.example/leads"
+    ), patch.object(crm.settings, "CRM_API_KEY", "secret"), patch(
+        "services.crm.requests.post"
+    ) as post:
         assert crm.push_lead(SAMPLE_LEAD) is None
+        post.assert_not_called()
+
+
+def test_push_lead_skips_without_api_key():
+    with patch.object(crm.settings, "CRM_SYNC_ENABLED", True), patch.object(
+        crm.settings, "CRM_WEBHOOK_URL", "https://crm.example/leads"
+    ), patch.object(crm.settings, "CRM_API_KEY", ""), patch(
+        "services.crm.requests.post"
+    ) as post:
+        assert crm.push_lead(SAMPLE_LEAD) is None
+        post.assert_not_called()
+
+
+def test_is_crm_push_configured_requires_all_three():
+    with patch.object(crm.settings, "CRM_SYNC_ENABLED", True), patch.object(
+        crm.settings, "CRM_WEBHOOK_URL", "https://crm.example/leads"
+    ), patch.object(crm.settings, "CRM_API_KEY", "secret"):
+        assert crm.is_crm_push_configured() is True
+    with patch.object(crm.settings, "CRM_SYNC_ENABLED", True), patch.object(
+        crm.settings, "CRM_WEBHOOK_URL", "https://crm.example/leads"
+    ), patch.object(crm.settings, "CRM_API_KEY", ""):
+        assert crm.is_crm_push_configured() is False
 
 
 def test_push_lead_posts_and_returns_lead_id():

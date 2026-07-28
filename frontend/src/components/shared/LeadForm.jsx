@@ -40,7 +40,8 @@ function buildMessageWithVisitPrefs(form) {
 
 function leadReference(result) {
     if (!result || typeof result !== "object") return null;
-    const raw = result.crm_reference || result.id || result._id;
+    // Visitor confirmation uses the Grosvenor lead id — never the CRM reference.
+    const raw = result.id || result._id;
     if (!raw) return null;
     const id = String(raw);
     return id.length > 8 ? id.slice(-8).toUpperCase() : id.toUpperCase();

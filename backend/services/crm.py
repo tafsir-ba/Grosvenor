@@ -148,9 +148,18 @@ def _extract_crm_reference(data: dict) -> str:
     return str(data.get("leadId") or data.get("id") or data.get("reference") or "synced")
 
 
+def is_crm_push_configured() -> bool:
+    """True when outbound lead push will actually fire (flag + URL + API key)."""
+    return bool(
+        settings.CRM_SYNC_ENABLED
+        and settings.CRM_WEBHOOK_URL
+        and settings.CRM_API_KEY
+    )
+
+
 def push_lead(lead: dict) -> Optional[str]:
     """POST a lead to the CRM. Returns a CRM reference id, or None if disabled/failed."""
-    if not settings.CRM_SYNC_ENABLED or not settings.CRM_WEBHOOK_URL:
+    if not is_crm_push_configured():
         return None
     try:
         resp = requests.post(
@@ -177,11 +186,11 @@ def get_crm_status() -> dict:
 
 def sync_units_from_crm() -> dict:
     """Placeholder for future inbound CRM unit sync."""
-    if not settings.CRM_SYNC_ENABLED or not settings.CRM_WEBHOOK_URL:
+    if not is_crm_push_configured():
         return {
             "ok": True,
             "synced": False,
-            "message": "CRM sync is not configured. Set CRM_SYNC_ENABLED and CRM_WEBHOOK_URL to enable unit synchronization.",
+            "message": "CRM sync is not configured. Set CRM_SYNC_ENABLED, CRM_WEBHOOK_URL, and CRM_API_KEY to enable unit synchronization.",
             "units_updated": 0,
         }
     return {

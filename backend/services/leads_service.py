@@ -97,6 +97,27 @@ def schedule_post_lead_notifications(doc: dict, *, send_confirmation: bool) -> N
     asyncio.create_task(_run())
 
 
+def schedule_crm_push(lead_id: str, doc: dict) -> None:
+    """Push the lead to the CRM in the background; never block the create response."""
+
+    async def _run() -> None:
+        try:
+            reference = await asyncio.to_thread(crm.push_lead, doc)
+            if not reference:
+                return
+            oid = _safe_object_id(lead_id)
+            if not oid:
+                return
+            await db[COLLECTION].update_one(
+                {"_id": oid},
+                {"$set": {"crm_synced": True, "crm_reference": reference}},
+            )
+        except Exception as exc:
+            logger.warning("Background CRM lead push failed for lead %s: %s", lead_id, exc)
+
+    asyncio.create_task(_run())
+
+
 async def create_lead(payload: LeadCreate) -> Lead:
     normalized = normalize_lead_create(payload)
 
@@ -117,14 +138,7 @@ async def create_lead(payload: LeadCreate) -> Lead:
 
     # Anonymous clicks are not pushed to the CRM as contacts.
     if normalized.lead_type not in ANONYMOUS_LEAD_TYPES:
-        reference = crm.push_lead(doc)
-        if reference:
-            await db[COLLECTION].update_one(
-                {"_id": res.inserted_id},
-                {"$set": {"crm_synced": True, "crm_reference": reference}},
-            )
-            doc["crm_synced"] = True
-            doc["crm_reference"] = reference
+        schedule_crm_push(lead_id, doc)
 
     schedule_post_lead_notifications(
         doc,
