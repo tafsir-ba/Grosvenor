@@ -1,4 +1,4 @@
-"""Downloads business logic — gated brochure vs open price list (single rule)."""
+"""Downloads business logic — open brochure & price list (optional gated tokens)."""
 import secrets
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -17,9 +17,10 @@ from services import leads_service
 COLLECTION = "downloads"
 TOKENS_COL = "download_tokens"
 PROTECTED_DIR = Path(__file__).resolve().parent.parent / "protected_downloads"
+PUBLIC_BROCHURE_URL = "/downloads/grosvenor-vistas-brochure.pdf"
 TOKEN_TTL = timedelta(minutes=15)
 
-# Which lead_type a gated download produces.
+# Which lead_type a download click / gated access produces.
 DOWNLOAD_LEAD_TYPE = {
     DownloadType.BROCHURE: LeadType.DOWNLOAD_BROCHURE,
     DownloadType.PRICELIST: LeadType.DOWNLOAD_PRICE_LIST,
@@ -47,7 +48,7 @@ def token_is_expired(expires_at, now: Optional[datetime] = None) -> bool:
 
 
 def to_public_download(download: Download) -> dict:
-    """Public list is metadata only — never expose gated file locations."""
+    """Public list includes open file URLs; gated locations stay hidden."""
     data = download.model_dump(by_alias=True)
     if download.type in GATED_DOWNLOAD_TYPES:
         data.pop("file_url", None)
@@ -100,10 +101,10 @@ async def _issue_gated_file_url(download: Download) -> str:
 
 
 async def access_download(download_id: str, lead: Optional[LeadCreate]) -> dict:
-    """Enforce the single gating rule and return the file url.
+    """Enforce the gating rule (if any) and return the file url.
 
-    Gated (brochure): a valid lead must be supplied -> captured -> tokenized file URL.
-    Open (pricelist): public file_url returned immediately; click recorded as a lead-less event.
+    Gated: a valid lead must be supplied -> captured -> tokenized file URL.
+    Open (brochure / pricelist): public file_url returned immediately; click recorded.
     """
     download = await get_download(download_id)
     if not download:
@@ -118,8 +119,9 @@ async def access_download(download_id: str, lead: Optional[LeadCreate]) -> dict:
         await leads_service.create_lead(lead)
         return {"file_url": await _issue_gated_file_url(download), "title": download.title}
 
-    if download.type == DownloadType.PRICELIST:
-        await leads_service.create_lead(LeadCreate(lead_type=LeadType.DOWNLOAD_PRICE_LIST))
+    lead_type = DOWNLOAD_LEAD_TYPE.get(download.type)
+    if lead_type:
+        await leads_service.create_lead(LeadCreate(lead_type=lead_type))
 
     return {"file_url": download.file_url, "title": download.title}
 
@@ -164,9 +166,16 @@ async def delete_download(download_id: str) -> bool:
     return res.deleted_count == 1
 
 
-async def ensure_brochure_protected_path():
-    """Migrate legacy public brochure URLs to the protected filename SoT."""
+async def ensure_brochure_public_path():
+    """Migrate protected/legacy brochure URLs to the public static path."""
     await db[COLLECTION].update_many(
-        {"type": DownloadType.BROCHURE.value, "file_url": {"$regex": r"downloads/"}},
-        {"$set": {"file_url": "grosvenor-vistas-brochure.pdf"}},
+        {
+            "type": DownloadType.BROCHURE.value,
+            "file_url": {"$ne": PUBLIC_BROCHURE_URL},
+        },
+        {"$set": {"file_url": PUBLIC_BROCHURE_URL}},
     )
+
+
+# Back-compat alias for older call sites / imports.
+ensure_brochure_protected_path = ensure_brochure_public_path

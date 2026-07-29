@@ -1,4 +1,4 @@
-// Single place for download access (gated brochure + open price list).
+// Single place for download access (open brochure + price list; optional gated tokens).
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 
@@ -6,7 +6,12 @@ const BACKEND = process.env.REACT_APP_BACKEND_URL;
 
 export function resolveFileUrl(fileUrl) {
     if (!fileUrl) return null;
-    return fileUrl.startsWith("http") ? fileUrl : `${BACKEND}${fileUrl}`;
+    if (fileUrl.startsWith("http")) return fileUrl;
+    // Tokenized API paths need the backend origin; static /downloads/* are on the SPA origin.
+    if (fileUrl.startsWith("/api/")) {
+        return `${BACKEND}${fileUrl}`;
+    }
+    return fileUrl;
 }
 
 export function openFileUrl(fileUrl, { popup = null } = {}) {

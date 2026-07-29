@@ -22,7 +22,7 @@ export default function AdminDownloads() {
     return (
         <div data-testid="admin-downloads">
             <h1 className="font-display text-3xl text-brand-ink">Downloads</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Manage the brochure (gated) and price list (open).</p>
+            <p className="mt-1 text-sm text-muted-foreground">Manage the brochure and price list (both open / public links).</p>
 
             <div className="mt-8 overflow-x-auto rounded-sm border border-border bg-card">
                 <Table>
@@ -33,7 +33,7 @@ export default function AdminDownloads() {
                         {downloads.map((d) => (
                             <TableRow key={d._id} data-testid={`download-row-${d.type}`}>
                                 <TableCell className="font-medium">{d.title}</TableCell>
-                                <TableCell><span className="rounded-sm bg-muted px-2 py-1 text-xs uppercase tracking-wide">{d.type === "brochure" ? "Gated" : "Open"}</span></TableCell>
+                                <TableCell><span className="rounded-sm bg-muted px-2 py-1 text-xs uppercase tracking-wide">Open</span></TableCell>
                                 <TableCell>
                                     <Input
                                         defaultValue={d.file_url}

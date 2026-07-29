@@ -393,7 +393,7 @@ class TestDownloads:
         assert "brochure" in types
         assert "pricelist" in types
         broch = next(d for d in items if d["type"] == "brochure")
-        assert "file_url" not in broch or broch.get("file_url") in (None, "")
+        assert broch.get("file_url") == "/downloads/grosvenor-vistas-brochure.pdf"
         price = next(d for d in items if d["type"] == "pricelist")
         assert price.get("file_url")
 
@@ -415,45 +415,28 @@ class TestDownloads:
         assert after == before + 1
         assert _leads_items(admin_session.get(f"{API}/admin/leads").json())[0].get("lead_type") == "download_price_list"
 
-    def test_brochure_gated_without_lead_422(self, session):
+    def test_brochure_open_without_lead(self, session):
         items = session.get(f"{API}/downloads").json()
         broch = next(d for d in items if d["type"] == "brochure")
         r = session.post(f"{API}/downloads/{broch['_id']}/access",
                          json={"lead": None})
-        assert r.status_code == 422, r.text
-
-    def test_brochure_gated_with_lead_succeeds(self, session):
-        items = session.get(f"{API}/downloads").json()
-        broch = next(d for d in items if d["type"] == "brochure")
-        lead = {
-            "first_name": "TEST",
-            "last_name": "Brochure",
-            "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
-            "consent": True,
-            "lead_type": "download_brochure",
-        }
-        r = session.post(f"{API}/downloads/{broch['_id']}/access",
-                         json={"lead": lead})
         assert r.status_code == 200, r.text
-        file_url = r.json().get("file_url")
-        assert file_url
-        assert file_url.startswith("/api/downloads/file/")
-        # Tokenized URL must stream the PDF
-        token = file_url.rsplit("/", 1)[-1]
-        file_resp = session.get(f"{API}/downloads/file/{token}")
-        assert file_resp.status_code == 200, file_resp.text
-        assert "pdf" in file_resp.headers.get("content-type", "").lower()
-        # Token remains valid within TTL (PDF viewers may re-fetch).
-        again = session.get(f"{API}/downloads/file/{token}")
-        assert again.status_code == 200
-        # Guessable legacy public path must not be returned by access.
-        assert "/downloads/grosvenor-vistas-brochure.pdf" not in file_url
+        assert r.json().get("file_url") == "/downloads/grosvenor-vistas-brochure.pdf"
 
-    def test_brochure_not_served_as_public_static_guess(self, session):
-        # Legacy public path must not be returned by the API after gating.
+    def test_brochure_access_records_download_lead(self, session, admin_session):
         items = session.get(f"{API}/downloads").json()
         broch = next(d for d in items if d["type"] == "brochure")
-        assert "/downloads/grosvenor-vistas-brochure.pdf" not in str(broch)
+        before = _leads_total(admin_session.get(f"{API}/admin/leads").json())
+        r = session.post(f"{API}/downloads/{broch['_id']}/access", json={"lead": None})
+        assert r.status_code == 200, r.text
+        after = _leads_total(admin_session.get(f"{API}/admin/leads").json())
+        assert after == before + 1
+        assert _leads_items(admin_session.get(f"{API}/admin/leads").json())[0].get("lead_type") == "download_brochure"
+
+    def test_brochure_public_file_url_exposed(self, session):
+        items = session.get(f"{API}/downloads").json()
+        broch = next(d for d in items if d["type"] == "brochure")
+        assert broch.get("file_url") == "/downloads/grosvenor-vistas-brochure.pdf"
 
 # -------------------- auth --------------------
 class TestAuth:

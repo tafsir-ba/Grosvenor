@@ -76,8 +76,9 @@ pages/       Home · Development · Residences · Amenities · Location · Galle
 `source_building` · `source_url` · `utm_source/medium/campaign/content/term` · `status` ·
 `notes` · `crm_synced` · `crm_reference` · `created_at`.
 
-### Download — gated brochure / open price list
+### Download — open brochure / open price list
 `title` · `type` (brochure|pricelist) · `file_url` · `description`.
+Both are public static PDFs under `/downloads/…`; clicks are tracked as anonymous leads.
 
 ### Enums (defined once in `domain/enums.py`)
 - **UnitStatus:** available · reserved · sold
@@ -85,7 +86,7 @@ pages/       Home · Development · Residences · Amenities · Location · Galle
   download_price_list · contact_about_unit · mortgage_info_request ·
   whatsapp_click · phone_click · email_click
 - **LeadStatus** (internal pipeline mirror): new · contacted · qualified · won · lost
-- **DownloadType:** brochure (gated) · pricelist (open)
+- **DownloadType:** brochure (open) · pricelist (open)
 
 ---
 
@@ -137,7 +138,7 @@ GET  /api/units                 ?building=&status=&min_price=&max_price=&sort=  
 GET  /api/units/{slug}          single unit
 POST /api/leads                 create lead (any lead_type) -> stores + CRM sync
 GET  /api/downloads             list downloads (metadata)
-POST /api/downloads/{id}/access brochure: requires lead body; pricelist: open -> returns file_url
+POST /api/downloads/{id}/access brochure & pricelist: open -> returns file_url (click tracked)
 GET  /api/content/faq           FAQ items
 GET  /api/content/amenities     amenities
 POST /api/track                 lightweight event (whatsapp/phone/email clicks)
@@ -195,9 +196,9 @@ UTM params parsed once on load, persisted, and attached to every lead automatica
    still pending (mapping stub ready in `map_crm_unit`).
 2. **Currency & surface unit** — assuming **price in USD** and **surface in sq ft**.
    Confirm (USD vs JMD; sq ft vs m²).
-3. **Price List gating** — you said price list needs no info, but "Download Price List" is a
-   lead type. Assumption: price list is **open** (click tracked as a lead-less event);
-   **brochure** uses the Download Form. Confirm.
+3. **Download gating** — brochure and price list are both **open** (click tracked as
+   lead-less events). Public shareable URLs: `/downloads/grosvenor-vistas-brochure.pdf`
+   and `/downloads/grosvenor-vistas-pricelist.pdf`.
 4. **Contact details** — need WhatsApp number, phone, email, and map address/coordinates
    for the showroom.
 5. **Buildings & naming** — how many buildings and their names/labels (e.g. Block A/B…)?

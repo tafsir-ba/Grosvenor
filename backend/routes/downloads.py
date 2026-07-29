@@ -1,4 +1,4 @@
-"""Public download routes — list + gated access."""
+"""Public download routes — list + access (open files; optional gated tokens)."""
 from typing import Optional
 
 from fastapi import APIRouter

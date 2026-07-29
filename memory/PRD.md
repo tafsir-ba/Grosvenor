@@ -26,7 +26,7 @@ DRY, separation of concerns) — not isolated pages. Showroom/model unit availab
   status, slug, crm_id.
 - **Lead**: name, email, phone, message, lead_type, source_page/unit/building/url, 5× UTM, status,
   crm_synced, crm_reference, created_at.
-- **Download**: title, type (brochure=gated / pricelist=open), file_url.
+- **Download**: title, type (brochure=open / pricelist=open), file_url (public `/downloads/…`).
 
 ## CRM
 EvoHome CRM (`crm.evo-home.ch`) is the destination for website leads. Integration isolated in
@@ -39,7 +39,7 @@ Inbound unit sync mapping (`map_crm_unit`) + endpoint stub still pending.
 - 9 marketing pages: Home, The Development, Residences (+filters), Unit Detail, Amenities, Location,
   Gallery, Mortgage & Financing, FAQ, Contact. WhatsApp float + click tracking (whatsapp/phone/email).
 - Real 43-unit inventory seeded (Heliconia 16, Hibiscus 16, Ginger Lily 9, Begonia townhouses 2;
-  30 available / 13 sold). Gated brochure / open price list. UTM-attributed leads.
+  30 available / 13 sold). Open brochure / open price list. UTM-attributed leads.
 - Admin (JWT): dashboard stats, Units CRUD + inline status, Leads (filter, status, CSV export), Downloads.
 - Tested: 23/23 backend pytest pass; all frontend flows pass (iteration_1.json).
 - Fixed CRA5 + webpack-dev-server@5 incompatibility via craco dev-server normalizer.
@@ -54,22 +54,22 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Removed "Find Us" overline kicker from MapSection. Card corners squared on Contact/Mortgage/Development.
 - AmenityScroller: click-and-drag scrolling; AMENITY_GALLERY titles corrected to real amenity list (Panoramic Views, Rooftop Pools & Gyms, Landscaped Gardens, Elevator Access, Kid's Playground, Underground Parking, Smart-Lock Entry, Gated Security).
 - Downloads section simplified (title + download row only, descriptions removed).
-- Verified: slider drag works, brochure gated dialog opens.
+- Verified: slider drag works, brochure download opens.
 
 ## Homepage Luxury Redesign (2026-06-23)
 - Full editorial redesign per client brief V2 (De Gasparin-inspired luxury hospitality feel).
 - New palette: warm white / ivory / beige + champagne gold; Grosvenor Blue now an accent only. Tokens added (brand-warm/ivory/beige) without breaking other pages.
 - New heading font: Cormorant Garamond (`.lux-title`, `font-heading`) + Signika body. `.lux-eyebrow` for "— Section" labels.
 - 9 sections: Hero (Elevate Your View) → The View → Lifestyle → Amenities immersive reveals → Full-width visual moment → Residences-by-size (Vista/Signature/Begonia, hover reveals sqft+price+availability from live data, NO bedroom counts) → Location preview (map) → Gallery horizontal scroll w/ arrows+counter → Final CTA.
-- Gold circular FAB (FloatingActionButton.jsx) bottom-right expands to Download Brochure (gated dialog) / Book a Visit / WhatsApp — REPLACED the left brochure rail + green WhatsApp button (both files deleted).
+- Gold circular FAB (FloatingActionButton.jsx) bottom-right expands to Download Brochure / Price List / Book a Visit / WhatsApp — REPLACED the left brochure rail + green WhatsApp button (both files deleted).
 - Framer Motion fade-up + parallax throughout; lazy-loaded imagery; real Grosvenor photos + 1 stock gym image.
-- Verified: all sections render, FAB brochure dialog opens, residence hover reveal works, gallery scrolls.
+- Verified: all sections render, FAB opens brochure/pricelist, residence hover reveal works, gallery scrolls.
 - NOTE: inner pages (Residences/Amenities/Development/Location/Contact/etc.) still use the previous blue/Source Sans style — to be migrated to the new luxury system next, per user (homepage first).
 
 ## Forms, Legal, Footer & CRM-Ready (2026-06-23, fork)
 - All lead forms now use SEPARATE fields: First name, Last name, Telephone, Email, Message (single LeadForm — DRY). No single "Name" field anywhere.
-- Required data-processing consent checkbox on every form (Evo Home wording) with inline Privacy Policy + Legal links. Backend enforces first_name+last_name+email+consent for non-click leads; same rule on gated brochure download.
-- Download Brochure forms (DownloadForm + FAB) include split fields + optional message + consent before file access.
+- Required data-processing consent checkbox on every form (Evo Home wording) with inline Privacy Policy + Legal links. Backend enforces first_name+last_name+email+consent for non-anonymous leads.
+- Download Brochure / Price List open as public links (no form); clicks tracked anonymously.
 - Removed ALL "agent" language sitewide → neutral "Contact Us / Book a Visit / our team". Admin login renamed "Admin Login".
 - Footer: Privacy (evo-home.ch/en/privacy) + Legal (evo-home.ch/en/legal) links (new tab), "Designed and developed by Evohome" credit, and the full sitewide legal disclaimer (subtle small text; placeholders [ADDRESS]/[DV-XXXXXX]/[APPROVAL DATE] left for client).
 - Elegant warm-luxury cookie notice (CookieNotice.jsx) — Accept All / Manage Preferences (analytics toggle) / Privacy link; persists via localStorage `gv_cookie_consent`.
@@ -127,7 +127,10 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Leads are inserted before CRM push so `externalId` / `idempotencyKey` use the Mongo id.
 - Enable via `CRM_SYNC_ENABLED=true` + `CRM_API_KEY` (webhook URL preset in `.do/app.yaml`).
 
-- **Downloads:** Replaced placeholder brochure & price list with the client's real PDFs (`/public/downloads/grosvenor-vistas-brochure.pdf` gated, `…-pricelist.pdf` open). Seeded download docs already pointed there; both now serve 200.
+- **Downloads:** Brochure and price list are both public PDFs under `/public/downloads/`
+  (`grosvenor-vistas-brochure.pdf`, `grosvenor-vistas-pricelist.pdf`). Clicks tracked as
+  anonymous leads; no lead form required. Shareable URL for CRM emails:
+  `/downloads/grosvenor-vistas-brochure.pdf`.
 - **Per-unit floor plans (protected):** Every residence has its OWN floor-plan PDF (41 building units + 2 Begonia townhouses sharing one plan = all 43). Stored OUTSIDE the web root at `/app/backend/protected_floorplans/{unit_number}.pdf`.
 - **Protected delivery:** New admin-only `GET /api/admin/floorplans/{unit_number}` (require_admin, FileResponse). Verified 401 without token / 200 with / 404 unknown. Never exposed publicly.
 - **Explorer UI:** detail-panel floor-plan section → single "View PDF" button per unit; fetches the PDF as an authenticated blob and shows it in a modal `<iframe>` with "Open in new tab" fallback. Removed old per-type sample images + Dropbox link (FULL_PLANS_URL). Beds/baths/rooms still from explorerData.

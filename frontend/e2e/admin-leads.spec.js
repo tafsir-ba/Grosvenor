@@ -178,7 +178,7 @@ test.describe("Admin leads UI (mocked API)", () => {
 });
 
 test.describe("Brochure download UX (mocked API)", () => {
-    test("FAB brochure submit opens returned file URL", async ({ page }) => {
+    test("FAB brochure click opens returned file URL", async ({ page }) => {
         await page.addInitScript(() => {
             window.__openedUrls = [];
             window.open = (url) => {
@@ -229,15 +229,10 @@ test.describe("Brochure download UX (mocked API)", () => {
         await page.evaluate(() => window.scrollTo(0, 500));
         await page.getByTestId("fab-toggle").click();
         await page.getByTestId("fab-brochure").click();
-        await page.getByTestId("fab-brochure-first-name").fill("Test");
-        await page.getByTestId("fab-brochure-last-name").fill("User");
-        await page.getByTestId("fab-brochure-email").fill("test@example.com");
-        await page.getByTestId("fab-brochure-consent").click();
-        await page.getByTestId("fab-brochure-submit").click();
 
-        await expect(page.getByText("Your brochure is opening in a new tab.")).toBeVisible({ timeout: 10_000 });
-
-        const opened = await page.evaluate(() => window.__openedUrls);
-        expect(opened.some((url) => String(url).includes("brochure.pdf"))).toBeTruthy();
+        await expect.poll(async () => {
+            const opened = await page.evaluate(() => window.__openedUrls);
+            return opened.some((url) => String(url).includes("brochure.pdf"));
+        }).toBeTruthy();
     });
 });

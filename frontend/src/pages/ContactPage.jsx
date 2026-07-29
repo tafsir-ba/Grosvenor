@@ -56,7 +56,7 @@ export default function ContactPage() {
                             <Eyebrow>Downloads</Eyebrow>
                             <h3 className="lux-title mt-4 text-2xl text-brand-blue sm:text-3xl">Brochure & price list</h3>
                             <p className="mt-3 max-w-md font-sans text-sm text-brand-ink/60">
-                                Save the project brochure (details required) or open the current price list.
+                                Open the project brochure or the current price list.
                             </p>
                             <div className="mt-6 space-y-1">
                                 {downloadsLoading && <p className="font-sans text-sm text-brand-ink/55">Loading downloads…</p>}

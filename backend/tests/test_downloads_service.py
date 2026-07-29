@@ -1,4 +1,4 @@
-"""Unit tests for downloads gating helpers (no live API required)."""
+"""Unit tests for downloads helpers (no live API required)."""
 from datetime import datetime, timedelta, timezone
 
 from domain.enums import DownloadType
@@ -6,16 +6,16 @@ from domain.models import Download
 from services.downloads_service import to_public_download, token_is_expired
 
 
-def test_public_list_omits_gated_file_url():
+def test_public_list_keeps_brochure_file_url():
     broch = Download(
         _id="507f1f77bcf86cd799439011",
         title="Brochure",
         type=DownloadType.BROCHURE,
-        file_url="grosvenor-vistas-brochure.pdf",
+        file_url="/downloads/grosvenor-vistas-brochure.pdf",
     )
     public = to_public_download(broch)
     assert public["type"] == "brochure"
-    assert "file_url" not in public
+    assert public["file_url"] == "/downloads/grosvenor-vistas-brochure.pdf"
 
 
 def test_public_list_keeps_open_file_url():
