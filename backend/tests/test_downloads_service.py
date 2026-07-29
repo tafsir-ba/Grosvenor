@@ -3,7 +3,12 @@ from datetime import datetime, timedelta, timezone
 
 from domain.enums import DownloadType
 from domain.models import Download
-from services.downloads_service import to_public_download, token_is_expired
+from services.downloads_service import (
+    PUBLIC_BROCHURE_URL,
+    brochure_url_needs_public_migration,
+    to_public_download,
+    token_is_expired,
+)
 
 
 def test_public_list_keeps_brochure_file_url():
@@ -27,6 +32,14 @@ def test_public_list_keeps_open_file_url():
     )
     public = to_public_download(price)
     assert public["file_url"] == "/downloads/grosvenor-vistas-pricelist.pdf"
+
+
+def test_brochure_migration_only_targets_legacy_protected_filename():
+    assert brochure_url_needs_public_migration("grosvenor-vistas-brochure.pdf") is True
+    assert brochure_url_needs_public_migration(PUBLIC_BROCHURE_URL) is False
+    assert brochure_url_needs_public_migration("/downloads/custom-brochure.pdf") is False
+    assert brochure_url_needs_public_migration(None) is False
+    assert brochure_url_needs_public_migration("") is False
 
 
 def test_token_is_expired_handles_naive_mongo_datetimes():

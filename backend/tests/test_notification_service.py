@@ -37,9 +37,14 @@ def _recipient(email: str, scenarios: list[str], *, active: bool = True) -> Noti
     )
 
 
-def test_resolve_scenario_key_maps_brochure_download():
+def test_resolve_scenario_key_maps_open_brochure_to_general_lead():
     lead = {"lead_type": "download_brochure"}
-    assert notification_service.resolve_scenario_key(lead) == "brochure_download"
+    assert notification_service.resolve_scenario_key(lead) == "general_lead"
+
+
+def test_resolve_scenario_key_maps_open_pricelist_to_general_lead():
+    lead = {"lead_type": "download_price_list"}
+    assert notification_service.resolve_scenario_key(lead) == "general_lead"
 
 
 def test_resolve_scenario_key_defaults_to_general_lead():
@@ -124,7 +129,7 @@ def test_notify_lead_recipients_sends_and_logs():
         mock_insert = AsyncMock()
         with patch(
             "services.notification_service.notification_settings_service.get_scenario",
-            new=AsyncMock(return_value=_scenario("brochure_download")),
+            new=AsyncMock(return_value=_scenario("general_lead")),
         ), patch(
             "services.notification_service.resolve_recipient_emails",
             new=AsyncMock(return_value=(["broker@example.com"], "assigned_recipients")),
@@ -139,12 +144,12 @@ def test_notify_lead_recipients_sends_and_logs():
     mock_send, mock_insert = asyncio.run(run())
     mock_send.assert_called_once_with(
         lead=lead,
-        scenario_label="Brochure Download",
+        scenario_label="General Lead",
         to_email="broker@example.com",
     )
     mock_insert.assert_called_once()
     assert mock_insert.call_args.args[0]["status"] == "sent"
-    assert mock_insert.call_args.args[0]["scenario"] == "brochure_download"
+    assert mock_insert.call_args.args[0]["scenario"] == "general_lead"
 
 
 def test_notify_lead_recipients_logs_skip_when_disabled():

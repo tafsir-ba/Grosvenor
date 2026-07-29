@@ -18,6 +18,11 @@ COLLECTION = "downloads"
 TOKENS_COL = "download_tokens"
 PROTECTED_DIR = Path(__file__).resolve().parent.parent / "protected_downloads"
 PUBLIC_BROCHURE_URL = "/downloads/grosvenor-vistas-brochure.pdf"
+# Only these known legacy / protected filenames are rewritten on startup.
+# Admin-customized brochure URLs must not be overwritten.
+LEGACY_BROCHURE_FILE_URLS = frozenset({
+    "grosvenor-vistas-brochure.pdf",
+})
 TOKEN_TTL = timedelta(minutes=15)
 
 # Which lead_type a download click / gated access produces.
@@ -166,12 +171,20 @@ async def delete_download(download_id: str) -> bool:
     return res.deleted_count == 1
 
 
+def brochure_url_needs_public_migration(file_url: Optional[str]) -> bool:
+    """True only for known protected/legacy brochure paths — never custom admin URLs."""
+    return (file_url or "") in LEGACY_BROCHURE_FILE_URLS
+
+
 async def ensure_brochure_public_path():
-    """Migrate protected/legacy brochure URLs to the public static path."""
+    """Migrate known protected/legacy brochure URLs to the public static path.
+
+    Does not overwrite admin-customized file_url values.
+    """
     await db[COLLECTION].update_many(
         {
             "type": DownloadType.BROCHURE.value,
-            "file_url": {"$ne": PUBLIC_BROCHURE_URL},
+            "file_url": {"$in": list(LEGACY_BROCHURE_FILE_URLS)},
         },
         {"$set": {"file_url": PUBLIC_BROCHURE_URL}},
     )
