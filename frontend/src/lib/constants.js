@@ -213,7 +213,7 @@ export const HOME_RESIDENCE_CATEGORIES = [
 export const HOME_MEDIA = {
     heroVideo: "/video/hero.mp4",
     heroFallback: "/media/grosvenor-website-header.webp",
-    locationMap: "/media/grosvenor-map.webp",
+    locationMap: "/media/grosvenor-map.jpg",
 };
 
 // Homepage amenity highlights (4 items — titles only on dedicated Amenities page).
