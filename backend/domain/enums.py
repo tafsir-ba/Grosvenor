@@ -35,13 +35,16 @@ class LeadType(str, Enum):
 
 
 class DownloadType(str, Enum):
-    BROCHURE = "brochure"     # open: public PDF link (click is tracked only)
-    PRICELIST = "pricelist"   # open: freely accessible (click is tracked only)
+    BROCHURE = "brochure"              # website: form-gated, then opens in browser
+    BROCHURE_EMAIL = "brochure_email"  # CRM drip: open public URL, not shown on the site
+    PRICELIST = "pricelist"            # open: freely accessible (click is tracked only)
 
 
-# Downloads that require a captured lead before the file is served.
-# Currently empty — brochure and price list are both public.
-GATED_DOWNLOAD_TYPES = set()
+# Website brochure requires a captured lead, then a short-lived file token.
+GATED_DOWNLOAD_TYPES = {DownloadType.BROCHURE}
+
+# Shown on the public site. The email brochure is admin/CRM-only.
+PUBLIC_WEBSITE_DOWNLOAD_TYPES = {DownloadType.BROCHURE, DownloadType.PRICELIST}
 
 # Anonymous interaction lead-types — captured without name/email (click tracking).
 CLICK_LEAD_TYPES = {
@@ -53,5 +56,4 @@ CLICK_LEAD_TYPES = {
 # Lead types that may be recorded without contact details (clicks + open downloads).
 ANONYMOUS_LEAD_TYPES = CLICK_LEAD_TYPES | {
     LeadType.DOWNLOAD_PRICE_LIST,
-    LeadType.DOWNLOAD_BROCHURE,
 }

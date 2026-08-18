@@ -70,8 +70,11 @@ def load_units_from_csv():
 
 _DOWNLOADS = [
     {"title": "Grosvenor Vistas Brochure", "type": "brochure",
+     "file_url": "grosvenor-vistas-brochure.pdf",
+     "description": "Website brochure — requires name and email before opening."},
+    {"title": "Grosvenor Vistas Brochure (Email)", "type": "brochure_email",
      "file_url": "/downloads/grosvenor-vistas-brochure.pdf",
-     "description": "The complete development brochure."},
+     "description": "Open public brochure for CRM drip emails. Not shown on the website."},
     {"title": "Current Price List", "type": "pricelist",
      "file_url": "/downloads/grosvenor-vistas-pricelist.pdf",
      "description": "Up-to-date availability and pricing."},
@@ -116,5 +119,5 @@ async def seed_inventory():
     if await db.downloads.count_documents({}) == 0:
         await db.downloads.insert_many([dict(d) for d in _DOWNLOADS])
     else:
-        from services.downloads_service import ensure_brochure_public_path
-        await ensure_brochure_public_path()
+        from services.downloads_service import ensure_brochure_buckets
+        await ensure_brochure_buckets()

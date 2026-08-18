@@ -6,19 +6,20 @@ import { toast } from "sonner";
 import { useDownloads } from "@/hooks/useData";
 import { accessDownload } from "@/lib/downloads";
 import { formatApiError } from "@/lib/api";
-import { PROJECT, LEAD_TYPE } from "@/lib/constants";
+import { DOWNLOAD_TYPE, PROJECT, LEAD_TYPE } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
+import BrochureLeadDialog from "@/components/shared/BrochureLeadDialog";
 
 const CYCLE = [Download, CalendarCheck, MessageCircle, FileText];
 
-// Single champagne-gold conversion hub. Brochure + price list open as public links.
 export default function FloatingActionButton() {
     const [open, setOpen] = useState(false);
+    const [brochureOpen, setBrochureOpen] = useState(false);
     const [iconIdx, setIconIdx] = useState(0);
     const [scrolled, setScrolled] = useState(false);
     const { downloads } = useDownloads();
-    const brochure = downloads.find((d) => d.type === "brochure");
-    const pricelist = downloads.find((d) => d.type === "pricelist");
+    const brochure = downloads.find((d) => d.type === DOWNLOAD_TYPE.BROCHURE);
+    const pricelist = downloads.find((d) => d.type === DOWNLOAD_TYPE.PRICELIST);
 
     // Delay FAB until the user scrolls past the hero.
     useEffect(() => {
@@ -42,6 +43,11 @@ export default function FloatingActionButton() {
     const openDownload = async (item) => {
         const id = item?._id || item?.id;
         if (!id) return;
+        if (item.type === DOWNLOAD_TYPE.BROCHURE) {
+            setOpen(false);
+            setBrochureOpen(true);
+            return;
+        }
         try {
             await accessDownload(id, null);
             setOpen(false);
@@ -112,6 +118,11 @@ export default function FloatingActionButton() {
                     )}
                 </AnimatePresence>
             </button>
+            <BrochureLeadDialog
+                download={brochure}
+                open={brochureOpen}
+                onOpenChange={setBrochureOpen}
+            />
         </div>
     );
 }

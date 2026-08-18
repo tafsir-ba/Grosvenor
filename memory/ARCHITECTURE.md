@@ -76,9 +76,11 @@ pages/       Home · Development · Residences · Amenities · Location · Galle
 `source_building` · `source_url` · `utm_source/medium/campaign/content/term` · `status` ·
 `notes` · `crm_synced` · `crm_reference` · `created_at`.
 
-### Download — open brochure / open price list
-`title` · `type` (brochure|pricelist) · `file_url` · `description`.
-Both are public static PDFs under `/downloads/…`; clicks are tracked as anonymous leads.
+### Download — website brochure / email brochure / price list
+`title` · `type` (brochure|brochure_email|pricelist) · `file_url` · `description`.
+Website `brochure` is form-gated and served from `backend/protected_downloads`.
+CRM drip `brochure_email` stays the open public URL `/downloads/grosvenor-vistas-brochure.pdf`.
+Price list remains a public static PDF.
 
 ### Enums (defined once in `domain/enums.py`)
 - **UnitStatus:** available · reserved · sold
@@ -86,7 +88,7 @@ Both are public static PDFs under `/downloads/…`; clicks are tracked as anonym
   download_price_list · contact_about_unit · mortgage_info_request ·
   whatsapp_click · phone_click · email_click
 - **LeadStatus** (internal pipeline mirror): new · contacted · qualified · won · lost
-- **DownloadType:** brochure (open) · pricelist (open)
+- **DownloadType:** brochure (website, form-gated) · brochure_email (open drip link) · pricelist (open)
 
 ---
 
@@ -138,7 +140,7 @@ GET  /api/units                 ?building=&status=&min_price=&max_price=&sort=  
 GET  /api/units/{slug}          single unit
 POST /api/leads                 create lead (any lead_type) -> stores + CRM sync
 GET  /api/downloads             list downloads (metadata)
-POST /api/downloads/{id}/access brochure & pricelist: open -> returns file_url (click tracked)
+POST /api/downloads/{id}/access website brochure: form-gated -> tokenized file; email brochure & pricelist: open file_url
 GET  /api/content/faq           FAQ items
 GET  /api/content/amenities     amenities
 POST /api/track                 lightweight event (whatsapp/phone/email clicks)
@@ -196,9 +198,10 @@ UTM params parsed once on load, persisted, and attached to every lead automatica
    still pending (mapping stub ready in `map_crm_unit`).
 2. **Currency & surface unit** — assuming **price in USD** and **surface in sq ft**.
    Confirm (USD vs JMD; sq ft vs m²).
-3. **Download gating** — brochure and price list are both **open** (click tracked as
-   lead-less events). Public shareable URLs: `/downloads/grosvenor-vistas-brochure.pdf`
-   and `/downloads/grosvenor-vistas-pricelist.pdf`.
+3. **Download gating** — two brochure buckets:
+   website `brochure` is **form-gated** (name + email, then a short-lived file token).
+   CRM drip `brochure_email` stays an **open** public URL:
+   `/downloads/grosvenor-vistas-brochure.pdf`. Price list remains open.
 4. **Contact details** — need WhatsApp number, phone, email, and map address/coordinates
    for the showroom.
 5. **Buildings & naming** — how many buildings and their names/labels (e.g. Block A/B…)?

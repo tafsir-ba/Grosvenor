@@ -26,7 +26,7 @@ DRY, separation of concerns) — not isolated pages. Showroom/model unit availab
   status, slug, crm_id.
 - **Lead**: name, email, phone, message, lead_type, source_page/unit/building/url, 5× UTM, status,
   crm_synced, crm_reference, created_at.
-- **Download**: title, type (brochure=open / pricelist=open), file_url (public `/downloads/…`).
+- **Download**: title, type (brochure=website form-gated / brochure_email=open drip link / pricelist=open), file_url.
 
 ## CRM
 EvoHome CRM (`crm.evo-home.ch`) is the destination for website leads. Integration isolated in
@@ -127,10 +127,10 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
 - Leads are inserted before CRM push so `externalId` / `idempotencyKey` use the Mongo id.
 - Enable via `CRM_SYNC_ENABLED=true` + `CRM_API_KEY` (webhook URL preset in `.do/app.yaml`).
 
-- **Downloads:** Brochure and price list are both public PDFs under `/public/downloads/`
-  (`grosvenor-vistas-brochure.pdf`, `grosvenor-vistas-pricelist.pdf`). Clicks tracked as
-  anonymous leads; no lead form required. Shareable URL for CRM emails:
-  `/downloads/grosvenor-vistas-brochure.pdf`.
+- **Downloads:** Two brochure buckets. Website `brochure` requires name + email, then
+  opens via a short-lived token from `backend/protected_downloads`. CRM drip
+  `brochure_email` stays the open public URL `/downloads/grosvenor-vistas-brochure.pdf`.
+  Price list remains a public PDF. Website brochure leads are real CRM contacts.
 - **Per-unit floor plans (protected):** Every residence has its OWN floor-plan PDF (41 building units + 2 Begonia townhouses sharing one plan = all 43). Stored OUTSIDE the web root at `/app/backend/protected_floorplans/{unit_number}.pdf`.
 - **Protected delivery:** New admin-only `GET /api/admin/floorplans/{unit_number}` (require_admin, FileResponse). Verified 401 without token / 200 with / 404 unknown. Never exposed publicly.
 - **Explorer UI:** detail-panel floor-plan section → single "View PDF" button per unit; fetches the PDF as an authenticated blob and shows it in a modal `<iframe>` with "Open in new tab" fallback. Removed old per-type sample images + Dropbox link (FULL_PLANS_URL). Beds/baths/rooms still from explorerData.

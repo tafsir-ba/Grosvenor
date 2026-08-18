@@ -4,23 +4,35 @@ from datetime import datetime, timedelta, timezone
 from domain.enums import DownloadType
 from domain.models import Download
 from services.downloads_service import (
-    PUBLIC_BROCHURE_URL,
-    brochure_url_needs_public_migration,
+    PUBLIC_EMAIL_BROCHURE_URL,
+    PROTECTED_BROCHURE_FILENAME,
     to_public_download,
     token_is_expired,
+    website_brochure_needs_protected_path,
 )
 
 
-def test_public_list_keeps_brochure_file_url():
+def test_public_list_hides_website_brochure_file_url():
     broch = Download(
         _id="507f1f77bcf86cd799439011",
         title="Brochure",
         type=DownloadType.BROCHURE,
-        file_url="/downloads/grosvenor-vistas-brochure.pdf",
+        file_url=PROTECTED_BROCHURE_FILENAME,
     )
     public = to_public_download(broch)
     assert public["type"] == "brochure"
-    assert public["file_url"] == "/downloads/grosvenor-vistas-brochure.pdf"
+    assert "file_url" not in public
+
+
+def test_public_list_keeps_email_brochure_file_url():
+    email = Download(
+        _id="507f1f77bcf86cd799439013",
+        title="Email Brochure",
+        type=DownloadType.BROCHURE_EMAIL,
+        file_url=PUBLIC_EMAIL_BROCHURE_URL,
+    )
+    public = to_public_download(email)
+    assert public["file_url"] == PUBLIC_EMAIL_BROCHURE_URL
 
 
 def test_public_list_keeps_open_file_url():
@@ -34,12 +46,12 @@ def test_public_list_keeps_open_file_url():
     assert public["file_url"] == "/downloads/grosvenor-vistas-pricelist.pdf"
 
 
-def test_brochure_migration_only_targets_legacy_protected_filename():
-    assert brochure_url_needs_public_migration("grosvenor-vistas-brochure.pdf") is True
-    assert brochure_url_needs_public_migration(PUBLIC_BROCHURE_URL) is False
-    assert brochure_url_needs_public_migration("/downloads/custom-brochure.pdf") is False
-    assert brochure_url_needs_public_migration(None) is False
-    assert brochure_url_needs_public_migration("") is False
+def test_website_brochure_known_paths_need_protected_migration():
+    assert website_brochure_needs_protected_path("grosvenor-vistas-brochure.pdf") is True
+    assert website_brochure_needs_protected_path(PUBLIC_EMAIL_BROCHURE_URL) is True
+    assert website_brochure_needs_protected_path("/downloads/custom-brochure.pdf") is False
+    assert website_brochure_needs_protected_path(None) is False
+    assert website_brochure_needs_protected_path("") is False
 
 
 def test_token_is_expired_handles_naive_mongo_datetimes():

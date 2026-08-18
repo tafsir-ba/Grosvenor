@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import CtaButton from "@/components/shared/CtaButton";
 import { api, formatApiError } from "@/lib/api";
+import { DOWNLOAD_TYPE_LABEL } from "@/lib/constants";
 
 export default function AdminDownloads() {
     const [downloads, setDownloads] = useState([]);
@@ -22,7 +23,9 @@ export default function AdminDownloads() {
     return (
         <div data-testid="admin-downloads">
             <h1 className="font-display text-3xl text-brand-ink">Downloads</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Manage the brochure and price list (both open / public links).</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+                Website brochure requires a form. Email brochure stays an open drip-campaign link. Price list remains public.
+            </p>
 
             <div className="mt-8 overflow-x-auto rounded-sm border border-border bg-card">
                 <Table>
@@ -33,7 +36,7 @@ export default function AdminDownloads() {
                         {downloads.map((d) => (
                             <TableRow key={d._id} data-testid={`download-row-${d.type}`}>
                                 <TableCell className="font-medium">{d.title}</TableCell>
-                                <TableCell><span className="rounded-sm bg-muted px-2 py-1 text-xs uppercase tracking-wide">Open</span></TableCell>
+                                <TableCell><span className="rounded-sm bg-muted px-2 py-1 text-xs uppercase tracking-wide">{DOWNLOAD_TYPE_LABEL[d.type] || d.type}</span></TableCell>
                                 <TableCell>
                                     <Input
                                         defaultValue={d.file_url}

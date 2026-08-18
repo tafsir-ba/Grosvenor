@@ -229,6 +229,11 @@ test.describe("Brochure download UX (mocked API)", () => {
         await page.evaluate(() => window.scrollTo(0, 500));
         await page.getByTestId("fab-toggle").click();
         await page.getByTestId("fab-brochure").click();
+        await page.getByTestId("brochure-first-name").fill("Test");
+        await page.getByTestId("brochure-last-name").fill("Visitor");
+        await page.getByTestId("brochure-email").fill("visitor@example.com");
+        await page.getByTestId("brochure-consent").click();
+        await page.getByTestId("brochure-submit").click();
 
         await expect.poll(async () => {
             const opened = await page.evaluate(() => window.__openedUrls);

@@ -1,15 +1,23 @@
+import { useState } from "react";
 import { toast } from "sonner";
 import { FileText, Download as DownloadIcon } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
+import BrochureLeadDialog from "@/components/shared/BrochureLeadDialog";
 import { formatApiError } from "@/lib/api";
 import { accessDownload } from "@/lib/downloads";
+import { DOWNLOAD_TYPE } from "@/lib/constants";
 
-// Open download row — brochure and price list both open via public link.
 export default function DownloadForm({ download, dark = false, compact = false }) {
-    const label = download.type === "brochure" ? "Download Brochure" : "Price List";
-    const outline = download.type !== "brochure";
+    const isBrochure = download.type === DOWNLOAD_TYPE.BROCHURE;
+    const [brochureOpen, setBrochureOpen] = useState(false);
+    const label = isBrochure ? "Download Brochure" : "Price List";
+    const outline = !isBrochure;
 
     const handleOpen = async () => {
+        if (isBrochure) {
+            setBrochureOpen(true);
+            return;
+        }
         try {
             await accessDownload(download._id || download.id, null);
         } catch (err) {
@@ -28,8 +36,21 @@ export default function DownloadForm({ download, dark = false, compact = false }
         </CtaButton>
     );
 
+    const dialog = (
+        <BrochureLeadDialog
+            download={download}
+            open={brochureOpen}
+            onOpenChange={setBrochureOpen}
+        />
+    );
+
     if (compact) {
-        return button;
+        return (
+            <>
+                {button}
+                {isBrochure && dialog}
+            </>
+        );
     }
 
     return (
@@ -39,6 +60,7 @@ export default function DownloadForm({ download, dark = false, compact = false }
                 <h4 className={`font-display text-2xl ${dark ? "text-white" : "text-brand-blue"}`}>{download.title}</h4>
             </div>
             {button}
+            {isBrochure && dialog}
         </div>
     );
 }

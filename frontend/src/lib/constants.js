@@ -284,6 +284,18 @@ export const LEAD_TYPE = {
     EMAIL_CLICK: "email_click",
 };
 
+export const DOWNLOAD_TYPE = {
+    BROCHURE: "brochure",
+    BROCHURE_EMAIL: "brochure_email",
+    PRICELIST: "pricelist",
+};
+
+export const DOWNLOAD_TYPE_LABEL = {
+    brochure: "Website brochure (form)",
+    brochure_email: "Email brochure (open link)",
+    pricelist: "Price list (open)",
+};
+
 export const LEAD_TYPE_LABEL = {
     general_contact: "General Contact",
     book_showroom_visit: "Book Showroom Visit",

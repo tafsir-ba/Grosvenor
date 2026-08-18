@@ -16,7 +16,7 @@ DEFAULT_SCENARIOS = [
     {
         "key": LeadNotificationScenario.BROCHURE_DOWNLOAD.value,
         "label": "Brochure Download",
-        "description": "Reserved for contact-gated brochure downloads (brochure is currently open; clicks use General Lead).",
+        "description": "Visitor submits contact details on the website to download the brochure.",
     },
     {
         "key": LeadNotificationScenario.CONTACT_FORM.value,
@@ -47,8 +47,7 @@ DEFAULT_SCENARIOS = [
 
 # Map internal lead_type values to notification scenarios.
 LEAD_TYPE_SCENARIO_MAP = {
-    # Open downloads (brochure + price list) share general_lead — same click-tracking pattern.
-    "download_brochure": LeadNotificationScenario.GENERAL_LEAD.value,
+    "download_brochure": LeadNotificationScenario.BROCHURE_DOWNLOAD.value,
     "general_contact": LeadNotificationScenario.CONTACT_FORM.value,
     "contact_about_unit": LeadNotificationScenario.CONTACT_FORM.value,
     "book_showroom_visit": LeadNotificationScenario.APPOINTMENT_REQUEST.value,
