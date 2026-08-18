@@ -3,6 +3,7 @@ import { FileText, Download as DownloadIcon } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
 import { formatApiError } from "@/lib/api";
 import { accessDownload } from "@/lib/downloads";
+import { trackGenerateLead } from "@/lib/tracking";
 
 // Open download row — brochure and price list both open via public link.
 export default function DownloadForm({ download, dark = false, compact = false }) {
@@ -12,6 +13,9 @@ export default function DownloadForm({ download, dark = false, compact = false }
     const handleOpen = async () => {
         try {
             await accessDownload(download._id || download.id, null);
+            if (download.type === "brochure") {
+                trackGenerateLead("Brochure");
+            }
         } catch (err) {
             toast.error(formatApiError(err.response?.data?.detail) || "Unable to open file.");
         }

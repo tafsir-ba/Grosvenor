@@ -1,8 +1,17 @@
 // Single source of truth for analytics events + UTM attribution.
 import { api } from "@/lib/api";
+import { LEAD_TYPE } from "@/lib/constants";
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 const STORE_KEY = "gv_attribution";
+export const GENERATE_LEAD_EVENT = "generate_lead";
+
+const GENERATE_LEAD_LABEL = {
+    [LEAD_TYPE.GENERAL_CONTACT]: "Contact",
+    [LEAD_TYPE.BOOK_SHOWROOM_VISIT]: "Contact",
+    [LEAD_TYPE.CONTACT_ABOUT_UNIT]: "Contact",
+    [LEAD_TYPE.MORTGAGE_INFO_REQUEST]: "Contact",
+};
 
 // Parse UTM params once on load and persist them for the session.
 export function captureAttribution() {
@@ -28,6 +37,27 @@ function getAttribution() {
         source_url: window.location.href,
         ...utm,
     };
+}
+
+export function pushDataLayerEvent(payload) {
+    if (typeof window === "undefined") return;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+}
+
+export function trackGenerateLead(eventLabel, extra = {}) {
+    if (!eventLabel) return;
+    pushDataLayerEvent({
+        event: GENERATE_LEAD_EVENT,
+        eventLabel,
+        ...extra,
+    });
+}
+
+export function trackGenerateLeadForLeadType(leadType, extra = {}) {
+    const eventLabel = GENERATE_LEAD_LABEL[leadType];
+    if (!eventLabel) return;
+    trackGenerateLead(eventLabel, extra);
 }
 
 // Build the full lead payload merging form data with automatic attribution.
