@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import CtaButton from "@/components/shared/CtaButton";
-import { buildLeadPayload, submitLead } from "@/lib/tracking";
+import { buildLeadPayload, submitLead, trackGenerateLeadForLeadType } from "@/lib/tracking";
 import { formatApiError } from "@/lib/api";
 import { LEAD_TYPE, LEGAL, PROJECT } from "@/lib/constants";
 
@@ -133,6 +133,7 @@ export default function LeadForm({
             setForm(EMPTY);
             setErrors({});
             setSubmitted({ message: successMessage, reference, nextSteps: successNextSteps });
+            trackGenerateLeadForLeadType(leadType);
             onSuccess && onSuccess(result);
         } catch (err) {
             toast.error(formatApiError(err.response?.data?.detail) || err.message || "Submission failed.");

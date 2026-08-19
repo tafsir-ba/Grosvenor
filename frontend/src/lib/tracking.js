@@ -1,5 +1,6 @@
 // Single source of truth for analytics events + UTM attribution.
 import { api } from "@/lib/api";
+import { LEAD_TYPE } from "@/lib/constants";
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 const STORE_KEY = "gv_attribution";
@@ -66,4 +67,35 @@ export async function submitLead(formData, leadType, ctx = {}) {
 export async function submitAdminLeadPayload(payload) {
     const { data } = await api.post("/admin/leads", payload);
     return data;
+}
+
+// ---------- GTM/DataLayer (for Meta Lead via GTM) ----------
+export const GENERATE_LEAD_EVENT = "generate_lead";
+
+const GENERATE_LEAD_LABEL = {
+    [LEAD_TYPE.GENERAL_CONTACT]: "Contact",
+    [LEAD_TYPE.BOOK_SHOWROOM_VISIT]: "Contact",
+    [LEAD_TYPE.CONTACT_ABOUT_UNIT]: "Contact",
+    [LEAD_TYPE.MORTGAGE_INFO_REQUEST]: "Contact",
+    [LEAD_TYPE.DOWNLOAD_BROCHURE]: "Brochure",
+};
+
+export function pushDataLayerEvent(payload) {
+    if (typeof window === "undefined") return;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+}
+
+export function trackGenerateLead(eventLabel, extra = {}) {
+    if (!eventLabel) return;
+    pushDataLayerEvent({
+        event: GENERATE_LEAD_EVENT,
+        eventLabel,
+        ...extra,
+    });
+}
+
+export function trackGenerateLeadForLeadType(leadType, extra = {}) {
+    const eventLabel = GENERATE_LEAD_LABEL[leadType];
+    trackGenerateLead(eventLabel, extra);
 }
