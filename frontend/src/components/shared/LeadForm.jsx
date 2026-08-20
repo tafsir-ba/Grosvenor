@@ -87,11 +87,13 @@ export default function LeadForm({
 
     const validate = () => {
         const next = {};
-        if (!form.first_name.trim()) next.first_name = "First name is required.";
-        if (!form.last_name.trim()) next.last_name = "Last name is required.";
-        if (!form.email.trim()) next.email = "Email is required.";
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = "Enter a valid email address.";
-        if (form.phone.trim() && !PHONE_RE.test(form.phone.trim())) {
+        if (fields.includes("first_name") && !form.first_name.trim()) next.first_name = "First name is required.";
+        if (fields.includes("last_name") && !form.last_name.trim()) next.last_name = "Last name is required.";
+        if (fields.includes("email")) {
+            if (!form.email.trim()) next.email = "Email is required.";
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = "Enter a valid email address.";
+        }
+        if (fields.includes("phone") && form.phone.trim() && !PHONE_RE.test(form.phone.trim())) {
             next.phone = "Enter a valid telephone number (digits, spaces, +, -, or parentheses).";
         }
         if (!form.consent) next.consent = "Please accept the data processing consent to continue.";
@@ -115,10 +117,10 @@ export default function LeadForm({
                   ? form.message.trim() || null
                   : null;
             const data = {
-                first_name: form.first_name.trim() || null,
-                last_name: form.last_name.trim() || null,
-                phone: form.phone.trim() || null,
-                email: form.email.trim() || null,
+                first_name: fields.includes("first_name") ? form.first_name.trim() || null : null,
+                last_name: fields.includes("last_name") ? form.last_name.trim() || null : null,
+                phone: fields.includes("phone") ? form.phone.trim() || null : null,
+                email: fields.includes("email") ? form.email.trim() || null : null,
                 message,
                 consent: form.consent,
             };
@@ -198,7 +200,8 @@ export default function LeadForm({
                 </div>
             )}
 
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className={`grid gap-5 ${fields.includes("first_name") && fields.includes("last_name") ? "sm:grid-cols-2" : ""}`}>
+                {fields.includes("first_name") && (
                 <div className="space-y-2">
                     <Label htmlFor={`${testIdPrefix}-first-name`}>First name</Label>
                     <Input
@@ -216,6 +219,8 @@ export default function LeadForm({
                     />
                     <FieldError id={`${testIdPrefix}-first-name-error`}>{errors.first_name}</FieldError>
                 </div>
+                )}
+                {fields.includes("last_name") && (
                 <div className="space-y-2">
                     <Label htmlFor={`${testIdPrefix}-last-name`}>Last name</Label>
                     <Input
@@ -233,8 +238,11 @@ export default function LeadForm({
                     />
                     <FieldError id={`${testIdPrefix}-last-name-error`}>{errors.last_name}</FieldError>
                 </div>
+                )}
             </div>
-            <div className="grid gap-5 sm:grid-cols-2">
+            {(fields.includes("phone") || fields.includes("email")) && (
+            <div className={`grid gap-5 ${fields.includes("phone") && fields.includes("email") ? "sm:grid-cols-2" : ""}`}>
+                {fields.includes("phone") && (
                 <div className="space-y-2">
                     <Label htmlFor={`${testIdPrefix}-phone`}>Telephone</Label>
                     <Input
@@ -253,6 +261,8 @@ export default function LeadForm({
                     />
                     <FieldError id={`${testIdPrefix}-phone-error`}>{errors.phone}</FieldError>
                 </div>
+                )}
+                {fields.includes("email") && (
                 <div className="space-y-2">
                     <Label htmlFor={`${testIdPrefix}-email`}>Email</Label>
                     <Input
@@ -271,7 +281,9 @@ export default function LeadForm({
                     />
                     <FieldError id={`${testIdPrefix}-email-error`}>{errors.email}</FieldError>
                 </div>
+                )}
             </div>
+            )}
             {showVisitPreferences && (
                 <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-2">

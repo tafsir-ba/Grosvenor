@@ -26,6 +26,7 @@ LEAD_TYPE_LABELS = {
     "contact_about_unit": "Unit Enquiry",
     "mortgage_info_request": "Mortgage Enquiry",
     "sales_explorer": "Sales Explorer Inquiry",
+    "whatsapp_enquiry": "WhatsApp Enquiry",
     "whatsapp_click": "WhatsApp Click",
     "phone_click": "Phone Click",
     "email_click": "Email Click",

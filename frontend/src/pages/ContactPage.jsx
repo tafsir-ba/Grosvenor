@@ -1,19 +1,23 @@
 import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
 import LeadForm from "@/components/shared/LeadForm";
 import DownloadForm from "@/components/shared/DownloadForm";
+import WhatsAppLeadDialog from "@/components/shared/WhatsAppLeadDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Eyebrow, fadeUp, PlaceholderMap, ROUND } from "@/components/shared/luxe";
 import { PROJECT, LEAD_TYPE } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
+import { requestWhatsApp } from "@/lib/whatsapp";
 import { useDownloads } from "@/hooks/useData";
 
 export default function ContactPage() {
     const { downloads, loading: downloadsLoading } = useDownloads();
+    const [whatsappOpen, setWhatsappOpen] = useState(false);
     const channels = [
         { icon: Phone, label: "Call", value: PROJECT.contact.phone, href: PROJECT.contact.phoneHref, type: LEAD_TYPE.PHONE_CLICK, testid: "contact-phone" },
-        { icon: MessageCircle, label: "WhatsApp", value: PROJECT.contact.whatsappNumber, href: PROJECT.contact.whatsapp, type: LEAD_TYPE.WHATSAPP_CLICK, testid: "contact-whatsapp", external: true },
+        { icon: MessageCircle, label: "WhatsApp", value: PROJECT.contact.whatsappNumber, whatsapp: true, testid: "contact-whatsapp" },
         { icon: Mail, label: "Email", value: PROJECT.contact.email, href: PROJECT.contact.emailHref, type: LEAD_TYPE.EMAIL_CLICK, testid: "contact-email" },
     ];
 
@@ -27,22 +31,43 @@ export default function ContactPage() {
                         <Eyebrow>Get in Touch</Eyebrow>
                         <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">We're here to help</h2>
                         <div className="mt-10 space-y-3">
-                            {channels.map((c) => (
-                                <a
-                                    key={c.label}
-                                    href={c.href}
-                                    onClick={() => trackClick(c.type)}
-                                    data-testid={c.testid}
-                                    {...(c.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                                    className="flex items-center gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5 transition-colors hover:border-brand-gold"
-                                >
-                                    <c.icon className="h-5 w-5 text-brand-gold" />
-                                    <div>
-                                        <p className="lux-eyebrow text-brand-ink/50">{c.label}</p>
-                                        <p className="font-sans font-medium text-brand-ink">{c.value}</p>
-                                    </div>
-                                </a>
-                            ))}
+                            {channels.map((c) => {
+                                const className = "flex items-center gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5 transition-colors hover:border-brand-gold";
+                                const body = (
+                                    <>
+                                        <c.icon className="h-5 w-5 text-brand-gold" />
+                                        <div>
+                                            <p className="lux-eyebrow text-brand-ink/50">{c.label}</p>
+                                            <p className="font-sans font-medium text-brand-ink">{c.value}</p>
+                                        </div>
+                                    </>
+                                );
+                                if (c.whatsapp) {
+                                    return (
+                                        <button
+                                            key={c.label}
+                                            type="button"
+                                            onClick={() => requestWhatsApp({ openDialog: () => setWhatsappOpen(true) })}
+                                            data-testid={c.testid}
+                                            className={`${className} w-full text-left`}
+                                        >
+                                            {body}
+                                        </button>
+                                    );
+                                }
+                                return (
+                                    <a
+                                        key={c.label}
+                                        href={c.href}
+                                        onClick={() => trackClick(c.type)}
+                                        data-testid={c.testid}
+                                        {...(c.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                                        className={className}
+                                    >
+                                        {body}
+                                    </a>
+                                );
+                            })}
                             <div className="flex items-start gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5">
                                 <MapPin className="mt-1 h-5 w-5 text-brand-gold" />
                                 <div>
@@ -96,6 +121,8 @@ export default function ContactPage() {
             <section className="container-wide pb-24 md:pb-32">
                 <PlaceholderMap className={`h-[56vh] lg:h-[64vh] ${ROUND}`} />
             </section>
+
+            <WhatsAppLeadDialog open={whatsappOpen} onOpenChange={setWhatsappOpen} />
         </div>
     );
 }

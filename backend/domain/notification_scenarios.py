@@ -26,7 +26,7 @@ DEFAULT_SCENARIOS = [
     {
         "key": LeadNotificationScenario.CALLBACK_REQUEST.value,
         "label": "Callback Request",
-        "description": "User clicks phone, email, or WhatsApp to request contact.",
+        "description": "User requests contact via phone, email, or WhatsApp (click or gated enquiry).",
     },
     {
         "key": LeadNotificationScenario.APPOINTMENT_REQUEST.value,
@@ -54,6 +54,7 @@ LEAD_TYPE_SCENARIO_MAP = {
     "mortgage_info_request": LeadNotificationScenario.INVESTMENT_INQUIRY.value,
     "sales_explorer": LeadNotificationScenario.GENERAL_LEAD.value,
     "download_price_list": LeadNotificationScenario.GENERAL_LEAD.value,
+    "whatsapp_enquiry": LeadNotificationScenario.CALLBACK_REQUEST.value,
     "whatsapp_click": LeadNotificationScenario.CALLBACK_REQUEST.value,
     "phone_click": LeadNotificationScenario.CALLBACK_REQUEST.value,
     "email_click": LeadNotificationScenario.CALLBACK_REQUEST.value,

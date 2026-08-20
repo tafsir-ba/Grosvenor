@@ -6,15 +6,17 @@ import { toast } from "sonner";
 import { useDownloads } from "@/hooks/useData";
 import { accessDownload } from "@/lib/downloads";
 import { formatApiError } from "@/lib/api";
-import { DOWNLOAD_TYPE, PROJECT, LEAD_TYPE } from "@/lib/constants";
-import { trackClick } from "@/lib/tracking";
+import { DOWNLOAD_TYPE } from "@/lib/constants";
 import BrochureLeadDialog from "@/components/shared/BrochureLeadDialog";
+import WhatsAppLeadDialog from "@/components/shared/WhatsAppLeadDialog";
+import { requestWhatsApp } from "@/lib/whatsapp";
 
 const CYCLE = [Download, CalendarCheck, MessageCircle, FileText];
 
 export default function FloatingActionButton() {
     const [open, setOpen] = useState(false);
     const [brochureOpen, setBrochureOpen] = useState(false);
+    const [whatsappOpen, setWhatsappOpen] = useState(false);
     const [iconIdx, setIconIdx] = useState(0);
     const [scrolled, setScrolled] = useState(false);
     const { downloads } = useDownloads();
@@ -60,7 +62,15 @@ export default function FloatingActionButton() {
         { key: "brochure", label: "Download Brochure", icon: Download, onClick: () => openDownload(brochure), disabled: !brochure },
         { key: "pricelist", label: "Price List", icon: FileText, onClick: () => openDownload(pricelist), disabled: !pricelist },
         { key: "visit", label: "Book a Visit", icon: CalendarCheck, to: "/contact" },
-        { key: "whatsapp", label: "WhatsApp", icon: MessageCircle, href: PROJECT.contact.whatsapp, external: true, onClick: () => trackClick(LEAD_TYPE.WHATSAPP_CLICK) },
+        {
+            key: "whatsapp",
+            label: "WhatsApp",
+            icon: MessageCircle,
+            onClick: () => {
+                setOpen(false);
+                requestWhatsApp({ openDialog: () => setWhatsappOpen(true) });
+            },
+        },
     ];
 
     const ActiveIcon = CYCLE[iconIdx];
@@ -122,6 +132,10 @@ export default function FloatingActionButton() {
                 download={brochure}
                 open={brochureOpen}
                 onOpenChange={setBrochureOpen}
+            />
+            <WhatsAppLeadDialog
+                open={whatsappOpen}
+                onOpenChange={setWhatsappOpen}
             />
         </div>
     );

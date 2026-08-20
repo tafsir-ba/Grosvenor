@@ -119,7 +119,7 @@ def test_send_residence_to_buyer(mock_post, tmp_path):
 
 
 def test_click_lead_types_have_human_labels():
-    for lead_type in ("whatsapp_click", "phone_click", "email_click"):
+    for lead_type in ("whatsapp_click", "phone_click", "email_click", "whatsapp_enquiry"):
         assert email_service.LEAD_TYPE_LABELS[lead_type]
         rows = email_service._lead_table_rows({"lead_type": lead_type})
         lead_type_row = next(r for r in rows if r[0] == "Lead type")

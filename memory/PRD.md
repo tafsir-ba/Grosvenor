@@ -131,6 +131,9 @@ Admin: admin@grosvenorvistas.com / Grosvenor2026! (see test_credentials.md)
   opens via a short-lived token from `backend/protected_downloads`. CRM drip
   `brochure_email` stays the open public URL `/downloads/grosvenor-vistas-brochure.pdf`.
   Price list remains a public PDF. Website brochure leads are real CRM contacts.
+- **WhatsApp soft-gate:** FAB / Contact / Unit Detail WhatsApp CTAs ask for first name +
+  email (+ consent) once per session (`whatsapp_enquiry` CRM lead), then open WhatsApp.
+  GTM Lead conversion should use `generate_lead` (eventLabel Contact), not link-click.
 - **Per-unit floor plans (protected):** Every residence has its OWN floor-plan PDF (41 building units + 2 Begonia townhouses sharing one plan = all 43). Stored OUTSIDE the web root at `/app/backend/protected_floorplans/{unit_number}.pdf`.
 - **Protected delivery:** New admin-only `GET /api/admin/floorplans/{unit_number}` (require_admin, FileResponse). Verified 401 without token / 200 with / 404 unknown. Never exposed publicly.
 - **Explorer UI:** detail-panel floor-plan section → single "View PDF" button per unit; fetches the PDF as an authenticated blob and shows it in a modal `<iframe>` with "Open in new tab" fallback. Removed old per-type sample images + Dropbox link (FULL_PLANS_URL). Beds/baths/rooms still from explorerData.

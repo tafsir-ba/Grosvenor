@@ -86,7 +86,7 @@ Price list remains a public static PDF.
 - **UnitStatus:** available · reserved · sold
 - **LeadType:** general_contact · book_showroom_visit · download_brochure ·
   download_price_list · contact_about_unit · mortgage_info_request ·
-  whatsapp_click · phone_click · email_click
+  sales_explorer · whatsapp_enquiry · whatsapp_click · phone_click · email_click
 - **LeadStatus** (internal pipeline mirror): new · contacted · qualified · won · lost
 - **DownloadType:** brochure (website, form-gated) · brochure_email (open drip link) · pricelist (open)
 
@@ -202,6 +202,8 @@ UTM params parsed once on load, persisted, and attached to every lead automatica
    website `brochure` is **form-gated** (name + email, then a short-lived file token).
    CRM drip `brochure_email` stays an **open** public URL:
    `/downloads/grosvenor-vistas-brochure.pdf`. Price list remains open.
+   WhatsApp CTAs use a soft gate (`whatsapp_enquiry`: first name + email + consent,
+   once per session) then open WhatsApp; GTM should use `generate_lead` (not link-click).
 4. **Contact details** — need WhatsApp number, phone, email, and map address/coordinates
    for the showroom.
 5. **Buildings & naming** — how many buildings and their names/labels (e.g. Block A/B…)?

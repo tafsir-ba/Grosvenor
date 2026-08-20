@@ -29,9 +29,16 @@ class LeadType(str, Enum):
     CONTACT_ABOUT_UNIT = "contact_about_unit"
     MORTGAGE_INFO_REQUEST = "mortgage_info_request"
     SALES_EXPLORER = "sales_explorer"
-    WHATSAPP_CLICK = "whatsapp_click"
+    WHATSAPP_ENQUIRY = "whatsapp_enquiry"  # form-gated WhatsApp open (CRM contact)
+    WHATSAPP_CLICK = "whatsapp_click"      # legacy anonymous click (kept for /track)
     PHONE_CLICK = "phone_click"
     EMAIL_CLICK = "email_click"
+
+
+# Form leads that require first_name + email + consent, but not last_name.
+OPTIONAL_LAST_NAME_LEAD_TYPES = {
+    LeadType.WHATSAPP_ENQUIRY,
+}
 
 
 class DownloadType(str, Enum):

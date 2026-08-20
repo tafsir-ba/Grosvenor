@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 import StatusBadge from "@/components/shared/StatusBadge";
 import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
+import WhatsAppLeadDialog from "@/components/shared/WhatsAppLeadDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnit, useUnits } from "@/hooks/useData";
-import { formatPrice, formatSurface, formatUnitDetailPrice } from "@/lib/format";
-import { BUILDINGS, LEAD_TYPE, PROJECT, collectionForSurface, homeCategoryForSurface } from "@/lib/constants";
-import { trackClick } from "@/lib/tracking";
+import { formatSurface, formatUnitDetailPrice } from "@/lib/format";
+import { BUILDINGS, LEAD_TYPE, collectionForSurface, homeCategoryForSurface } from "@/lib/constants";
+import { requestWhatsApp } from "@/lib/whatsapp";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
 function shortBuilding(value) {
@@ -66,6 +67,7 @@ export default function UnitDetailPage() {
     const { slug } = useParams();
     const { unit, loading, error } = useUnit(slug);
     const { units: allUnits } = useUnits({ sort: "price_asc" });
+    const [whatsappOpen, setWhatsappOpen] = useState(false);
 
     const collection = unit ? collectionForSurface(unit.total_surface) : null;
 
@@ -167,7 +169,11 @@ export default function UnitDetailPage() {
                                 <CtaButton to="/contact" variant="outline" data-testid="unit-book-visit">
                                     <CalendarCheck className="h-4 w-4" /> Book a Visit
                                 </CtaButton>
-                                <CtaButton href={PROJECT.contact.whatsapp} target="_blank" rel="noreferrer" variant="outline" onClick={() => trackClick(LEAD_TYPE.WHATSAPP_CLICK, leadCtx)} data-testid="unit-whatsapp">
+                                <CtaButton
+                                    variant="outline"
+                                    onClick={() => requestWhatsApp({ openDialog: () => setWhatsappOpen(true) })}
+                                    data-testid="unit-whatsapp"
+                                >
                                     <MessageCircle className="h-4 w-4" /> WhatsApp
                                 </CtaButton>
                             </div>
@@ -266,6 +272,12 @@ export default function UnitDetailPage() {
                     </div>
                 </section>
             )}
+
+            <WhatsAppLeadDialog
+                open={whatsappOpen}
+                onOpenChange={setWhatsappOpen}
+                ctx={leadCtx}
+            />
         </div>
     );
 }
