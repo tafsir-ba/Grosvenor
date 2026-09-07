@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { X, Download, CalendarCheck, MessageCircle, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
 import { useDownloads } from "@/hooks/useData";
-import { accessDownload } from "@/lib/downloads";
-import { formatApiError } from "@/lib/api";
 import { DOWNLOAD_TYPE } from "@/lib/constants";
 import BrochureLeadDialog from "@/components/shared/BrochureLeadDialog";
+import PriceListLeadDialog from "@/components/shared/PriceListLeadDialog";
 import WhatsAppLeadDialog from "@/components/shared/WhatsAppLeadDialog";
 import { requestWhatsApp } from "@/lib/whatsapp";
 
@@ -16,6 +14,7 @@ const CYCLE = [Download, CalendarCheck, MessageCircle, FileText];
 export default function FloatingActionButton() {
     const [open, setOpen] = useState(false);
     const [brochureOpen, setBrochureOpen] = useState(false);
+    const [pricelistOpen, setPricelistOpen] = useState(false);
     const [whatsappOpen, setWhatsappOpen] = useState(false);
     const [iconIdx, setIconIdx] = useState(0);
     const [scrolled, setScrolled] = useState(false);
@@ -42,19 +41,15 @@ export default function FloatingActionButton() {
         return () => clearInterval(id);
     }, [open]);
 
-    const openDownload = async (item) => {
-        const id = item?._id || item?.id;
-        if (!id) return;
+    const openDownload = (item) => {
+        if (!item) return;
+        setOpen(false);
         if (item.type === DOWNLOAD_TYPE.BROCHURE) {
-            setOpen(false);
             setBrochureOpen(true);
             return;
         }
-        try {
-            await accessDownload(id, null);
-            setOpen(false);
-        } catch (err) {
-            toast.error(formatApiError(err.response?.data?.detail) || "Unable to open file.");
+        if (item.type === DOWNLOAD_TYPE.PRICELIST) {
+            setPricelistOpen(true);
         }
     };
 
@@ -132,6 +127,11 @@ export default function FloatingActionButton() {
                 download={brochure}
                 open={brochureOpen}
                 onOpenChange={setBrochureOpen}
+            />
+            <PriceListLeadDialog
+                download={pricelist}
+                open={pricelistOpen}
+                onOpenChange={setPricelistOpen}
             />
             <WhatsAppLeadDialog
                 open={whatsappOpen}

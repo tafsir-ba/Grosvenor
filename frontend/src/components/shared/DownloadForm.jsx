@@ -1,27 +1,25 @@
 import { useState } from "react";
-import { toast } from "sonner";
 import { FileText, Download as DownloadIcon } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
 import BrochureLeadDialog from "@/components/shared/BrochureLeadDialog";
-import { formatApiError } from "@/lib/api";
-import { accessDownload } from "@/lib/downloads";
+import PriceListLeadDialog from "@/components/shared/PriceListLeadDialog";
 import { DOWNLOAD_TYPE } from "@/lib/constants";
 
 export default function DownloadForm({ download, dark = false, compact = false }) {
     const isBrochure = download.type === DOWNLOAD_TYPE.BROCHURE;
+    const isPricelist = download.type === DOWNLOAD_TYPE.PRICELIST;
     const [brochureOpen, setBrochureOpen] = useState(false);
+    const [pricelistOpen, setPricelistOpen] = useState(false);
     const label = isBrochure ? "Download Brochure" : "Price List";
     const outline = !isBrochure;
 
-    const handleOpen = async () => {
+    const handleOpen = () => {
         if (isBrochure) {
             setBrochureOpen(true);
             return;
         }
-        try {
-            await accessDownload(download._id || download.id, null);
-        } catch (err) {
-            toast.error(formatApiError(err.response?.data?.detail) || "Unable to open file.");
+        if (isPricelist) {
+            setPricelistOpen(true);
         }
     };
 
@@ -36,19 +34,30 @@ export default function DownloadForm({ download, dark = false, compact = false }
         </CtaButton>
     );
 
-    const dialog = (
-        <BrochureLeadDialog
-            download={download}
-            open={brochureOpen}
-            onOpenChange={setBrochureOpen}
-        />
+    const dialogs = (
+        <>
+            {isBrochure && (
+                <BrochureLeadDialog
+                    download={download}
+                    open={brochureOpen}
+                    onOpenChange={setBrochureOpen}
+                />
+            )}
+            {isPricelist && (
+                <PriceListLeadDialog
+                    download={download}
+                    open={pricelistOpen}
+                    onOpenChange={setPricelistOpen}
+                />
+            )}
+        </>
     );
 
     if (compact) {
         return (
             <>
                 {button}
-                {isBrochure && dialog}
+                {dialogs}
             </>
         );
     }
@@ -60,7 +69,7 @@ export default function DownloadForm({ download, dark = false, compact = false }
                 <h4 className={`font-display text-2xl ${dark ? "text-white" : "text-brand-blue"}`}>{download.title}</h4>
             </div>
             {button}
-            {isBrochure && dialog}
+            {dialogs}
         </div>
     );
 }

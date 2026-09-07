@@ -3,14 +3,16 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, MapPin, Waves, Dumbbell, KeyRound, Car } from "lucide-react";
 import CtaButton from "@/components/shared/CtaButton";
+import PriceListLeadDialog from "@/components/shared/PriceListLeadDialog";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
-import { useUnits } from "@/hooks/useData";
+import { useUnits, useDownloads } from "@/hooks/useData";
 import {
     PROJECT,
     HOME_RESIDENCE_CATEGORIES,
     HOME_MEDIA,
     HOME_AMENITY_HIGHLIGHTS,
     HOME_LIFESTYLE_PANELS,
+    DOWNLOAD_TYPE,
     unitMatchesHomeCategory,
 } from "@/lib/constants";
 import { homePageHighlights } from "@/lib/format";
@@ -150,6 +152,9 @@ function ProjectHighlights({ highlights, error }) {
 
 function HeroSection() {
     const [videoFailed, setVideoFailed] = useState(false);
+    const [pricelistOpen, setPricelistOpen] = useState(false);
+    const { downloads } = useDownloads();
+    const pricelist = downloads.find((d) => d.type === DOWNLOAD_TYPE.PRICELIST);
 
     return (
         <section className="container-wide pb-8 pt-32 md:pb-10 md:pt-36" data-testid="hero-section">
@@ -182,11 +187,23 @@ function HeroSection() {
                     <h1 className="lux-title mt-6 text-6xl text-white sm:text-7xl lg:text-8xl">Elevate Your View</h1>
                     <p className="mt-5 max-w-xl font-sans text-lg text-white/85">Luxury residences in Grosvenor Heights, Manor Park.</p>
                     <div className="mt-9 flex flex-wrap gap-4">
-                        <CtaButton to="/contact" variant="primary" data-testid="hero-book-visit">Book a Visit</CtaButton>
+                        <CtaButton
+                            variant="primary"
+                            onClick={() => setPricelistOpen(true)}
+                            disabled={!pricelist}
+                            data-testid="hero-download-price-list"
+                        >
+                            Download price list
+                        </CtaButton>
                         <CtaButton to="/residences" variant="outline-light" data-testid="hero-explore">Explore Residences</CtaButton>
                     </div>
                 </motion.div>
             </div>
+            <PriceListLeadDialog
+                download={pricelist}
+                open={pricelistOpen}
+                onOpenChange={setPricelistOpen}
+            />
         </section>
     );
 }

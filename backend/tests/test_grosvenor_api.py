@@ -396,22 +396,31 @@ class TestDownloads:
         assert "file_url" not in broch
         assert all(d["type"] != "brochure_email" for d in items)
         price = next(d for d in items if d["type"] == "pricelist")
-        assert price.get("file_url")
+        assert "file_url" not in price
 
-    def test_pricelist_open(self, session):
+    def test_pricelist_requires_lead(self, session):
         items = session.get(f"{API}/downloads").json()
         price = next(d for d in items if d["type"] == "pricelist")
         r = session.post(f"{API}/downloads/{price['_id']}/access",
                          json={"lead": None})
-        assert r.status_code == 200, r.text
-        assert r.json().get("file_url")
+        assert r.status_code == 422, r.text
 
     def test_pricelist_access_records_download_lead(self, session, admin_session):
         items = session.get(f"{API}/downloads").json()
         price = next(d for d in items if d["type"] == "pricelist")
         before = _leads_total(admin_session.get(f"{API}/admin/leads").json())
-        r = session.post(f"{API}/downloads/{price['_id']}/access", json={"lead": None})
+        payload = {
+            "first_name": "TEST",
+            "last_name": "Pricelist",
+            "email": f"pricelist_{uuid.uuid4().hex[:8]}@example.com",
+            "phone": "+18765550123",
+            "consent": True,
+            "lead_type": "download_price_list",
+        }
+        r = session.post(f"{API}/downloads/{price['_id']}/access", json={"lead": payload})
         assert r.status_code == 200, r.text
+        file_url = r.json().get("file_url")
+        assert file_url and "/api/downloads/file/" in file_url
         after = _leads_total(admin_session.get(f"{API}/admin/leads").json())
         assert after == before + 1
         assert _leads_items(admin_session.get(f"{API}/admin/leads").json())[0].get("lead_type") == "download_price_list"
@@ -431,6 +440,7 @@ class TestDownloads:
             "first_name": "TEST",
             "last_name": "Brochure",
             "email": f"brochure_{uuid.uuid4().hex[:8]}@example.com",
+            "phone": "+18765550199",
             "consent": True,
             "lead_type": "download_brochure",
         }

@@ -3,26 +3,26 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { accessDownload } from "@/lib/downloads";
 import { LEAD_TYPE } from "@/lib/constants";
 
-export default function BrochureLeadDialog({ download, open, onOpenChange }) {
+export default function PriceListLeadDialog({ download, open, onOpenChange }) {
     const id = download?._id || download?.id;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent data-testid="brochure-lead-dialog">
+            <DialogContent data-testid="pricelist-lead-dialog">
                 <DialogHeader>
-                    <DialogTitle className="font-display text-2xl text-brand-blue">Download the brochure</DialogTitle>
+                    <DialogTitle className="font-display text-2xl text-brand-blue">Download the price list</DialogTitle>
                     <DialogDescription>
-                        Share your name, email, and phone number and the brochure will open in your browser.
+                        Share your name, email, and phone number and the price list will open in your browser.
                     </DialogDescription>
                 </DialogHeader>
                 {id && (
                     <LeadForm
-                        leadType={LEAD_TYPE.DOWNLOAD_BROCHURE}
+                        leadType={LEAD_TYPE.DOWNLOAD_PRICE_LIST}
                         fields={["first_name", "last_name", "phone", "email"]}
-                        submitLabel="Download Brochure"
-                        successMessage="Thank you — your brochure is opening now."
+                        submitLabel="Download Price List"
+                        successMessage="Thank you — your price list is opening now."
                         successNextSteps="If the file did not open, allow pop-ups and try again."
-                        testIdPrefix="brochure"
+                        testIdPrefix="pricelist"
                         submitFn={(payload) => accessDownload(id, payload)}
                     />
                 )}

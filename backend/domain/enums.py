@@ -35,20 +35,22 @@ class LeadType(str, Enum):
     EMAIL_CLICK = "email_click"
 
 
-# Form leads that require first_name + email + consent, but not last_name.
-OPTIONAL_LAST_NAME_LEAD_TYPES = {
+# Form leads that also require a phone number (on top of name + email + consent).
+REQUIRED_PHONE_LEAD_TYPES = {
     LeadType.WHATSAPP_ENQUIRY,
+    LeadType.DOWNLOAD_PRICE_LIST,
+    LeadType.DOWNLOAD_BROCHURE,
 }
 
 
 class DownloadType(str, Enum):
     BROCHURE = "brochure"              # website: form-gated, then opens in browser
     BROCHURE_EMAIL = "brochure_email"  # CRM drip: open public URL, not shown on the site
-    PRICELIST = "pricelist"            # open: freely accessible (click is tracked only)
+    PRICELIST = "pricelist"            # website: form-gated, then opens in browser
 
 
-# Website brochure requires a captured lead, then a short-lived file token.
-GATED_DOWNLOAD_TYPES = {DownloadType.BROCHURE}
+# Website brochure + price list require a captured lead, then a short-lived file token.
+GATED_DOWNLOAD_TYPES = {DownloadType.BROCHURE, DownloadType.PRICELIST}
 
 # Shown on the public site. The email brochure is admin/CRM-only.
 PUBLIC_WEBSITE_DOWNLOAD_TYPES = {DownloadType.BROCHURE, DownloadType.PRICELIST}
@@ -60,7 +62,5 @@ CLICK_LEAD_TYPES = {
     LeadType.EMAIL_CLICK,
 }
 
-# Lead types that may be recorded without contact details (clicks + open downloads).
-ANONYMOUS_LEAD_TYPES = CLICK_LEAD_TYPES | {
-    LeadType.DOWNLOAD_PRICE_LIST,
-}
+# Lead types that may be recorded without contact details (click tracking only).
+ANONYMOUS_LEAD_TYPES = CLICK_LEAD_TYPES

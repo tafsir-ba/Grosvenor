@@ -76,8 +76,8 @@ _DOWNLOADS = [
      "file_url": "/downloads/grosvenor-vistas-brochure.pdf",
      "description": "Open public brochure for CRM drip emails. Not shown on the website."},
     {"title": "Current Price List", "type": "pricelist",
-     "file_url": "/downloads/grosvenor-vistas-pricelist.pdf",
-     "description": "Up-to-date availability and pricing."},
+     "file_url": "grosvenor-vistas-pricelist.pdf",
+     "description": "Website price list — requires contact details before opening."},
 ]
 
 

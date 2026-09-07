@@ -294,7 +294,7 @@ export const DOWNLOAD_TYPE = {
 export const DOWNLOAD_TYPE_LABEL = {
     brochure: "Website brochure (form)",
     brochure_email: "Email brochure (open link)",
-    pricelist: "Price list (open)",
+    pricelist: "Price list",
 };
 
 export const LEAD_TYPE_LABEL = {

@@ -19,6 +19,7 @@ test.describe("Production public smoke (read-only)", () => {
         await page.goto("/");
         await expect(page.getByRole("heading", { level: 1, name: /Elevate Your View/i })).toBeVisible();
         await expect(page.getByRole("link", { name: /Book a Visit/i }).first()).toBeVisible();
+        await expect(page.getByTestId("hero-download-price-list")).toBeVisible();
         await expect(page.getByRole("link", { name: /Explore Residences/i }).first()).toBeVisible();
     });
 

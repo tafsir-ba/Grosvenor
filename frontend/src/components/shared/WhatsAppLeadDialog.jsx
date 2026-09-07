@@ -10,13 +10,13 @@ export default function WhatsAppLeadDialog({ open, onOpenChange, ctx = {} }) {
                 <DialogHeader>
                     <DialogTitle className="font-display text-2xl text-brand-blue">Chat on WhatsApp</DialogTitle>
                     <DialogDescription>
-                        Share your first name and email — WhatsApp will open right away.
+                        Share your name, email, and phone number — WhatsApp will open right away.
                     </DialogDescription>
                 </DialogHeader>
                 <LeadForm
                     leadType={LEAD_TYPE.WHATSAPP_ENQUIRY}
                     ctx={ctx}
-                    fields={["first_name", "email"]}
+                    fields={["first_name", "last_name", "phone", "email"]}
                     submitLabel="Continue to WhatsApp"
                     successMessage="Opening WhatsApp…"
                     successNextSteps="If WhatsApp did not open, allow pop-ups and try again."

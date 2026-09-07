@@ -35,15 +35,16 @@ def test_public_list_keeps_email_brochure_file_url():
     assert public["file_url"] == PUBLIC_EMAIL_BROCHURE_URL
 
 
-def test_public_list_keeps_open_file_url():
+def test_public_list_hides_pricelist_file_url():
     price = Download(
         _id="507f1f77bcf86cd799439012",
         title="Price List",
         type=DownloadType.PRICELIST,
-        file_url="/downloads/grosvenor-vistas-pricelist.pdf",
+        file_url="grosvenor-vistas-pricelist.pdf",
     )
     public = to_public_download(price)
-    assert public["file_url"] == "/downloads/grosvenor-vistas-pricelist.pdf"
+    assert public["type"] == "pricelist"
+    assert "file_url" not in public
 
 
 def test_website_brochure_known_paths_need_protected_migration():

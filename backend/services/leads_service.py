@@ -12,7 +12,7 @@ from fastapi import HTTPException
 
 from core.db import db
 from domain.base import utc_now_iso
-from domain.enums import ANONYMOUS_LEAD_TYPES, OPTIONAL_LAST_NAME_LEAD_TYPES, LeadStatus, LeadType
+from domain.enums import ANONYMOUS_LEAD_TYPES, REQUIRED_PHONE_LEAD_TYPES, LeadStatus, LeadType
 from domain.models import Lead, LeadCreate, LeadListResponse, LeadUpdate
 from services import crm, email_service, notification_service
 
@@ -123,11 +123,10 @@ async def create_lead(payload: LeadCreate) -> Lead:
 
     # Real form submissions require contact info + consent; click events do not.
     if normalized.lead_type not in ANONYMOUS_LEAD_TYPES:
-        if normalized.lead_type in OPTIONAL_LAST_NAME_LEAD_TYPES:
-            if not normalized.first_name or not normalized.email:
-                raise HTTPException(status_code=422, detail="First name and email are required.")
-        elif not normalized.first_name or not normalized.last_name or not normalized.email:
+        if not normalized.first_name or not normalized.last_name or not normalized.email:
             raise HTTPException(status_code=422, detail="First name, last name and email are required.")
+        if normalized.lead_type in REQUIRED_PHONE_LEAD_TYPES and not (normalized.phone or "").strip():
+            raise HTTPException(status_code=422, detail="Phone number is required.")
         if not normalized.consent:
             raise HTTPException(status_code=422, detail="Please accept the data processing consent to continue.")
 

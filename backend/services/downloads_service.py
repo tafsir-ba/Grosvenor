@@ -18,14 +18,22 @@ COLLECTION = "downloads"
 TOKENS_COL = "download_tokens"
 PROTECTED_DIR = Path(__file__).resolve().parent.parent / "protected_downloads"
 PROTECTED_BROCHURE_FILENAME = "grosvenor-vistas-brochure.pdf"
+PROTECTED_PRICELIST_FILENAME = "grosvenor-vistas-pricelist.pdf"
 # Open CRM drip-email brochure. Existing campaign links keep this path.
 PUBLIC_EMAIL_BROCHURE_URL = "/downloads/grosvenor-vistas-brochure.pdf"
 PUBLIC_BROCHURE_URL = PUBLIC_EMAIL_BROCHURE_URL
+PUBLIC_PRICELIST_URL = "/downloads/grosvenor-vistas-pricelist.pdf"
 # Known website-brochure locations that should be moved back to the protected file.
 WEBSITE_BROCHURE_FILE_URLS = frozenset({
     PROTECTED_BROCHURE_FILENAME,
     PUBLIC_EMAIL_BROCHURE_URL,
     "/downloads/grosvenor-vistas-brochure.pdf",
+})
+# Known website-pricelist locations that should be moved to the protected file.
+WEBSITE_PRICELIST_FILE_URLS = frozenset({
+    PROTECTED_PRICELIST_FILENAME,
+    PUBLIC_PRICELIST_URL,
+    "grosvenor-vistas-pricelist.pdf",
 })
 TOKEN_TTL = timedelta(minutes=15)
 
@@ -121,9 +129,11 @@ async def _issue_gated_file_url(download: Download) -> str:
 
 
 def _require_download_lead(lead: Optional[LeadCreate]) -> LeadCreate:
-    """Website brochure needs name, email, and consent."""
+    """Gated website downloads need full name, email, phone, and consent."""
     if not lead or not (lead.first_name or "").strip() or not (lead.last_name or "").strip() or not lead.email:
         raise HTTPException(status_code=422, detail="Please provide your details to download.")
+    if not (lead.phone or "").strip():
+        raise HTTPException(status_code=422, detail="Please provide your phone number to download.")
     if not lead.consent:
         raise HTTPException(status_code=422, detail="Please accept the data processing consent to continue.")
     return lead
@@ -132,8 +142,8 @@ def _require_download_lead(lead: Optional[LeadCreate]) -> LeadCreate:
 async def access_download(download_id: str, lead: Optional[LeadCreate]) -> dict:
     """Enforce the gating rule (if any) and return the file url.
 
-    Website brochure: a valid lead must be supplied -> captured -> tokenized file URL.
-    Email brochure / pricelist: public file_url returned immediately.
+    Website brochure / pricelist: a valid lead must be supplied -> captured -> tokenized file URL.
+    Email brochure: public file_url returned immediately.
     """
     download = await get_download(download_id)
     if not download:
@@ -144,10 +154,6 @@ async def access_download(download_id: str, lead: Optional[LeadCreate]) -> dict:
         lead.lead_type = DOWNLOAD_LEAD_TYPE[download.type]
         await leads_service.create_lead(lead)
         return {"file_url": await _issue_gated_file_url(download), "title": download.title}
-
-    lead_type = DOWNLOAD_LEAD_TYPE.get(download.type)
-    if lead_type:
-        await leads_service.create_lead(LeadCreate(lead_type=lead_type))
 
     return {"file_url": download.file_url, "title": download.title}
 
@@ -201,6 +207,7 @@ async def ensure_brochure_buckets():
     """Keep two brochure records: gated website file + open email drip URL.
 
     Does not overwrite admin-customized website brochure paths that are not known defaults.
+    Also migrates the website price list onto the protected path.
     """
     await db[COLLECTION].update_many(
         {
@@ -209,6 +216,13 @@ async def ensure_brochure_buckets():
         },
         {"$set": {"file_url": PROTECTED_BROCHURE_FILENAME}},
     )
+    await db[COLLECTION].update_many(
+        {
+            "type": DownloadType.PRICELIST.value,
+            "file_url": {"$in": list(WEBSITE_PRICELIST_FILE_URLS)},
+        },
+        {"$set": {"file_url": PROTECTED_PRICELIST_FILENAME}},
+    )
     if await db[COLLECTION].count_documents({"type": DownloadType.BROCHURE_EMAIL.value}) == 0:
         await db[COLLECTION].insert_one(dict(EMAIL_BROCHURE_SEED))
 
@@ -216,4 +230,5 @@ async def ensure_brochure_buckets():
 # Back-compat aliases for older call sites / imports.
 ensure_brochure_public_path = ensure_brochure_buckets
 ensure_brochure_protected_path = ensure_brochure_buckets
+ensure_pricelist_protected_path = ensure_brochure_buckets
 brochure_url_needs_public_migration = website_brochure_needs_protected_path

@@ -1,4 +1,4 @@
-"""Public download routes — website list + access (form-gated brochure; open price list / email brochure)."""
+"""Public download routes — website list + access (form-gated brochure/pricelist; open email brochure)."""
 from typing import Optional
 
 from fastapi import APIRouter

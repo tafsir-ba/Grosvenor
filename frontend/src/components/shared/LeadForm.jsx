@@ -93,8 +93,11 @@ export default function LeadForm({
             if (!form.email.trim()) next.email = "Email is required.";
             else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = "Enter a valid email address.";
         }
-        if (fields.includes("phone") && form.phone.trim() && !PHONE_RE.test(form.phone.trim())) {
-            next.phone = "Enter a valid telephone number (digits, spaces, +, -, or parentheses).";
+        if (fields.includes("phone")) {
+            if (!form.phone.trim()) next.phone = "Telephone is required.";
+            else if (!PHONE_RE.test(form.phone.trim())) {
+                next.phone = "Enter a valid telephone number (digits, spaces, +, -, or parentheses).";
+            }
         }
         if (!form.consent) next.consent = "Please accept the data processing consent to continue.";
         return next;
@@ -251,6 +254,7 @@ export default function LeadForm({
                         type="tel"
                         inputMode="tel"
                         autoComplete="tel"
+                        required
                         data-testid={`${testIdPrefix}-phone`}
                         className={`${INPUT_CLS} ${errors.phone ? INPUT_ERR_CLS : ""}`}
                         value={form.phone}
