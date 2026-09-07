@@ -1,23 +1,12 @@
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
-import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
 import MortgageCalculator from "@/components/shared/MortgageCalculator";
 import FaqAccordion from "@/components/shared/FaqAccordion";
-import { LEAD_TYPE, MORTGAGE_STEPS, SAGICOR } from "@/lib/constants";
+import { MORTGAGE_APPLICATION_URL, MORTGAGE_STEPS, SAGICOR } from "@/lib/constants";
 import { useFaq } from "@/hooks/useData";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
-
-const scrollToApply = () => {
-    const section = document.getElementById("apply");
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
-    // After scroll settles, move focus into the form so mobile users land on the application fields.
-    window.setTimeout(() => {
-        const firstField = document.querySelector('[data-testid="mortgage-first-name"]');
-        if (firstField && typeof firstField.focus === "function") firstField.focus({ preventScroll: true });
-    }, 450);
-};
 
 export default function MortgagePage() {
     const { data: faq, loading: faqLoading, error: faqError } = useFaq();
@@ -90,10 +79,19 @@ export default function MortgagePage() {
                         <div className="flex flex-col justify-center p-10 md:p-14">
                             <Eyebrow>Online Application</Eyebrow>
                             <h2 className="lux-title mt-6 text-4xl text-brand-blue sm:text-5xl">Start your application</h2>
-                            <p className="mt-6 max-w-md font-sans text-lg text-brand-ink/65">Share your details to begin. Once submitted, our team reviews your request and follows up with financing options and next steps — usually within one business day.</p>
+                            <p className="mt-6 max-w-md font-sans text-lg text-brand-ink/65">Complete the full mortgage application online. Our team and financing partner will follow up with next steps.</p>
                         </div>
-                        <div className="border-t border-brand-beige bg-brand-warm/60 p-10 md:p-14 lg:border-l lg:border-t-0" data-testid="mortgage-enquiry">
-                            <LeadForm leadType={LEAD_TYPE.MORTGAGE_INFO_REQUEST} submitLabel="Start Your Application" messagePlaceholder="Tell us about your plans (residence of interest, budget, timeline)…" testIdPrefix="mortgage" />
+                        <div className="flex flex-col items-start justify-center gap-5 border-t border-brand-beige bg-brand-warm/60 p-10 md:p-14 lg:border-l lg:border-t-0" data-testid="mortgage-enquiry">
+                            <p className="font-sans text-base text-brand-ink/65">You’ll be taken to our secure online application form to begin.</p>
+                            <CtaButton
+                                href={MORTGAGE_APPLICATION_URL}
+                                target="_blank"
+                                rel="noreferrer"
+                                variant="primary"
+                                data-testid="mortgage-start-application"
+                            >
+                                Start Application <ArrowRight className="h-4 w-4" />
+                            </CtaButton>
                         </div>
                     </div>
                 </motion.div>
@@ -127,7 +125,15 @@ export default function MortgagePage() {
                     <Eyebrow light>Begin</Eyebrow>
                     <h2 className="lux-title max-w-2xl text-4xl text-white sm:text-5xl">Ready to begin?</h2>
                     <div className="flex flex-wrap justify-center gap-4">
-                        <CtaButton variant="white" onClick={scrollToApply} data-testid="mortgage-cta-apply">Start Application</CtaButton>
+                        <CtaButton
+                            href={MORTGAGE_APPLICATION_URL}
+                            target="_blank"
+                            rel="noreferrer"
+                            variant="white"
+                            data-testid="mortgage-cta-apply"
+                        >
+                            Start Application
+                        </CtaButton>
                         <CtaButton to="/contact" variant="outline-light" data-testid="mortgage-cta-contact">Contact Us</CtaButton>
                     </div>
                 </motion.div>

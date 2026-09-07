@@ -25,7 +25,8 @@ test.describe("Production public smoke (read-only)", () => {
 
     test("residences list loads and opens first available unit detail", async ({ page }) => {
         await page.goto("/residences");
-        await expect(page.getByRole("heading", { name: /Find your space/i })).toBeVisible();
+        await expect(page.getByRole("heading", { name: /Navigate the development/i })).toBeVisible();
+        await expect(page.getByTestId("residences-explorer")).toBeVisible();
 
         const count = page.getByTestId("residence-count");
         await expect(count).not.toHaveText(/Loading/i, { timeout: 45_000 });

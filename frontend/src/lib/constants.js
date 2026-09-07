@@ -31,8 +31,8 @@ export const PROJECT = {
 export const LEGAL = {
     privacyUrl: "https://evo-home.ch/en/privacy",
     legalUrl: "https://evo-home.ch/en/legal",
-    privacyLabel: "Evo Home Privacy Policy",
-    legalLabel: "Evo Home Legal",
+    privacyLabel: "Privacy Policy",
+    legalLabel: "Legal",
     consentText:
         "By completing the form, you authorize Evo Home (developer partner for Grosvenor Vistas / Niaviv Ltd.) to store and process the personal data submitted above to provide you the requested content.",
     credit: "Designed and developed by Evohome",
@@ -386,6 +386,8 @@ export const SAGICOR = {
     url: "https://www.sagicor.com/en-jm/personal-solution/mortgage/home-purchase",
     rep: { name: "Woodrow Smallwood", phone: "+1 (876) 838-3431", phoneHref: "tel:+18768383431", email: "woodrow_smallwood@sagicor.com" },
 };
+
+export const MORTGAGE_APPLICATION_URL = "https://share.hsforms.com/1xmbxR3viQzqxRX7ZfBW6dg3e5iv";
 
 // Image-led amenity showcase — short titles only, drawn from the real amenity list.
 export const AMENITY_GALLERY = [

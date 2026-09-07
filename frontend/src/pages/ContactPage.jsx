@@ -1,4 +1,4 @@
-import { Phone, Mail, MessageCircle, MapPin } from "lucide-react";
+import { Phone, Mail, MessageCircle, MapPin, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
@@ -6,20 +6,45 @@ import LeadForm from "@/components/shared/LeadForm";
 import DownloadForm from "@/components/shared/DownloadForm";
 import WhatsAppLeadDialog from "@/components/shared/WhatsAppLeadDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Eyebrow, fadeUp, PlaceholderMap, ROUND } from "@/components/shared/luxe";
+import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 import { PROJECT, LEAD_TYPE } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
 import { requestWhatsApp } from "@/lib/whatsapp";
 import { useDownloads } from "@/hooks/useData";
 
+function LiveMap({ className = `h-[56vh] lg:h-[64vh] ${ROUND}` }) {
+    return (
+        <div
+            data-testid="contact-live-map"
+            className={`relative overflow-hidden border border-brand-beige ${className}`}
+        >
+            <iframe
+                title="Grosvenor Vistas location map"
+                src={PROJECT.contact.mapEmbed}
+                className="absolute inset-0 h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 bg-gradient-to-t from-brand-warm/95 via-brand-warm/70 to-transparent p-6">
+                <span className="lux-title text-2xl text-brand-blue md:text-3xl">Grosvenor Heights</span>
+                <a
+                    href={PROJECT.contact.mapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-testid="contact-open-maps"
+                    className="pointer-events-auto lux-eyebrow flex items-center gap-2 rounded-full bg-brand-warm/95 px-4 py-2 text-brand-ink backdrop-blur transition-colors hover:text-brand-gold"
+                >
+                    Open in Maps <ArrowRight className="h-4 w-4" />
+                </a>
+            </div>
+        </div>
+    );
+}
+
 export default function ContactPage() {
     const { downloads, loading: downloadsLoading } = useDownloads();
     const [whatsappOpen, setWhatsappOpen] = useState(false);
-    const channels = [
-        { icon: Phone, label: "Call", value: PROJECT.contact.phone, href: PROJECT.contact.phoneHref, type: LEAD_TYPE.PHONE_CLICK, testid: "contact-phone" },
-        { icon: MessageCircle, label: "WhatsApp", value: PROJECT.contact.whatsappNumber, whatsapp: true, testid: "contact-whatsapp" },
-        { icon: Mail, label: "Email", value: PROJECT.contact.email, href: PROJECT.contact.emailHref, type: LEAD_TYPE.EMAIL_CLICK, testid: "contact-email" },
-    ];
 
     return (
         <div data-testid="contact-page">
@@ -31,43 +56,46 @@ export default function ContactPage() {
                         <Eyebrow>Get in Touch</Eyebrow>
                         <h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">We're here to help</h2>
                         <div className="mt-10 space-y-3">
-                            {channels.map((c) => {
-                                const className = "flex items-center gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5 transition-colors hover:border-brand-gold";
-                                const body = (
-                                    <>
-                                        <c.icon className="h-5 w-5 text-brand-gold" />
-                                        <div>
-                                            <p className="lux-eyebrow text-brand-ink/50">{c.label}</p>
-                                            <p className="font-sans font-medium text-brand-ink">{c.value}</p>
-                                        </div>
-                                    </>
-                                );
-                                if (c.whatsapp) {
-                                    return (
+                            <div
+                                data-testid="contact-call-whatsapp"
+                                className="flex items-start gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5"
+                            >
+                                <Phone className="mt-1 h-5 w-5 flex-shrink-0 text-brand-gold" />
+                                <div className="min-w-0 flex-1">
+                                    <p className="lux-eyebrow text-brand-ink/50">Call + WhatsApp</p>
+                                    <p className="font-sans font-medium text-brand-ink">{PROJECT.contact.phone}</p>
+                                    <div className="mt-3 flex flex-wrap gap-4">
+                                        <a
+                                            href={PROJECT.contact.phoneHref}
+                                            onClick={() => trackClick(LEAD_TYPE.PHONE_CLICK)}
+                                            data-testid="contact-phone"
+                                            className="inline-flex items-center gap-1.5 font-sans text-sm font-medium text-brand-gold transition-opacity hover:opacity-75"
+                                        >
+                                            <Phone className="h-3.5 w-3.5" /> Call
+                                        </a>
                                         <button
-                                            key={c.label}
                                             type="button"
                                             onClick={() => requestWhatsApp({ openDialog: () => setWhatsappOpen(true) })}
-                                            data-testid={c.testid}
-                                            className={`${className} w-full text-left`}
+                                            data-testid="contact-whatsapp"
+                                            className="inline-flex items-center gap-1.5 font-sans text-sm font-medium text-brand-gold transition-opacity hover:opacity-75"
                                         >
-                                            {body}
+                                            <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
                                         </button>
-                                    );
-                                }
-                                return (
-                                    <a
-                                        key={c.label}
-                                        href={c.href}
-                                        onClick={() => trackClick(c.type)}
-                                        data-testid={c.testid}
-                                        {...(c.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                                        className={className}
-                                    >
-                                        {body}
-                                    </a>
-                                );
-                            })}
+                                    </div>
+                                </div>
+                            </div>
+                            <a
+                                href={PROJECT.contact.emailHref}
+                                onClick={() => trackClick(LEAD_TYPE.EMAIL_CLICK)}
+                                data-testid="contact-email"
+                                className="flex items-center gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5 transition-colors hover:border-brand-gold"
+                            >
+                                <Mail className="h-5 w-5 text-brand-gold" />
+                                <div>
+                                    <p className="lux-eyebrow text-brand-ink/50">Email</p>
+                                    <p className="font-sans font-medium text-brand-ink">{PROJECT.contact.email}</p>
+                                </div>
+                            </a>
                             <div className="flex items-start gap-4 rounded-2xl border border-brand-beige bg-brand-ivory p-5">
                                 <MapPin className="mt-1 h-5 w-5 text-brand-gold" />
                                 <div>
@@ -119,7 +147,7 @@ export default function ContactPage() {
             </section>
 
             <section className="container-wide pb-24 md:pb-32">
-                <PlaceholderMap className={`h-[56vh] lg:h-[64vh] ${ROUND}`} />
+                <LiveMap />
             </section>
 
             <WhatsAppLeadDialog open={whatsappOpen} onOpenChange={setWhatsappOpen} />

@@ -12,14 +12,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useUnits } from "@/hooks/useData";
 import {
     BUILDINGS,
-    HOME_RESIDENCE_CATEGORIES,
-    PROJECT,
     UNIT_STATUSES,
     homeCategoryForKey,
     unitMatchesHomeCategory,
 } from "@/lib/constants";
-import { formatPrice, formatSurface, formatUnitListPrice, minStartingPrice, statusMeta, unitFloor } from "@/lib/format";
-import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
+import { formatPrice, formatSurface, formatUnitListPrice, statusMeta, unitFloor } from "@/lib/format";
+import { Eyebrow, fadeUp } from "@/components/shared/luxe";
 
 const STATUSES = [
     { value: "all", label: "All Statuses" },
@@ -112,23 +110,6 @@ export default function ResidencesPage() {
 
     // Single inventory fetch — filters/sorts applied client-side to avoid flashy multi-request loading.
     const { units: allUnits, loading, error } = useUnits({ sort: "building" });
-
-    const availableUnits = useMemo(() => allUnits.filter((u) => u.status === "available"), [allUnits]);
-
-    const tiers = useMemo(() => HOME_RESIDENCE_CATEGORIES.map((c) => {
-        const us = availableUnits.filter((u) => unitMatchesHomeCategory(u, c));
-        const surfaces = us.map((u) => u.total_surface).filter(Boolean);
-        const prices = us.map((u) => u.price).filter(Boolean);
-        return {
-            key: c.key,
-            name: c.name,
-            subtitle: c.subtitle,
-            image: c.cardImage,
-            count: us.length,
-            minSurface: surfaces.length ? Math.min(...surfaces) : null,
-            minPrice: prices.length ? Math.min(...prices) : null,
-        };
-    }), [availableUnits]);
 
     const activeHomeTier = homeCategoryForKey(tierKey);
 
@@ -224,81 +205,9 @@ export default function ResidencesPage() {
         setTimeout(scrollToSelectedResidence, 100);
     };
 
-    const selectTier = (key) => {
-        const next = new URLSearchParams(params);
-        next.set("tier", key);
-        next.delete("collection");
-        next.delete("building");
-        next.delete("unit");
-        setParams(next);
-        setTimeout(() => document.getElementById("availability")?.scrollIntoView({ behavior: "smooth" }), 60);
-    };
-
-    const startingPrice = loading ? null : formatPrice(minStartingPrice(availableUnits));
-
     return (
         <div data-testid="residences-page" className="bg-brand-warm text-brand-ink">
-            <section className="container-wide pb-14 pt-32 md:pb-20 md:pt-40">
-                <motion.div {...fadeUp} className="mb-10 px-2 md:mb-12 md:px-6">
-                    <Eyebrow>The Residences</Eyebrow>
-                    <h1 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl lg:text-6xl">Find your space</h1>
-                    <p className="mt-5 max-w-2xl font-sans text-lg text-brand-ink/65">
-                        {PROJECT.unitsCount} residences across four collections
-                        {startingPrice ? ` — from ${startingPrice}.` : loading ? "." : ` — from ${formatPrice(null)}.`}
-                    </p>
-                </motion.div>
-
-                {loading ? (
-                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-testid="residence-tiers-loading" aria-busy="true" aria-live="polite">
-                        {Array.from({ length: 4 }).map((_, i) => (
-                            <Skeleton key={`tier-skeleton-${i}`} className={`h-[48vh] w-full md:h-[52vh] ${ROUND}`} />
-                        ))}
-                        <p className="sr-only">Loading residence collections…</p>
-                    </div>
-                ) : error ? (
-                    <p className="px-2 font-sans text-sm text-destructive md:px-6" data-testid="residence-tiers-error">
-                        We could not load residence availability. Please try again shortly.
-                    </p>
-                ) : (
-                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                        {tiers.map((t) => (
-                            <button
-                                key={t.key}
-                                type="button"
-                                onClick={() => selectTier(t.key)}
-                                data-testid={`residence-tier-${t.key}`}
-                                className={`group relative block h-[48vh] w-full overflow-hidden text-left md:h-[52vh] ${ROUND}`}
-                            >
-                                <img src={t.image} alt={t.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/85 via-brand-ink/15 to-transparent" />
-                                <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-7">
-                                    <h2 className="lux-title text-2xl md:text-3xl">{t.name}</h2>
-                                    {t.subtitle && <p className="mt-1 font-sans text-xs uppercase tracking-[0.16em] text-white/70">{t.subtitle}</p>}
-                                    {t.minSurface && (
-                                        <p className="mt-2 font-sans text-sm uppercase tracking-[0.18em] text-white/80">
-                                            From {t.minSurface.toLocaleString()} sq ft
-                                        </p>
-                                    )}
-                                    <p className="mt-2 font-sans text-white/90">
-                                        {t.minPrice ? `From USD ${t.minPrice.toLocaleString()}` : "Price on request"}
-                                    </p>
-                                    <p className="font-sans text-sm text-white/70">{t.count} available</p>
-                                    <span className="lux-eyebrow mt-3 inline-flex items-center gap-2 text-brand-gold">
-                                        View Availability <ArrowRight className="h-4 w-4" />
-                                    </span>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </section>
-
-            <section id="explore" className="container-wide pb-10 md:pb-14">
-                <motion.div {...fadeUp} className="mb-8 px-2 md:px-6">
-                    <Eyebrow>Explore</Eyebrow>
-                    <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Navigate the development</h2>
-                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/65">Select a building, floor, and residence. We’ll highlight it in the live list below so you can open it with one clear step.</p>
-                </motion.div>
+            <section id="explore" className="container-wide pb-10 pt-32 md:pb-14 md:pt-36">
                 <motion.div {...fadeUp} className="px-2 md:px-6" id="residences-explorer" data-testid="residences-explorer">
                     {loading ? (
                         <Skeleton className="h-[52vh] w-full rounded-2xl" />
@@ -312,10 +221,14 @@ export default function ResidencesPage() {
                         />
                     )}
                 </motion.div>
+                <motion.div {...fadeUp} className="mt-8 px-2 md:px-6">
+                    <Eyebrow>Explore</Eyebrow>
+                    <h1 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl">Navigate the development</h1>
+                    <p className="mt-4 max-w-2xl font-sans text-base text-brand-ink/65">Select a building, floor, and residence. We’ll highlight it in the live list below so you can open it with one clear step.</p>
+                </motion.div>
             </section>
 
             <section id="availability" className="container-wide pb-24 md:pb-32">
-                <div className="mb-10 px-2 md:px-6"><Eyebrow>Availability</Eyebrow><h2 className="lux-title mt-7 text-4xl text-brand-blue sm:text-5xl">Every residence, live</h2></div>
 
                 {activeHomeTier && (
                     <div className="mb-6 px-2 md:px-6">

@@ -186,20 +186,41 @@ export default function ResidenceExplorerMap({
                 )}
 
                 {display && (
-                    <>
-                        <img
-                            src={display.image}
-                            alt={VIEW_TITLE[display.view] || "Site view"}
-                            className="block h-auto w-full select-none"
-                        />
-                        <svg
-                            viewBox={display.viewBox}
-                            preserveAspectRatio="none"
+                    <div
+                        className="relative w-full overflow-hidden"
+                        style={
+                            display.view === "aerial"
+                                ? // Crop ~7% sky; keep aspect slightly shorter so layout height shrinks too.
+                                  { paddingBottom: `${(vbH / vbW) * 93}%` }
+                                : undefined
+                        }
+                    >
+                        <div
                             className={cn(
-                                "absolute inset-0 h-full w-full transition-opacity duration-300 ease-out",
-                                transitioning ? "pointer-events-none opacity-0" : "opacity-100",
+                                display.view === "aerial" ? "absolute inset-x-0" : "relative",
                             )}
+                            style={
+                                display.view === "aerial"
+                                    ? { top: "-7.5%", height: "107.5%" }
+                                    : undefined
+                            }
                         >
+                            <img
+                                src={display.image}
+                                alt={VIEW_TITLE[display.view] || "Site view"}
+                                className={cn(
+                                    "block w-full select-none",
+                                    display.view === "aerial" ? "h-full object-fill" : "h-auto",
+                                )}
+                            />
+                            <svg
+                                viewBox={display.viewBox}
+                                preserveAspectRatio="none"
+                                className={cn(
+                                    "absolute inset-0 h-full w-full transition-opacity duration-300 ease-out",
+                                    transitioning ? "pointer-events-none opacity-0" : "opacity-100",
+                                )}
+                            >
                             {display.regions.map((r) => {
                                 const aerial = display.view === "aerial";
                                 const u = aerial ? null : byUnit.get(r.unit);
@@ -223,8 +244,9 @@ export default function ResidenceExplorerMap({
                                     />
                                 );
                             })}
-                        </svg>
-                    </>
+                            </svg>
+                        </div>
+                    </div>
                 )}
 
                 {transitioning && (
