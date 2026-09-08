@@ -17,8 +17,9 @@ export const PROJECT = {
         emailHref: "mailto:info@grosvenorvistas.com",
         address: "3A Grosvenor Heights, Manor Park, Kingston 8, Jamaica",
         mapUrl: "https://maps.app.goo.gl/HKF8wRKzt6VaiSxW7",
+        // Pin on Grosvenor Vistas; center offset east/NE so Manor Park, Norbrook & Constant Spring Golf sit in frame.
         mapEmbed:
-            "https://maps.google.com/maps?q=Grosvenor%20Heights%2C%20Manor%20Park%2C%20Kingston%208%2C%20Jamaica&t=k&z=17&output=embed",
+            "https://maps.google.com/maps?q=18.0477121,-76.7984781&ll=18.0502,-76.7918&z=15&t=k&output=embed",
     },
     // Official profile URL when ready; omit/empty to hide Instagram CTAs.
     social: {
