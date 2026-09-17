@@ -18,7 +18,7 @@ export default function PriceListLeadDialog({ download, open, onOpenChange }) {
                 {id && (
                     <LeadForm
                         leadType={LEAD_TYPE.DOWNLOAD_PRICE_LIST}
-                        fields={["first_name", "last_name", "phone", "email"]}
+                        fields={["first_name", "last_name", "phone", "email", "message"]}
                         submitLabel="Download Price List"
                         successMessage="Thank you — your price list is opening now."
                         successNextSteps="If the file did not open, allow pop-ups and try again."

@@ -16,7 +16,7 @@ export default function WhatsAppLeadDialog({ open, onOpenChange, ctx = {} }) {
                 <LeadForm
                     leadType={LEAD_TYPE.WHATSAPP_ENQUIRY}
                     ctx={ctx}
-                    fields={["first_name", "last_name", "phone", "email"]}
+                    fields={["first_name", "last_name", "phone", "email", "message"]}
                     submitLabel="Continue to WhatsApp"
                     successMessage="Opening WhatsApp…"
                     successNextSteps="If WhatsApp did not open, allow pop-ups and try again."

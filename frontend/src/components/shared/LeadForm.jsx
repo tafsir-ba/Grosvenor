@@ -318,7 +318,9 @@ export default function LeadForm({
             )}
             {fields.includes("message") && (
                 <div className="space-y-2">
-                    <Label htmlFor={`${testIdPrefix}-message`}>Message</Label>
+                    <Label htmlFor={`${testIdPrefix}-message`}>
+                        Message <span className="font-normal text-brand-ink/45">(optional)</span>
+                    </Label>
                     <Textarea
                         id={`${testIdPrefix}-message`}
                         name="message"

@@ -18,7 +18,7 @@ export default function BrochureLeadDialog({ download, open, onOpenChange }) {
                 {id && (
                     <LeadForm
                         leadType={LEAD_TYPE.DOWNLOAD_BROCHURE}
-                        fields={["first_name", "last_name", "phone", "email"]}
+                        fields={["first_name", "last_name", "phone", "email", "message"]}
                         submitLabel="Download Brochure"
                         successMessage="Thank you — your brochure is opening now."
                         successNextSteps="If the file did not open, allow pop-ups and try again."
