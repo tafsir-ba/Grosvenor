@@ -26,6 +26,19 @@ const EMPTY = {
 };
 const PHONE_RE = /^[+\d][\d\s().-]{6,}$/;
 
+/** Showroom visit slots in 12-hour labels (stored as-is in the lead message). */
+const VISIT_TIME_OPTIONS = (() => {
+    const slots = [];
+    for (let minutes = 8 * 60; minutes <= 18 * 60; minutes += 30) {
+        const h24 = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        const period = h24 >= 12 ? "PM" : "AM";
+        const h12 = h24 % 12 || 12;
+        slots.push(`${h12}:${String(m).padStart(2, "0")} ${period}`);
+    }
+    return slots;
+})();
+
 function buildMessageWithVisitPrefs(form) {
     const base = (form.message || "").trim();
     const date = (form.preferred_date || "").trim();
@@ -304,15 +317,19 @@ export default function LeadForm({
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor={`${testIdPrefix}-preferred-time`}>Preferred time</Label>
-                        <Input
+                        <select
                             id={`${testIdPrefix}-preferred-time`}
                             name="preferred_time"
-                            type="time"
                             data-testid={`${testIdPrefix}-preferred-time`}
-                            className={INPUT_CLS}
+                            className={`${INPUT_CLS} flex h-10 w-full px-3 py-2 text-sm`}
                             value={form.preferred_time}
                             onChange={update("preferred_time")}
-                        />
+                        >
+                            <option value="">Select a time</option>
+                            {VISIT_TIME_OPTIONS.map((slot) => (
+                                <option key={slot} value={slot}>{slot}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
             )}
