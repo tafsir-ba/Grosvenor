@@ -287,6 +287,11 @@ export const PHOTO = {
     undergroundParking: "/gallery/photos/grosvenor-underground-parking.webp",
     wayfindingSign: "/gallery/photos/grosvenor-wayfinding-sign.webp",
     wayfindingSignThumb: "/gallery/photos/grosvenor-wayfinding-sign-thumb.webp",
+    rooftopGym: "/gallery/photos/grosvenor-rooftop-gym.webp",
+    rooftopGymCard: "/gallery/photos/grosvenor-rooftop-gym-card.webp",
+    rooftopGymLandscape: "/gallery/photos/grosvenor-rooftop-gym-16x10.webp",
+    childrensPlayArea: "/gallery/photos/grosvenor-childrens-play-area.webp",
+    childrensPlayAreaCard: "/gallery/photos/grosvenor-childrens-play-area-16x10.webp",
 };
 
 /** Shared first Exterior slot for every residence detail page. */
@@ -385,7 +390,9 @@ export const GALLERY = [
     { src: PHOTO.townhouseExterior, thumb: PHOTO.townhouseExteriorCard, caption: "The townhouses", group: "Exteriors" },
     { src: PHOTO.rooftopPoolDay, caption: "Rooftop pool by day", group: "Amenities" },
     { src: PHOTO.rooftopPoolBlueHour, caption: "Rooftop pool at blue hour", group: "Amenities" },
+    { src: PHOTO.rooftopGym, thumb: PHOTO.rooftopGymLandscape, caption: "Rooftop gym", group: "Amenities", fit: "contain" },
     { src: PHOTO.rooftopTerraceDusk, caption: "Rooftop terrace at dusk", group: "Amenities" },
+    { src: PHOTO.childrensPlayArea, thumb: PHOTO.childrensPlayAreaCard, caption: "Children's play area", group: "Grounds" },
     { src: PHOTO.kingstonCoastal, caption: "Kingston and coastal outlook", group: "Views" },
     { src: PHOTO.valleyGoldenHour, caption: "Valley outlook at golden hour", group: "Views" },
     { src: PHOTO.modelLiving, caption: "Model residence: living room", group: "Interiors" },
@@ -426,12 +433,21 @@ export const DEV_FEATURES = [
 ];
 
 // Amenities preview (links through to the full Amenities page).
-// Gym / Children's Playground use icon tiles until verified photos exist.
 export const AMENITY_PREVIEW = [
     { title: "Rooftop Pools", image: PHOTO.rooftopPoolDay },
-    { title: "Gym", icon: "dumbbell" },
+    {
+        title: "Gym",
+        image: PHOTO.rooftopGymCard,
+        caption: "Rooftop gym",
+        objectPosition: "center 45%",
+    },
     { title: "Landscaped Grounds", image: PHOTO.landscapedCourtyard },
-    { title: "Children's Playground", icon: "playground" },
+    {
+        title: "Children's Playground",
+        image: PHOTO.childrensPlayAreaCard,
+        caption: "Children's play area",
+        objectPosition: "center 55%",
+    },
     { title: "Security", image: PHOTO.entranceGate, caption: "Gated access" },
     { title: "Outdoor Gathering Spaces", image: PHOTO.rooftopTerraceDusk },
 ];
@@ -456,10 +472,11 @@ export const MORTGAGE_APPLICATION_URL = "https://share.hsforms.com/1xmbxR3viQzqx
 // Image-led amenity showcase — short titles only, drawn from the real amenity list.
 export const AMENITY_GALLERY = [
     { title: "Panoramic Views", image: PHOTO.kingstonCoastal },
-    { title: "Rooftop Pools & Gyms", image: PHOTO.rooftopPoolDay },
+    { title: "Rooftop Pools", image: PHOTO.rooftopPoolDay },
+    { title: "Rooftop Gym", image: PHOTO.rooftopGymCard, objectPosition: "center 45%" },
     { title: "Landscaped Gardens", image: PHOTO.landscapedCourtyard },
     { title: "Elevator Access", image: PHOTO.rooftopTerraceDusk },
-    { title: "Kid's Playground", icon: "playground" },
+    { title: "Kid's Playground", image: PHOTO.childrensPlayAreaCard, objectPosition: "center 55%" },
     { title: "Underground Parking", image: PHOTO.undergroundParking },
     { title: "Smart-Lock Entry", image: PHOTO.entranceGate },
     { title: "Gated Security", image: PHOTO.entranceGate },

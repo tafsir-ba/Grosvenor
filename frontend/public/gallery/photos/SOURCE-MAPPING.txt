@@ -61,3 +61,18 @@ Preserved from prior brief (unchanged by this must-use pass)
 - Homepage hero (HOME_MEDIA video/fallback)
 - Shared apartment/townhouse unit Exterior defaults
 - Development / Amenities / Location / Gallery heroes from prior brief
+
+
+Gym & play-area follow-up (Nov 2026)
+------------------------------------
+PHOTO-2026-06-17-10-06-19 2.jpg
+  -> grosvenor-rooftop-gym.webp (full)
+  -> grosvenor-rooftop-gym-16x10.webp / grosvenor-rooftop-gym-card.webp (equipment-forward crops)
+  Note: identical bytes to legacy /gallery/gym.jpg; canonical site path is gallery/photos/.
+  Placements: Development amenity Gym tile; AMENITY_GALLERY / Gallery where gym shown.
+
+backyard-with-children-composite-v2.png
+  -> grosvenor-childrens-play-area.webp (+ 16x10 crop)
+  Approved composite — children, lawn and pergola. Do not label as unedited documentary photo
+  or invent playground equipment. Caption: "Children's play area".
+  Placements: Development Children's Playground tile; Gallery; AMENITY_GALLERY Kid's Playground.

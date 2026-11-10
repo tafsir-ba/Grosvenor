@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Check, Dumbbell, ToyBrick } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
@@ -7,11 +7,6 @@ import { useUnits } from "@/hooks/useData";
 import { DEVELOPMENT_BUILDINGS, DEV_FEATURES, AMENITY_PREVIEW, MASTERPLAN_IMAGE, PHOTO } from "@/lib/constants";
 import { developmentStatCards } from "@/lib/format";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
-
-const AMENITY_ICONS = {
-    dumbbell: Dumbbell,
-    playground: ToyBrick,
-};
 
 function buildingStats(units, b) {
     const us = units.filter((u) => u.building === b.building);
@@ -162,32 +157,25 @@ export default function DevelopmentPage() {
                     <h2 className="lux-title mt-6 text-3xl text-brand-blue sm:text-4xl lg:text-5xl">Designed for everyday ease</h2>
                 </motion.div>
                 <div className="grid grid-cols-2 gap-5 px-2 md:grid-cols-3 md:px-6">
-                    {AMENITY_PREVIEW.map((a) => {
-                        const Icon = a.icon ? AMENITY_ICONS[a.icon] : null;
-                        return (
-                            <motion.div
-                                {...fadeUp}
-                                key={a.title}
-                                data-testid={`amenity-preview-${a.title.toLowerCase().replace(/[^a-z]+/g, "-")}`}
-                                className={`group relative h-56 overflow-hidden md:h-64 ${ROUND} ${Icon ? "bg-brand-ivory" : ""}`}
-                            >
-                                {Icon ? (
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-brand-ivory px-6 text-center">
-                                        <span className="flex h-14 w-14 items-center justify-center rounded-full border border-brand-gold/35 text-brand-gold">
-                                            <Icon className="h-6 w-6" strokeWidth={1.4} />
-                                        </span>
-                                        <span className="font-sans text-sm uppercase tracking-[0.16em] text-brand-blue">{a.title}</span>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <img src={a.image} alt={a.caption || a.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/70 to-transparent" />
-                                        <span className="absolute bottom-0 left-0 p-5 font-sans text-sm uppercase tracking-[0.16em] text-white">{a.title}</span>
-                                    </>
-                                )}
-                            </motion.div>
-                        );
-                    })}
+                    {AMENITY_PREVIEW.map((a) => (
+                        <motion.div
+                            {...fadeUp}
+                            key={a.title}
+                            data-testid={`amenity-preview-${a.title.toLowerCase().replace(/[^a-z]+/g, "-")}`}
+                            className={`group relative h-56 overflow-hidden md:h-64 ${ROUND}`}
+                        >
+                            <img
+                                src={a.image}
+                                alt={a.caption || a.title}
+                                loading="lazy"
+                                decoding="async"
+                                style={a.objectPosition ? { objectPosition: a.objectPosition } : undefined}
+                                className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/70 to-transparent" />
+                            <span className="absolute bottom-0 left-0 p-5 font-sans text-sm uppercase tracking-[0.16em] text-white">{a.title}</span>
+                        </motion.div>
+                    ))}
                 </div>
                 <div className="mt-10 px-2 md:px-6"><CtaButton to="/amenities" variant="outline" data-testid="explore-amenities">Explore Amenities <ArrowRight className="h-4 w-4" /></CtaButton></div>
             </section>
