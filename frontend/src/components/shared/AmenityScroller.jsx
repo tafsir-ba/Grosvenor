@@ -53,6 +53,7 @@ export default function AmenityScroller({ items }) {
                         src={a.image}
                         alt={a.title}
                         draggable={false}
+                        style={a.objectPosition ? { objectPosition: a.objectPosition } : undefined}
                         className="pointer-events-none h-full w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-brand-ink/10 to-transparent" />
