@@ -254,6 +254,54 @@ export function collectionForSurface(surface) {
     return COLLECTIONS.find((c) => surface >= c.min && surface < c.max) || COLLECTIONS[0];
 }
 
+// Real-photo assets from the Nov 2026 photo brief (native WebP, no upscaling).
+// Homepage hero uses HOME_MEDIA and must remain unchanged — do not point it here.
+export const PHOTO = {
+    apartmentExterior: "/gallery/photos/grosvenor-apartment-exterior-day.webp",
+    apartmentExteriorCard: "/gallery/photos/grosvenor-apartment-exterior-day-16x10.webp",
+    developmentHero: "/gallery/photos/grosvenor-development-hero.webp",
+    townhouseExterior: "/gallery/photos/grosvenor-townhouses-exterior-day.webp",
+    townhouseExteriorCard: "/gallery/photos/grosvenor-townhouses-exterior-day-16x10.webp",
+    rooftopPoolDay: "/gallery/photos/grosvenor-rooftop-pool-day.webp",
+    rooftopPoolDayHero: "/gallery/photos/grosvenor-rooftop-pool-day-hero.webp",
+    rooftopPoolBlueHour: "/gallery/photos/grosvenor-rooftop-pool-blue-hour.webp",
+    neighbourhoodOutlook: "/gallery/photos/grosvenor-neighbourhood-outlook-day.webp",
+    neighbourhoodOutlookHero: "/gallery/photos/grosvenor-neighbourhood-outlook-day-hero.webp",
+    rooftopCityBlueHour: "/gallery/photos/grosvenor-rooftop-city-blue-hour.webp",
+    rooftopCityBlueHourHero: "/gallery/photos/grosvenor-rooftop-city-blue-hour-hero.webp",
+    rooftopTerraceDusk: "/gallery/photos/grosvenor-rooftop-terrace-dusk.webp",
+    kingstonCoastal: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp",
+    modelLiving: "/gallery/photos/grosvenor-model-living-room.webp",
+    modelBedroom: "/gallery/photos/grosvenor-model-bedroom.webp",
+    modelBathroom: "/gallery/photos/grosvenor-model-bathroom.webp",
+    kitchenWindow: "/gallery/photos/grosvenor-kitchen-window-detail.webp",
+    kitchenWindowThumb: "/gallery/photos/grosvenor-kitchen-window-detail-thumb.webp",
+    landscapedCourtyard: "/gallery/photos/grosvenor-landscaped-courtyard.webp",
+    entranceGate: "/gallery/photos/grosvenor-entrance-gate.webp",
+    undergroundParking: "/gallery/photos/grosvenor-underground-parking.webp",
+};
+
+/** Shared first Exterior slot for every residence detail page. */
+export function residenceExteriorImage(collection) {
+    const isTownhouse = collection?.key === "townhouses";
+    if (isTownhouse) {
+        return {
+            label: "Exterior",
+            caption: "Townhouse exterior — representative photograph",
+            image: PHOTO.townhouseExteriorCard,
+            fullImage: PHOTO.townhouseExterior,
+            objectPosition: "center 40%",
+        };
+    }
+    return {
+        label: "Exterior",
+        caption: "Development exterior — representative photograph",
+        image: PHOTO.apartmentExteriorCard,
+        fullImage: PHOTO.apartmentExterior,
+        objectPosition: "center 45%",
+    };
+}
+
 // Mirrors backend UnitStatus enum (values are authoritative on the backend).
 export const STATUS_META = {
     available: { label: "Available", classes: "bg-brand-green/10 text-brand-green" },
@@ -321,24 +369,25 @@ export const BUYING_PROCESS = [
 
 // FAQ content is served from GET /api/content/faq (backend/content/site_content.py).
 
-// Curated lifestyle imagery (neutral captions — no room-spec labelling).
+// Curated lifestyle imagery — real photographs (Nov 2026 brief). Renders removed.
+// thumb = landscape grid source; src = full-aspect lightbox original.
 export const GALLERY = [
-    { src: "/gallery/buildings-01.png", caption: "The Development", group: "Exteriors" },
-    { src: "/gallery/rooftop-pool.png", caption: "Rooftop Pool", group: "Amenities" },
-    { src: "/gallery/terrace-2.png", caption: "Outdoor Living", group: "Amenities" },
-    { src: "/gallery/homestaging-evening-terrace.png", caption: "Evening Terrace", group: "Amenities" },
-    { src: "/gallery/model-unit-living-room.png", caption: "Model Residence", group: "Interiors" },
-    { src: "/gallery/homestaging-living-room-2.png", caption: "Living Spaces", group: "Interiors" },
-    { src: "/gallery/model-unit-living-and-dining-room.png", caption: "Living & Dining", group: "Interiors" },
-    { src: "/gallery/home-staging-living-dinning-room-and-kitchen.png", caption: "Open-Plan Living", group: "Interiors" },
-    { src: "/gallery/homestaging-living-dinning-room-kitchen-2.png", caption: "Entertaining Space", group: "Interiors" },
-    { src: "/gallery/model-unit-kitchen.png", caption: "Gourmet Kitchen", group: "Interiors" },
-    { src: "/gallery/homestaging-kitchen.png", caption: "Kitchen Detail", group: "Interiors" },
-    { src: "/gallery/model-unit-dining-kitchen.png", caption: "Dining & Kitchen", group: "Interiors" },
-    { src: "/gallery/walk-in-closet.png", caption: "Dressing Area", group: "Interiors" },
-    { src: "/gallery/model-unit-dinning-room.png", caption: "Dining", group: "Interiors" },
+    { src: PHOTO.apartmentExterior, thumb: PHOTO.apartmentExteriorCard, caption: "Apartment architecture", group: "Exteriors" },
+    { src: PHOTO.townhouseExterior, thumb: PHOTO.townhouseExteriorCard, caption: "The townhouses", group: "Exteriors" },
+    { src: PHOTO.rooftopPoolDay, caption: "Rooftop pool by day", group: "Amenities" },
+    { src: PHOTO.rooftopPoolBlueHour, caption: "Rooftop pool at blue hour", group: "Amenities" },
+    { src: PHOTO.rooftopTerraceDusk, caption: "Rooftop terrace at dusk", group: "Amenities" },
+    { src: PHOTO.kingstonCoastal, caption: "Kingston and coastal outlook", group: "Views" },
+    { src: PHOTO.modelLiving, caption: "Model residence: living room", group: "Interiors" },
+    { src: PHOTO.modelBedroom, caption: "Model residence: bedroom", group: "Interiors" },
+    { src: PHOTO.modelBathroom, caption: "Model residence: bathroom", group: "Interiors" },
+    { src: PHOTO.kitchenWindow, thumb: PHOTO.kitchenWindowThumb, caption: "Kitchen window detail", group: "Interiors", fit: "contain" },
+    { src: PHOTO.landscapedCourtyard, caption: "Landscaped courtyard", group: "Grounds" },
+    { src: PHOTO.entranceGate, caption: "Entrance gate", group: "Grounds" },
+    { src: PHOTO.undergroundParking, caption: "Underground parking", group: "Amenities" },
 ];
 
+// Legacy constant retained for any residual imports; homepage hero uses HOME_MEDIA instead.
 export const HERO_IMAGE = "/gallery/buildings-01.png";
 export const AERIAL_IMAGE = "/site/aerial-masterplan.jpg";
 export const MASTERPLAN_IMAGE = "/site/masterplan.png";
@@ -364,13 +413,14 @@ export const DEV_FEATURES = [
 ];
 
 // Amenities preview (links through to the full Amenities page).
+// Gym / Children's Playground use icon tiles until verified photos exist.
 export const AMENITY_PREVIEW = [
-    { title: "Rooftop Pools", image: "/gallery/rooftop-pool.png" },
-    { title: "Gym", image: "/gallery/homestaging-living-dinning-room-kitchen-2.png" },
-    { title: "Landscaped Grounds", image: "/gallery/heliconia-grounds.png" },
-    { title: "Children's Playground", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Security", image: "/gallery/gate-entrance.png" },
-    { title: "Outdoor Gathering Spaces", image: "/gallery/terrace-2.png" },
+    { title: "Rooftop Pools", image: PHOTO.rooftopPoolDay },
+    { title: "Gym", icon: "dumbbell" },
+    { title: "Landscaped Grounds", image: PHOTO.landscapedCourtyard },
+    { title: "Children's Playground", icon: "playground" },
+    { title: "Security", image: PHOTO.entranceGate, caption: "Gated access" },
+    { title: "Outdoor Gathering Spaces", image: PHOTO.rooftopTerraceDusk },
 ];
 
 // Mortgage — buyer journey + financing partner.
@@ -392,14 +442,14 @@ export const MORTGAGE_APPLICATION_URL = "https://share.hsforms.com/1xmbxR3viQzqx
 
 // Image-led amenity showcase — short titles only, drawn from the real amenity list.
 export const AMENITY_GALLERY = [
-    { title: "Panoramic Views", image: "/gallery/buildings-01.png" },
-    { title: "Rooftop Pools & Gyms", image: "/gallery/rooftop-pool.png" },
-    { title: "Landscaped Gardens", image: "/gallery/heliconia-grounds.png" },
-    { title: "Elevator Access", image: "/gallery/terrace-2.png" },
-    { title: "Kid's Playground", image: "/gallery/homestaging-evening-terrace.png" },
-    { title: "Underground Parking", image: "/gallery/ext-aerial.png" },
-    { title: "Smart-Lock Entry", image: "/gallery/model-unit-living-room.png" },
-    { title: "Gated Security", image: "/gallery/model-unit-living-and-dining-room.png" },
+    { title: "Panoramic Views", image: PHOTO.kingstonCoastal },
+    { title: "Rooftop Pools & Gyms", image: PHOTO.rooftopPoolDay },
+    { title: "Landscaped Gardens", image: PHOTO.landscapedCourtyard },
+    { title: "Elevator Access", image: PHOTO.rooftopTerraceDusk },
+    { title: "Kid's Playground", icon: "playground" },
+    { title: "Underground Parking", image: PHOTO.undergroundParking },
+    { title: "Smart-Lock Entry", image: PHOTO.entranceGate },
+    { title: "Gated Security", image: PHOTO.entranceGate },
 ];
 
-export const SHOWROOM_IMAGE = "/gallery/model-unit-living-room.png";
+export const SHOWROOM_IMAGE = PHOTO.modelBedroom;

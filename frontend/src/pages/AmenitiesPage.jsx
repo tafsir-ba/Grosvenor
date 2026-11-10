@@ -3,6 +3,7 @@ import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 import { useAmenities } from "@/hooks/useData";
+import { PHOTO } from "@/lib/constants";
 import { resolveAmenityIcon } from "@/lib/amenityIcons";
 
 export default function AmenitiesPage() {
@@ -10,7 +11,13 @@ export default function AmenitiesPage() {
 
     return (
         <div data-testid="amenities-page">
-            <Hero image="/gallery/rooftop-pool.png" overline="Amenities & Lifestyle" title="Live well, every day" subtitle="Spaces and surroundings designed for comfort, connection and calm." />
+            <Hero
+                image={PHOTO.rooftopPoolDayHero}
+                overline="Amenities & Lifestyle"
+                title="Live well, every day"
+                subtitle="Spaces and surroundings designed for comfort, connection and calm."
+                objectPosition="center 45%"
+            />
 
             <section className="container-wide py-16 md:py-24">
                 <motion.div {...fadeUp} className="max-w-3xl px-2 md:px-6">
@@ -63,8 +70,13 @@ export default function AmenitiesPage() {
 
             <section className="container-wide py-24 md:py-32">
                 <div className={`relative flex min-h-[52vh] flex-col items-center justify-center gap-8 overflow-hidden p-10 text-center ${ROUND}`}>
-                    <img src="/gallery/homestaging-evening-terrace.png" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-brand-ink/55" />
+                    <img
+                        src={PHOTO.modelBedroom}
+                        alt="Model residence bedroom at the showroom"
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover object-[center_40%]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/75 via-brand-ink/45 to-brand-ink/25" />
                     <h2 className="lux-title relative z-10 text-4xl text-white md:text-5xl lg:text-6xl">See it for yourself at the showroom</h2>
                     <CtaButton to="/contact" variant="primary" className="relative z-10">Book a Visit</CtaButton>
                 </div>
