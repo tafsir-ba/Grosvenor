@@ -4,7 +4,7 @@ import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
 import MortgageCalculator from "@/components/shared/MortgageCalculator";
 import FaqAccordion from "@/components/shared/FaqAccordion";
-import { MORTGAGE_APPLICATION_URL, MORTGAGE_STEPS, SAGICOR } from "@/lib/constants";
+import { MORTGAGE_APPLICATION_URL, MORTGAGE_STEPS, PHOTO, SAGICOR } from "@/lib/constants";
 import { useFaq } from "@/hooks/useData";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
@@ -13,7 +13,7 @@ export default function MortgagePage() {
 
     return (
         <div data-testid="mortgage-page">
-            <Hero image="/gallery/model-unit-living-and-dining-room.png" height="min-h-[58vh]" overline="Mortgage & Financing" title="Financing made simple" subtitle="Clear, supportive guidance to help you move forward with confidence." />
+            <Hero image={PHOTO.modelBedroomSuite} height="min-h-[58vh]" overline="Mortgage & Financing" title="Financing made simple" subtitle="Clear, supportive guidance to help you move forward with confidence." objectPosition="center 42%" />
 
             {/* 1. Intro */}
             <section className="container-wide py-16 md:py-24">

@@ -7,7 +7,7 @@ import DownloadForm from "@/components/shared/DownloadForm";
 import WhatsAppLeadDialog from "@/components/shared/WhatsAppLeadDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
-import { PROJECT, LEAD_TYPE } from "@/lib/constants";
+import { PHOTO, PROJECT, LEAD_TYPE } from "@/lib/constants";
 import { trackClick } from "@/lib/tracking";
 import { requestWhatsApp } from "@/lib/whatsapp";
 import { useDownloads } from "@/hooks/useData";
@@ -48,7 +48,7 @@ export default function ContactPage() {
 
     return (
         <div data-testid="contact-page">
-            <Hero image="/gallery/homestaging-living-dinning-room-kitchen-2.png" overline="Contact" title="Let's talk" subtitle="Book a showroom visit or send a message — we'll be in touch." />
+            <Hero image={PHOTO.modelLiving} overline="Contact" title="Let's talk" subtitle="Book a showroom visit or send a message — we'll be in touch." objectPosition="center 40%" />
 
             <section className="container-wide py-16 md:py-24">
                 <div className="grid gap-14 px-2 md:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, MessageCircle, CalendarCheck, Mail, Check } from "lucide-react";
 import { motion } from "framer-motion";
@@ -6,10 +6,11 @@ import StatusBadge from "@/components/shared/StatusBadge";
 import LeadForm from "@/components/shared/LeadForm";
 import CtaButton from "@/components/shared/CtaButton";
 import WhatsAppLeadDialog from "@/components/shared/WhatsAppLeadDialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnit, useUnits } from "@/hooks/useData";
 import { formatSurface, formatUnitDetailPrice } from "@/lib/format";
-import { BUILDINGS, LEAD_TYPE, collectionForSurface, homeCategoryForSurface } from "@/lib/constants";
+import { BUILDINGS, LEAD_TYPE, collectionForSurface, homeCategoryForSurface, residenceExteriorImage } from "@/lib/constants";
 import { requestWhatsApp } from "@/lib/whatsapp";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
 
@@ -19,36 +20,63 @@ function shortBuilding(value) {
 
 const scrollToEnquiry = () => document.getElementById("enquire")?.scrollIntoView({ behavior: "smooth" });
 
-function Gallery({ images, unitNumber }) {
+function Gallery({ images, unitNumber, unitKey }) {
     const [active, setActive] = useState(0);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+
+    // Reset selection whenever the residence changes so a prior thumb never carries over.
+    useEffect(() => {
+        setActive(0);
+        setLightboxOpen(false);
+    }, [unitKey]);
+
+    const current = images[active] || images[0];
+    const overlayLabel = current?.caption || current?.label || "";
+    const altText = current?.caption
+        || (current?.label ? `Residence ${unitNumber} — ${current.label}` : `Residence ${unitNumber}`);
+    const lightboxSrc = current?.fullImage || current?.image;
+
     return (
         <div data-testid="unit-gallery">
-            <div className={`relative h-[42vh] overflow-hidden md:h-[56vh] ${ROUND}`}>
+            <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                aria-label={`Open ${overlayLabel || "gallery image"}`}
+                className={`relative block h-[42vh] w-full overflow-hidden md:h-[56vh] ${ROUND}`}
+            >
                 <motion.img
-                    key={active}
+                    key={`${unitKey}-${active}`}
                     initial={{ opacity: 0.4, scale: 1.03 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    src={images[active].image}
-                    alt={`Residence ${unitNumber} — ${images[active].label}`}
+                    src={current?.image}
+                    alt={altText}
                     loading="eager"
                     decoding="async"
+                    style={current?.objectPosition ? { objectPosition: current.objectPosition } : undefined}
                     className="absolute inset-0 h-full w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/35 to-transparent" />
-                <span className="absolute bottom-5 left-6 font-sans text-sm uppercase tracking-[0.18em] text-white">{images[active].label}</span>
-            </div>
+                <span className="absolute bottom-5 left-6 text-left font-sans text-sm uppercase tracking-[0.18em] text-white">{overlayLabel}</span>
+            </button>
             <div className="mt-4 grid grid-cols-6 gap-3">
                 {images.map((g, i) => (
                     <button
-                        key={g.label}
+                        key={`${unitKey}-${g.label}-${i}`}
                         type="button"
                         onClick={() => setActive(i)}
                         data-testid={`gallery-thumb-${i}`}
-                        aria-label={g.label}
+                        aria-label={g.caption || g.label}
                         className={`relative h-16 overflow-hidden rounded-xl transition-all duration-300 md:h-20 ${active === i ? "ring-2 ring-brand-gold ring-offset-2 ring-offset-brand-warm" : "opacity-70 hover:opacity-100"}`}
                     >
-                        <img src={g.image} alt={g.label} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                        <img
+                            src={g.image}
+                            alt={g.caption || g.label}
+                            loading="lazy"
+                            decoding="async"
+                            style={g.objectPosition ? { objectPosition: g.objectPosition } : undefined}
+                            className="h-full w-full object-cover"
+                        />
                     </button>
                 ))}
             </div>
@@ -59,6 +87,21 @@ function Gallery({ images, unitNumber }) {
                 </button>
                 {" "}or download the brochure from Contact / the floating menu.
             </p>
+
+            <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+                <DialogContent className="max-w-5xl border-none bg-transparent p-0 shadow-none" data-testid="unit-gallery-lightbox">
+                    {current && (
+                        <figure className="overflow-hidden rounded-sm bg-brand-ink">
+                            <DialogTitle className="sr-only">{overlayLabel}</DialogTitle>
+                            <DialogDescription className="sr-only">{altText}</DialogDescription>
+                            <img src={lightboxSrc} alt={altText} className="max-h-[80vh] w-full object-contain" />
+                            <figcaption className="p-4 text-center text-sm uppercase tracking-[0.14em] text-white/80">
+                                {overlayLabel}
+                            </figcaption>
+                        </figure>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
@@ -73,7 +116,7 @@ export default function UnitDetailPage() {
 
     const galleryImages = useMemo(() => {
         if (!collection) return [];
-        return [{ label: "Exterior", image: "/gallery/buildings-01.png" }, ...collection.gallery];
+        return [residenceExteriorImage(collection), ...collection.gallery];
     }, [collection]);
 
     const related = useMemo(() => {
@@ -133,7 +176,7 @@ export default function UnitDetailPage() {
             <section className="container-wide pt-6">
                 <div className="grid gap-10 lg:grid-cols-[1.35fr_1fr]">
                     <motion.div {...fadeUp}>
-                        <Gallery images={galleryImages} unitNumber={unit.unit_number} />
+                        <Gallery images={galleryImages} unitNumber={unit.unit_number} unitKey={unit.slug} />
                     </motion.div>
 
                     <motion.div {...fadeUp} className="flex flex-col lg:pl-2" data-testid="unit-info-panel">

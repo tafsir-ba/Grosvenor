@@ -3,7 +3,19 @@ import CtaButton from "@/components/shared/CtaButton";
 import { Eyebrow, ROUND } from "@/components/shared/luxe";
 
 // Site-wide page hero — wide curved image container with an overlaid editorial title.
-export default function Hero({ image, overline, eyebrow, title, titleAccent, subtitle, primary, secondary, height = "h-[72vh]" }) {
+export default function Hero({
+    image,
+    overline,
+    eyebrow,
+    title,
+    titleAccent,
+    subtitle,
+    primary,
+    secondary,
+    height = "h-[72vh]",
+    objectPosition,
+    overlayClassName = "absolute inset-0 bg-gradient-to-t from-brand-ink/65 via-brand-ink/10 to-transparent",
+}) {
     const label = eyebrow || overline;
     return (
         <section className="container-wide pb-8 pt-32 md:pt-36" data-testid="hero-section">
@@ -14,9 +26,12 @@ export default function Hero({ image, overline, eyebrow, title, titleAccent, sub
                     transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
                     src={image}
                     alt=""
+                    loading="eager"
+                    decoding="async"
+                    style={objectPosition ? { objectPosition } : undefined}
                     className="absolute inset-0 h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/65 via-brand-ink/10 to-transparent" />
+                <div className={overlayClassName} />
                 <motion.div
                     initial={{ opacity: 0, y: 28 }}
                     animate={{ opacity: 1, y: 0 }}

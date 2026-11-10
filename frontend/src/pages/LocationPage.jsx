@@ -3,7 +3,7 @@ import { MapPin } from "lucide-react";
 import Hero from "@/components/shared/Hero";
 import CtaButton from "@/components/shared/CtaButton";
 import { Eyebrow, fadeUp, ROUND } from "@/components/shared/luxe";
-import { PROJECT } from "@/lib/constants";
+import { PHOTO, PROJECT } from "@/lib/constants";
 
 const HIGHLIGHTS = [
     { title: "Manor Park", body: "An established, leafy residential district known for calm streets and everyday convenience." },
@@ -21,7 +21,13 @@ const NEARBY = [
 export default function LocationPage() {
     return (
         <div data-testid="location-page">
-            <Hero image="/gallery/terrace-2.png" overline="Location" title="Grosvenor Heights, Manor Park" subtitle="A coveted Kingston 8 address — connected, yet wonderfully private." />
+            <Hero
+                image={PHOTO.neighbourhoodOutlookHero}
+                overline="Location"
+                title="Grosvenor Heights, Manor Park"
+                subtitle="A coveted Kingston 8 address — connected, yet wonderfully private."
+                objectPosition="center 48%"
+            />
 
             <section className="container-wide py-16 md:py-24">
                 <motion.div {...fadeUp} className="mb-12 max-w-3xl px-2 md:px-6">
@@ -36,6 +42,15 @@ export default function LocationPage() {
                         </motion.div>
                     ))}
                 </div>
+                <motion.div {...fadeUp} className={`mt-12 overflow-hidden ${ROUND}`} data-testid="location-golden-hour">
+                    <img
+                        src={PHOTO.valleyGoldenHour}
+                        alt="Golden-hour valley outlook from Grosvenor Heights"
+                        loading="lazy"
+                        decoding="async"
+                        className="h-[42vh] w-full object-cover md:h-[52vh]"
+                    />
+                </motion.div>
             </section>
 
             <section className="container-wide pb-16 md:pb-24">

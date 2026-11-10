@@ -2,6 +2,7 @@ import Hero from "@/components/shared/Hero";
 import SectionHeading from "@/components/shared/SectionHeading";
 import FaqAccordion from "@/components/shared/FaqAccordion";
 import CtaButton from "@/components/shared/CtaButton";
+import { PHOTO } from "@/lib/constants";
 import { useFaq } from "@/hooks/useData";
 
 export default function FaqPage() {
@@ -10,11 +11,12 @@ export default function FaqPage() {
     return (
         <div data-testid="faq-page">
             <Hero
-                image="/gallery/model-unit-kitchen.png"
+                image={PHOTO.kitchenWindow}
                 height="min-h-[52vh]"
                 overline="FAQ"
                 title="Good to know"
                 subtitle="Clear answers to common questions."
+                objectPosition="center 35%"
             />
             <section className="container-x py-24 md:py-32">
                 <div className="grid gap-14 lg:grid-cols-[1fr_1.4fr]">
