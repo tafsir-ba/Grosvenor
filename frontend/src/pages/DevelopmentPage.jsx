@@ -67,6 +67,22 @@ export default function DevelopmentPage() {
                         {error && <p className="col-span-3 font-sans text-sm text-destructive">Inventory could not be loaded. Stats may be incomplete.</p>}
                     </motion.div>
                 </div>
+                <motion.div {...fadeUp} className={`mt-12 grid gap-5 overflow-hidden md:grid-cols-[1.2fr_0.8fr] ${ROUND}`} data-testid="dev-photo-pair">
+                    <img
+                        src={PHOTO.apartmentElevatedOutlook}
+                        alt="Elevated apartment outlook across Grosvenor Heights"
+                        loading="lazy"
+                        decoding="async"
+                        className="h-64 w-full object-cover md:h-80"
+                    />
+                    <img
+                        src={PHOTO.wayfindingSign}
+                        alt="On-site wayfinding for Ginger Lily, Begonia, Hibiscus and Heliconia"
+                        loading="lazy"
+                        decoding="async"
+                        className="h-64 w-full object-cover object-[center_35%] bg-brand-ivory md:h-80"
+                    />
+                </motion.div>
             </section>
 
             {/* 2. Masterplan + building breakdown */}

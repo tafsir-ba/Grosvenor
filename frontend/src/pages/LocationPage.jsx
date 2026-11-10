@@ -42,6 +42,15 @@ export default function LocationPage() {
                         </motion.div>
                     ))}
                 </div>
+                <motion.div {...fadeUp} className={`mt-12 overflow-hidden ${ROUND}`} data-testid="location-golden-hour">
+                    <img
+                        src={PHOTO.valleyGoldenHour}
+                        alt="Golden-hour valley outlook from Grosvenor Heights"
+                        loading="lazy"
+                        decoding="async"
+                        className="h-[42vh] w-full object-cover md:h-[52vh]"
+                    />
+                </motion.div>
             </section>
 
             <section className="container-wide pb-16 md:pb-24">

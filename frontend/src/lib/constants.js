@@ -89,83 +89,84 @@ export const BUILDINGS = [
 
 // Lifestyle collections — single source of truth (Residences + Unit Detail).
 // Mapped to real inventory by total surface (sq ft). No bedroom/room data shown.
+// Collection galleries use Vanessa's must-use real photographs (indicative across units).
 export const COLLECTIONS = [
     {
         key: "vista", name: "The Vista Residences", min: 0, max: 1750,
         blurb: "Poised entry residences with elegant proportions, natural light and an elevated outlook.",
-        cardImage: "/gallery/home-staging-kitchen-2.png",
-        heroImage: "/gallery/ext-heliconia-view.png",
+        cardImage: "/gallery/photos/grosvenor-model-living-room.webp",
+        heroImage: "/gallery/photos/grosvenor-apartment-elevated-outlook.webp",
         gallery: [
-            { label: "Living Spaces", image: "/gallery/model-unit-living-room.png" },
-            { label: "Gourmet Kitchen", image: "/gallery/home-staging-kitchen-2.png" },
-            { label: "Interior Detail", image: "/gallery/model-unit-bedroom.png" },
-            { label: "Terrace & Views", image: "/gallery/ext-heliconia-view.png" },
-            { label: "Spa Finishes", image: "/gallery/model-unit-bathroom.png" },
+            { label: "Living Spaces", image: "/gallery/photos/grosvenor-model-living-room.webp" },
+            { label: "Kitchen Detail", image: "/gallery/photos/grosvenor-kitchen-window-detail-thumb.webp", fullImage: "/gallery/photos/grosvenor-kitchen-window-detail.webp" },
+            { label: "Interior Detail", image: "/gallery/photos/grosvenor-model-bedroom-suite.webp" },
+            { label: "Terrace & Views", image: "/gallery/photos/grosvenor-valley-golden-hour.webp" },
+            { label: "Spa Finishes", image: "/gallery/photos/grosvenor-model-bathroom.webp" },
         ],
     },
     {
         key: "signature", name: "Signature Residences", min: 1750, max: 2100,
         blurb: "Generously scaled residences with refined finishes and considered living spaces.",
-        cardImage: "/gallery/homestaging-bathroom-4.png",
-        heroImage: "/gallery/terrace-2.png",
+        cardImage: "/gallery/photos/grosvenor-model-bathroom-angle-2.webp",
+        heroImage: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp",
         gallery: [
-            { label: "Living Spaces", image: "/gallery/homestaging-living-room-2.png" },
-            { label: "Gourmet Kitchen", image: "/gallery/homestaging-kitchen.png" },
-            { label: "Interior Detail", image: "/gallery/homestaging-ginger-lily-bedroom.png" },
-            { label: "Terrace & Views", image: "/gallery/terrace-2.png" },
-            { label: "Spa Finishes", image: "/gallery/homestaging-bathroom-4.png" },
+            { label: "Living Spaces", image: "/gallery/photos/grosvenor-model-living-room.webp" },
+            { label: "Kitchen Detail", image: "/gallery/photos/grosvenor-kitchen-window-detail-thumb.webp", fullImage: "/gallery/photos/grosvenor-kitchen-window-detail.webp" },
+            { label: "Interior Detail", image: "/gallery/photos/grosvenor-model-bedroom-suite.webp" },
+            { label: "Terrace & Views", image: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp" },
+            { label: "Spa Finishes", image: "/gallery/photos/grosvenor-model-bathroom-angle-2.webp" },
         ],
     },
     {
         key: "grand", name: "Grand Residences", min: 2100, max: 2600,
         blurb: "Expansive residences designed for entertaining, with open-plan living and wide outlooks.",
-        cardImage: "/gallery/model-unit-living-and-dining-room.png",
-        heroImage: "/gallery/ext-rooftop-mountain.png",
+        cardImage: "/gallery/photos/grosvenor-model-living-room.webp",
+        heroImage: "/gallery/photos/grosvenor-apartment-elevated-outlook.webp",
         gallery: [
-            { label: "Living & Dining", image: "/gallery/model-unit-living-and-dining-room.png" },
-            { label: "Gourmet Kitchen", image: "/gallery/model-unit-dining-kitchen.png" },
-            { label: "Interior Detail", image: "/gallery/model-unit-bedroom-2.png" },
-            { label: "Terrace & Views", image: "/gallery/ext-rooftop-mountain.png" },
-            { label: "Spa Finishes", image: "/gallery/model-unit-bathroom-2.png" },
+            { label: "Living Spaces", image: "/gallery/photos/grosvenor-model-living-room.webp" },
+            { label: "Kitchen Detail", image: "/gallery/photos/grosvenor-kitchen-window-detail-thumb.webp", fullImage: "/gallery/photos/grosvenor-kitchen-window-detail.webp" },
+            { label: "Interior Detail", image: "/gallery/photos/grosvenor-model-bedroom.webp" },
+            { label: "Terrace & Views", image: "/gallery/photos/grosvenor-apartment-elevated-outlook.webp" },
+            { label: "Spa Finishes", image: "/gallery/photos/grosvenor-model-bathroom.webp" },
         ],
     },
     {
         key: "skyline", name: "Skyline Residences", min: 2600, max: 3400,
         blurb: "Duplex residences across two levels, crowned by sweeping skyline and mountain views.",
-        cardImage: "/gallery/ext-rooftop-seaview.png",
-        heroImage: "/gallery/ext-rooftop-seaview.png",
+        cardImage: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp",
+        heroImage: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp",
         gallery: [
-            { label: "Living Spaces", image: "/gallery/homestaging-living-dinning-room-kitchen-2.png" },
-            { label: "Gourmet Kitchen", image: "/gallery/model-unit-kitchen.png" },
-            { label: "Interior Detail", image: "/gallery/model-unit-bedroom-3.png" },
-            { label: "Terrace & Views", image: "/gallery/ext-rooftop-seaview.png" },
-            { label: "Spa Finishes", image: "/gallery/model-unit-master-bathroom-3.png" },
+            { label: "Living Spaces", image: "/gallery/photos/grosvenor-model-living-room.webp" },
+            { label: "Kitchen Detail", image: "/gallery/photos/grosvenor-kitchen-window-detail-thumb.webp", fullImage: "/gallery/photos/grosvenor-kitchen-window-detail.webp" },
+            { label: "Interior Detail", image: "/gallery/photos/grosvenor-model-bedroom-suite.webp" },
+            { label: "Terrace & Views", image: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp" },
+            { label: "Spa Finishes", image: "/gallery/photos/grosvenor-model-bathroom-angle-2.webp" },
         ],
     },
     {
         key: "penthouse", name: "Penthouse Collection", min: 3400, max: 4500,
         blurb: "The development's most exclusive duplex residences, with the finest finishes and panoramas.",
-        cardImage: "/gallery/homestaging-living-room-2.png",
-        heroImage: "/gallery/hero-rooftop-sunset.png",
+        cardImage: "/gallery/photos/grosvenor-valley-golden-hour.webp",
+        heroImage: "/gallery/photos/grosvenor-valley-golden-hour.webp",
         gallery: [
-            { label: "Living Spaces", image: "/gallery/home-staging-living-dinning-room-and-kitchen.png" },
-            { label: "Gourmet Kitchen", image: "/gallery/homestaging-kitchen.png" },
-            { label: "Interior Detail", image: "/gallery/model-unit-mater-bedroom.png" },
-            { label: "Terrace & Views", image: "/gallery/hero-rooftop-sunset.png" },
-            { label: "Spa Finishes", image: "/gallery/model-unit-master-bathroom-4.png" },
+            { label: "Living Spaces", image: "/gallery/photos/grosvenor-model-living-room.webp" },
+            { label: "Kitchen Detail", image: "/gallery/photos/grosvenor-kitchen-window-detail-thumb.webp", fullImage: "/gallery/photos/grosvenor-kitchen-window-detail.webp" },
+            { label: "Interior Detail", image: "/gallery/photos/grosvenor-model-bedroom.webp" },
+            { label: "Terrace & Views", image: "/gallery/photos/grosvenor-valley-golden-hour.webp" },
+            { label: "Spa Finishes", image: "/gallery/photos/grosvenor-model-bathroom.webp" },
         ],
     },
     {
         key: "townhouses", name: "Begonia Townhouses", min: 4500, max: 100000,
         blurb: "Standalone townhouse residences with private rooftop space and the largest footprints.",
-        cardImage: "/gallery/townhouse-new.png",
-        heroImage: "/gallery/heliconia-grounds.png",
+        cardImage: "/gallery/photos/grosvenor-townhouses-exterior-day-16x10.webp",
+        heroImage: "/gallery/photos/grosvenor-townhouses-exterior-day.webp",
         gallery: [
-            { label: "Living Spaces", image: "/gallery/model-unit-living-room.png" },
-            { label: "Gourmet Kitchen", image: "/gallery/model-unit-dining-kitchen.png" },
-            { label: "Interior Detail", image: "/gallery/model-unit-mater-bedroom.png" },
-            { label: "Grounds & Views", image: "/gallery/heliconia-grounds.png" },
-            { label: "Spa Finishes", image: "/gallery/homestaging-master-bathroom-1.png" },
+            { label: "Living Spaces", image: "/gallery/photos/grosvenor-model-living-room.webp" },
+            { label: "Kitchen Detail", image: "/gallery/photos/grosvenor-kitchen-window-detail-thumb.webp", fullImage: "/gallery/photos/grosvenor-kitchen-window-detail.webp" },
+            { label: "Interior Detail", image: "/gallery/photos/grosvenor-model-bedroom-suite.webp" },
+            { label: "Grounds & Views", image: "/gallery/photos/grosvenor-landscaped-courtyard.webp" },
+            { label: "Spa Finishes", image: "/gallery/photos/grosvenor-model-bathroom-angle-2.webp" },
         ],
     },
 ];
@@ -178,7 +179,7 @@ export const HOME_RESIDENCE_CATEGORIES = [
         subtitle: null,
         min: 0,
         max: 1750,
-        cardImage: "/gallery/home-staging-kitchen-2.png",
+        cardImage: "/gallery/photos/grosvenor-model-living-room.webp",
         collectionKey: "vista",
     },
     {
@@ -187,7 +188,7 @@ export const HOME_RESIDENCE_CATEGORIES = [
         subtitle: null,
         min: 1750,
         max: 2600,
-        cardImage: "/gallery/homestaging-bathroom-4.png",
+        cardImage: "/gallery/photos/grosvenor-model-bathroom-angle-2.webp",
         collectionKey: "signature",
     },
     {
@@ -196,7 +197,7 @@ export const HOME_RESIDENCE_CATEGORIES = [
         subtitle: "Penthouse",
         min: 2600,
         max: 4500,
-        cardImage: "/gallery/ext-rooftop-seaview.png",
+        cardImage: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp",
         collectionKey: "skyline",
     },
     {
@@ -205,7 +206,7 @@ export const HOME_RESIDENCE_CATEGORIES = [
         subtitle: "Townhouses",
         min: 4500,
         max: Infinity,
-        cardImage: "/gallery/townhouse-new.png",
+        cardImage: "/gallery/photos/grosvenor-townhouses-exterior-day-16x10.webp",
         collectionKey: "townhouses",
     },
 ];
@@ -226,10 +227,11 @@ export const HOME_AMENITY_HIGHLIGHTS = [
 ];
 
 // Homepage lifestyle panels — image-led, minimal copy.
+// Not the homepage hero (HOME_MEDIA); these sit below the fold.
 export const HOME_LIFESTYLE_PANELS = [
-    { title: "Privacy", line: "A private, gated residential setting.", image: "/gallery/gate-entrance.png" },
-    { title: "Elevation", line: "Elevated views over Kingston.", image: "/gallery/ext-rooftop-seaview.png" },
-    { title: "Modern Living", line: "Contemporary spaces designed for ease.", image: "/gallery/model-unit-living-room.png" },
+    { title: "Privacy", line: "A private, gated residential setting.", image: "/gallery/photos/grosvenor-entrance-gate.webp" },
+    { title: "Elevation", line: "Elevated views over Kingston.", image: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp" },
+    { title: "Modern Living", line: "Contemporary spaces designed for ease.", image: "/gallery/photos/grosvenor-model-living-room.webp" },
 ];
 
 export function homeCategoryForKey(key) {
@@ -259,6 +261,7 @@ export function collectionForSurface(surface) {
 export const PHOTO = {
     apartmentExterior: "/gallery/photos/grosvenor-apartment-exterior-day.webp",
     apartmentExteriorCard: "/gallery/photos/grosvenor-apartment-exterior-day-16x10.webp",
+    apartmentElevatedOutlook: "/gallery/photos/grosvenor-apartment-elevated-outlook.webp",
     developmentHero: "/gallery/photos/grosvenor-development-hero.webp",
     townhouseExterior: "/gallery/photos/grosvenor-townhouses-exterior-day.webp",
     townhouseExteriorCard: "/gallery/photos/grosvenor-townhouses-exterior-day-16x10.webp",
@@ -271,14 +274,19 @@ export const PHOTO = {
     rooftopCityBlueHourHero: "/gallery/photos/grosvenor-rooftop-city-blue-hour-hero.webp",
     rooftopTerraceDusk: "/gallery/photos/grosvenor-rooftop-terrace-dusk.webp",
     kingstonCoastal: "/gallery/photos/grosvenor-kingston-coastal-outlook.webp",
+    valleyGoldenHour: "/gallery/photos/grosvenor-valley-golden-hour.webp",
     modelLiving: "/gallery/photos/grosvenor-model-living-room.webp",
     modelBedroom: "/gallery/photos/grosvenor-model-bedroom.webp",
+    modelBedroomSuite: "/gallery/photos/grosvenor-model-bedroom-suite.webp",
     modelBathroom: "/gallery/photos/grosvenor-model-bathroom.webp",
+    modelBathroomAngle2: "/gallery/photos/grosvenor-model-bathroom-angle-2.webp",
     kitchenWindow: "/gallery/photos/grosvenor-kitchen-window-detail.webp",
     kitchenWindowThumb: "/gallery/photos/grosvenor-kitchen-window-detail-thumb.webp",
     landscapedCourtyard: "/gallery/photos/grosvenor-landscaped-courtyard.webp",
     entranceGate: "/gallery/photos/grosvenor-entrance-gate.webp",
     undergroundParking: "/gallery/photos/grosvenor-underground-parking.webp",
+    wayfindingSign: "/gallery/photos/grosvenor-wayfinding-sign.webp",
+    wayfindingSignThumb: "/gallery/photos/grosvenor-wayfinding-sign-thumb.webp",
 };
 
 /** Shared first Exterior slot for every residence detail page. */
@@ -369,21 +377,26 @@ export const BUYING_PROCESS = [
 
 // FAQ content is served from GET /api/content/faq (backend/content/site_content.py).
 
-// Curated lifestyle imagery — real photographs (Nov 2026 brief). Renders removed.
+// Curated lifestyle imagery — real photographs (Nov 2026 brief + Vanessa must-use set).
 // thumb = landscape grid source; src = full-aspect lightbox original.
 export const GALLERY = [
     { src: PHOTO.apartmentExterior, thumb: PHOTO.apartmentExteriorCard, caption: "Apartment architecture", group: "Exteriors" },
+    { src: PHOTO.apartmentElevatedOutlook, caption: "Elevated apartment outlook", group: "Exteriors" },
     { src: PHOTO.townhouseExterior, thumb: PHOTO.townhouseExteriorCard, caption: "The townhouses", group: "Exteriors" },
     { src: PHOTO.rooftopPoolDay, caption: "Rooftop pool by day", group: "Amenities" },
     { src: PHOTO.rooftopPoolBlueHour, caption: "Rooftop pool at blue hour", group: "Amenities" },
     { src: PHOTO.rooftopTerraceDusk, caption: "Rooftop terrace at dusk", group: "Amenities" },
     { src: PHOTO.kingstonCoastal, caption: "Kingston and coastal outlook", group: "Views" },
+    { src: PHOTO.valleyGoldenHour, caption: "Valley outlook at golden hour", group: "Views" },
     { src: PHOTO.modelLiving, caption: "Model residence: living room", group: "Interiors" },
+    { src: PHOTO.modelBedroomSuite, caption: "Model residence: bedroom suite", group: "Interiors" },
     { src: PHOTO.modelBedroom, caption: "Model residence: bedroom", group: "Interiors" },
     { src: PHOTO.modelBathroom, caption: "Model residence: bathroom", group: "Interiors" },
+    { src: PHOTO.modelBathroomAngle2, caption: "Model residence: bathroom with tub", group: "Interiors" },
     { src: PHOTO.kitchenWindow, thumb: PHOTO.kitchenWindowThumb, caption: "Kitchen window detail", group: "Interiors", fit: "contain" },
     { src: PHOTO.landscapedCourtyard, caption: "Landscaped courtyard", group: "Grounds" },
     { src: PHOTO.entranceGate, caption: "Entrance gate", group: "Grounds" },
+    { src: PHOTO.wayfindingSign, thumb: PHOTO.wayfindingSignThumb, caption: "On-site wayfinding", group: "Grounds", fit: "contain" },
     { src: PHOTO.undergroundParking, caption: "Underground parking", group: "Amenities" },
 ];
 
@@ -452,4 +465,4 @@ export const AMENITY_GALLERY = [
     { title: "Gated Security", image: PHOTO.entranceGate },
 ];
 
-export const SHOWROOM_IMAGE = PHOTO.modelBedroom;
+export const SHOWROOM_IMAGE = PHOTO.modelBedroomSuite;

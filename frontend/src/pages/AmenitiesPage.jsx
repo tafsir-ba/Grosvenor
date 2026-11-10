@@ -71,7 +71,7 @@ export default function AmenitiesPage() {
             <section className="container-wide py-24 md:py-32">
                 <div className={`relative flex min-h-[52vh] flex-col items-center justify-center gap-8 overflow-hidden p-10 text-center ${ROUND}`}>
                     <img
-                        src={PHOTO.modelBedroom}
+                        src={PHOTO.modelBedroomSuite}
                         alt="Model residence bedroom at the showroom"
                         loading="lazy"
                         className="absolute inset-0 h-full w-full object-cover object-[center_40%]"

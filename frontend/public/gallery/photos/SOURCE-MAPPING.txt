@@ -1,0 +1,63 @@
+Grosvenor must-use photo filename mapping
+==========================================
+Generated for Vanessa's MUST-USE set (9 JPGs). Exact content duplicates keep one visual asset.
+
+SOURCE JPG                              -> SITE ASSET                                      NOTES
+--------------------------------------  ------------------------------------------------  -----
+PHOTO-2026-10-12-02-43-16 2.jpg         grosvenor-model-bathroom.webp                     Bathroom angle 1 (vanity + shower)
+PHOTO-2026-10-12-02-43-16 3.jpg         grosvenor-model-bathroom-angle-2.webp             Bathroom angle 2 (includes tub)
+PHOTO-2026-10-12-02-43-16 4.jpg         grosvenor-model-living-room.webp                  Model living room
+PHOTO-2026-10-12-02-43-16.jpg           grosvenor-model-bedroom-suite.webp                Model bedroom suite
+PHOTO-2026-10-12-02-43-17 2.jpg         grosvenor-valley-golden-hour.webp                 Valley outlook at golden hour
+PHOTO-2026-10-12-02-43-17 4.jpg         grosvenor-kingston-coastal-outlook.webp           Kingston / coastal outlook
+PHOTO-2026-10-12-02-43-19 2.jpg         grosvenor-apartment-elevated-outlook.webp         Elevated apartment exterior / roof terrace
+PHOTO-2026-10-12-02-43-21.jpg           grosvenor-wayfinding-sign.webp (+ -thumb)         Building wayfinding sign (portrait)
+PHOTO-2026-10-12-02-48-45 7.jpg         grosvenor-kitchen-window-detail.webp (+ -thumb)   Exact duplicate of PHOTO-2026-10-12-02-43-25 7.jpg — single visual retained
+
+Already present from prior photo brief (same bytes / same visual):
+- 02-43-16 2, 02-43-16 4, 02-43-17 4, and kitchen via 02-43-25 7 ≡ 02-48-45 7
+
+Visible placements (must-use set)
+---------------------------------
+PHOTO-2026-10-12-02-43-16 2.jpg
+  Gallery: "Model residence: bathroom"
+  Unit galleries: Spa Finishes (Vista / Grand / Penthouse)
+
+PHOTO-2026-10-12-02-43-16 3.jpg
+  Gallery: "Model residence: bathroom with tub"
+  Unit galleries: Spa Finishes (Signature / Skyline / Townhouses)
+  Homepage residence cards: Signature
+
+PHOTO-2026-10-12-02-43-16 4.jpg
+  Gallery: "Model residence: living room"
+  Unit galleries: Living Spaces (all collections)
+  Contact hero; Homepage lifestyle "Modern Living"; Vista/Grand cards
+
+PHOTO-2026-10-12-02-43-16.jpg
+  Gallery: "Model residence: bedroom suite"
+  Unit galleries: Interior Detail (Vista / Signature / Skyline / Townhouses)
+  Mortgage hero; Amenities showroom banner
+
+PHOTO-2026-10-12-02-43-17 2.jpg
+  Gallery: "Valley outlook at golden hour"
+  Location page secondary image; Penthouse card/hero; Vista Terrace & Views
+
+PHOTO-2026-10-12-02-43-17 4.jpg
+  Gallery: "Kingston and coastal outlook"
+  Homepage lifestyle "Elevation"; Skyline/Signature views; Skyline card
+
+PHOTO-2026-10-12-02-43-19 2.jpg
+  Gallery: "Elevated apartment outlook"
+  Development overview photo pair; Grand Terrace & Views / hero
+
+PHOTO-2026-10-12-02-43-21.jpg
+  Gallery: "On-site wayfinding" (contained portrait thumb)
+  Development overview photo pair
+
+PHOTO-2026-10-12-02-48-45 7.jpg
+  (= PHOTO-2026-10-12-02-43-25 7.jpg) Gallery kitchen window detail + FAQ hero + unit Kitchen Detail
+
+Preserved from prior brief (unchanged by this must-use pass)
+- Homepage hero (HOME_MEDIA video/fallback)
+- Shared apartment/townhouse unit Exterior defaults
+- Development / Amenities / Location / Gallery heroes from prior brief
